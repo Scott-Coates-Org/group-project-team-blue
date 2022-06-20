@@ -44,7 +44,7 @@ Try This
 - [ ] Marge
 - [ ] Khant
 - [ ] Alec
-- [ ] Patrick
+- [x] Patrick
 
 ## Sprint Progress
 
