@@ -42,7 +42,7 @@ Try This
 ## Team Members Roll Call
 
 - [ ] Marge
-- [ ] Khant
+- [X] Khant
 - [ ] Alec
 - [ ] Patrick
 
