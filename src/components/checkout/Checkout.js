@@ -5,7 +5,7 @@ import Cart from './Cart';
 const Checkout = () => {
   return (
     <div className="vh-100 checkout-bg">
-      <Container className="px-5 pt-5">
+      <Container className="pt-5">
         <Row xs="1">
           <Wizard />
           <Cart />
