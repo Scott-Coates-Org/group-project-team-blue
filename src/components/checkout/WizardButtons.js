@@ -4,12 +4,25 @@ import { Button } from 'reactstrap';
 const WizardButtons = () => {
   const { nextStep, isFirstStep, isLastStep, previousStep } = useWizard();
   return (
-    <div>
+    <div className="d-flex">
       {!isFirstStep ? (
-        <Button onClick={() => previousStep()}>Back</Button>
+        <Button
+          color="secondary"
+          onClick={() => previousStep()}
+          className={`font-weight-bold flex-grow-1 w-50 ${
+            isLastStep ? '' : 'mr-2'
+          }`}
+          outline
+        >
+          Back
+        </Button>
       ) : null}
       {!isLastStep ? (
-        <Button color="primary" onClick={() => nextStep()}>
+        <Button
+          color="warning"
+          onClick={() => nextStep()}
+          className="font-weight-bold flex-grow-1 w-75"
+        >
           Continue
         </Button>
       ) : null}
