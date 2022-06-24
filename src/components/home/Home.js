@@ -1,5 +1,5 @@
 import Logo from 'components/logo/Logo';
-import { Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
@@ -7,7 +7,9 @@ const Home = () => {
       <div>
         <Logo />
         <div className="d-flex justify-content-center">
-          <div id="homepage-btn">Buy a Pass</div>
+          <Link to="/checkout" className="text-decoration-none">
+            <div id="homepage-btn">Buy a Pass</div>
+          </Link>
         </div>
       </div>
     </div>
