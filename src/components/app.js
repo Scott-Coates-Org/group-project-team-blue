@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'styles/custom.css';
-import Home from 'components/home';
+import Home from 'components/home/Home';
 import { AuthProvider, useAuth } from 'components/user/auth';
 import Login from 'components/user/login';
 import Logout from 'components/user/logout';
@@ -64,9 +64,9 @@ function App() {
                 <Logout {...routeProps} {...props} firebase={firebase} />
               )}
             />
-            <Route path="/checkout" render={() => <Checkout />} />
+            <Route path="/" render={() => <Home />} />
             {/* this must be on the bottom */}
-            <ProtectedRoute path="/" component={Home} {...props} />
+            {/* <ProtectedRoute path="/" component={Home} {...props} /> */}
           </Switch>
         </Router>
       </AuthProvider>
