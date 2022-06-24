@@ -7,7 +7,7 @@ const WizardHeader = () => {
   return (
     <div className="mb-4">
       <small className="text-uppercase mb-2 d-block">Step {step} of 4</small>
-      <Progress value={step * 25} />
+      <Progress value={step * 25} color="warning" />
     </div>
   );
 };
