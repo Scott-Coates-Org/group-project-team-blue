@@ -9751,6 +9751,11 @@ react-transition-group@^3.0.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
+react-use-wizard@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-use-wizard/-/react-use-wizard-2.2.0.tgz#7fa0eaf0f7237450f95ac06ecc71679c7c176bef"
+  integrity sha512-KxmGKC6YntbrpaSxxhFFKVWWHb5MYV997VnCJd4QcVqg0zMXOZyvqlEhQ3TmCK086iBYyxs/77FiC3njSlMd/w==
+
 react@^17.0.0:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"

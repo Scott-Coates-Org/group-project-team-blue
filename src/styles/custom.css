@@ -1,0 +1,15 @@
+.checkout-bg {
+  background-image: linear-gradient(
+    165deg,
+    hsl(301deg 94% 35%) 0%,
+    hsl(286deg 94% 36%) 5%,
+    hsl(270deg 93% 38%) 13%,
+    hsl(255deg 92% 39%) 24%,
+    hsl(239deg 91% 41%) 35%,
+    hsl(224deg 91% 42%) 48%,
+    hsl(208deg 90% 44%) 61%,
+    hsl(193deg 89% 45%) 75%,
+    hsl(178deg 88% 47%) 88%,
+    hsl(162deg 88% 48%) 100%
+  );
+}
