@@ -1,5 +1,5 @@
 import { Container, Row } from 'reactstrap';
-import Wizard from './Wizard';
+import WizardContainer from './WizardContainer';
 import Cart from './Cart';
 
 const Checkout = () => {
@@ -7,7 +7,7 @@ const Checkout = () => {
     <div className="vh-100 checkout-bg">
       <Container className="pt-5">
         <Row xs="1">
-          <Wizard />
+          <WizardContainer />
           <Cart />
         </Row>
       </Container>
