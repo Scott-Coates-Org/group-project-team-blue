@@ -5,22 +5,6 @@
   background-position: center;
 }
 
-.checkout-bg {
-  background-image: linear-gradient(
-    165deg,
-    hsl(301deg 94% 35%) 0%,
-    hsl(286deg 94% 36%) 5%,
-    hsl(270deg 93% 38%) 13%,
-    hsl(255deg 92% 39%) 24%,
-    hsl(239deg 91% 41%) 35%,
-    hsl(224deg 91% 42%) 48%,
-    hsl(208deg 90% 44%) 61%,
-    hsl(193deg 89% 45%) 75%,
-    hsl(178deg 88% 47%) 88%,
-    hsl(162deg 88% 48%) 100%
-  );
-}
-
 #logo {
   display: flex;
   flex-direction: row;
@@ -34,6 +18,7 @@
   color: #f9ff00;
   font-family: 'Concert One', sans-serif;
   width: max-content;
+  height: max-content;
   font-size: 5rem;
   font-size: clamp(5rem, 3.4rem + 8vw, 13rem);
   text-shadow: -7px 7px 0px #ff5f92;
@@ -70,4 +55,57 @@
   100% {
     transform: scale(1, 1) translateY(0);
   }
+}
+
+#homepage-btn {
+  box-sizing: content-box;
+  width: max-content;
+  color: #ff5f92;
+  font-size: 1.4em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1rem 2.5rem;
+  background-image: radial-gradient(
+      circle at 0% 50%,
+      transparent 0.5rem,
+      #ffffff 0.6rem
+    ),
+    radial-gradient(circle at 0% 50%, transparent 0.5rem, #ffffff 0.6rem),
+    radial-gradient(circle at 100% 50%, transparent 0.5rem, #ffffff 0.6rem),
+    radial-gradient(circle at 100% 50%, transparent 0.5rem, #ffffff 0.6rem);
+  background-size: 51% 51%, 51% 51%, 51% 51%, 51% 51%;
+  background-repeat: no-repeat;
+  background-position: top left, bottom left, top right, bottom right;
+
+  transition: 0.2s all ease;
+}
+
+#homepage-btn:hover,
+#homepage-btn:active {
+  color: #ffffff;
+  cursor: pointer;
+  background-image: radial-gradient(
+      circle at 0% 50%,
+      transparent 0.5rem,
+      #ff5f92 0.6rem
+    ),
+    radial-gradient(circle at 0% 50%, transparent 0.5rem, #ff5f92 0.6rem),
+    radial-gradient(circle at 100% 50%, transparent 0.5rem, #ff5f92 0.6rem),
+    radial-gradient(circle at 100% 50%, transparent 0.5rem, #ff5f92 0.6rem);
+}
+
+.checkout-bg {
+  background-image: linear-gradient(
+    165deg,
+    hsl(301deg 94% 35%) 0%,
+    hsl(286deg 94% 36%) 5%,
+    hsl(270deg 93% 38%) 13%,
+    hsl(255deg 92% 39%) 24%,
+    hsl(239deg 91% 41%) 35%,
+    hsl(224deg 91% 42%) 48%,
+    hsl(208deg 90% 44%) 61%,
+    hsl(193deg 89% 45%) 75%,
+    hsl(178deg 88% 47%) 88%,
+    hsl(162deg 88% 48%) 100%
+  );
 }
