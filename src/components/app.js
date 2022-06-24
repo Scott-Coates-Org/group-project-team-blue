@@ -65,6 +65,7 @@ function App() {
               )}
             />
             <Route path="/" render={() => <Home />} />
+            <Route path="/checkout" render={() => <Checkout />} />
             {/* this must be on the bottom */}
             {/* <ProtectedRoute path="/" component={Home} {...props} /> */}
           </Switch>
