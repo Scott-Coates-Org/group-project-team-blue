@@ -17,6 +17,7 @@
 .badge {
     margin-left: 20px;
     padding: 3px 10px;
+    background-color: #007bff !important;
 }
 
 .bgdark {
