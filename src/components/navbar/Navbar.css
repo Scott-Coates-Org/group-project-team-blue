@@ -19,6 +19,26 @@
     padding-top: 0;
     color: white;
 }
+.nt {
+    line-height: 0.75rem;
+}
+
+.dominant{
+    position: relative;
+}
+
+.passive{
+    position: absolute;
+    top: 60px;
+    right: 15px;
+/*     padding-left: 50px;
+    padding-right: 50px; */
+}
+
+.matchWidth{
+    padding-left: 62px;
+    padding-right: 62px;
+}
 
 @media screen and (max-width: 720px) {
     .disappear {

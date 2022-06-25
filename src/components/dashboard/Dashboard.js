@@ -4,18 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "./Dashboard.css"
 import { faThLarge, faEnvelope, faCalendar, faTag, faUsers, faEdit, faTh, faCog } from "@fortawesome/free-solid-svg-icons"
 import AdminNavbar from "components/navbar/Navbar"
+import Sidebar from "components/sidebar/Sidebar"
 
 const Dashboard = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const toogle = () => {
-    setIsOpen(!isOpen);
-    console.log(isOpen)
-  }
+  
+
   return (
     <>
       <AdminNavbar/>
       <Row>
-        <Col className="sidebar bg-dark border-0 text-white" xs="2">
+        <Sidebar/>
+        {/*<Col className="sidebar bg-dark border-0 text-white" xs="2">
           <ListGroup className="text-white mt-3 fa-ul">
             <ListGroupItem className="bg-dark border-0">
               <span class="fa-li"><FontAwesomeIcon icon={faThLarge} /></span>Dashboard
@@ -65,7 +64,7 @@ const Dashboard = (props) => {
               <span class="fa-li"><FontAwesomeIcon icon={faCog} /></span>Settings
             </ListGroupItem>
           </ListGroup>
-        </Col>
+  </Col>*/}
         <Col className="bg-light content" xs="10">
           <p>hi i change</p>
         </Col>
