@@ -34,8 +34,8 @@ export default function AdminNavbar() {
               <a><FontAwesomeIcon icon={faBell} /></a>
               <a><FontAwesomeIcon icon={faQuestionCircle} /></a>
               <Button onClick={toggle} className="dominant bg-dark">
-              <a><NavbarText className='nt text-white pt-0 disappear'>Jan3<br/>LoremLoremLorem</NavbarText></a>
-              <a><FontAwesomeIcon icon={faCaretSquareDown} /></a>
+              <NavbarText className='nt text-white pt-0 disappear'>Jan3<br/>LoremLoremLorem</NavbarText>
+              <FontAwesomeIcon icon={faCaretSquareDown} />
               </Button>
               <Collapse className='passive' isOpen={isOpen}>
                 <ListGroup className="text-white">
