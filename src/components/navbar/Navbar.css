@@ -19,3 +19,9 @@
     padding-top: 0;
     color: white;
 }
+
+@media screen and (max-width: 720px) {
+    .disappear {
+        display: none;
+    }
+}

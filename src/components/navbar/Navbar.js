@@ -15,10 +15,10 @@ export default function AdminNavbar() {
             >
             <span>Admin</span>
             <div className="navend">
-              <FontAwesomeIcon icon={faBell} />
-              <FontAwesomeIcon icon={faQuestionCircle} />
-              <NavbarText className='n-text'>Jan3<br/>LoremLoremLorem</NavbarText>
-              <FontAwesomeIcon icon={faCaretSquareDown} />
+              <a><FontAwesomeIcon icon={faBell} /></a>
+              <a><FontAwesomeIcon icon={faQuestionCircle} /></a>
+              <a><NavbarText className='text-white pt-0 disappear'>Jan3<br/>LoremLoremLorem</NavbarText></a>
+              <a><FontAwesomeIcon icon={faCaretSquareDown} /></a>
               
             </div>
             

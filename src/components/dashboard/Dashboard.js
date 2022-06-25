@@ -3,7 +3,7 @@ import { Nav, NavLink, NavItem, DropdownItem, Container, Row, Col, ListGroup, Li
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "./Dashboard.css"
 import { faThLarge, faEnvelope, faCalendar, faTag, faUsers, faEdit, faTh, faCog } from "@fortawesome/free-solid-svg-icons"
-import Navbar from "components/navbar/Navbar"
+import AdminNavbar from "components/navbar/Navbar"
 
 const Dashboard = (props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,9 +13,9 @@ const Dashboard = (props) => {
   }
   return (
     <>
-      <Navbar/>
+      <AdminNavbar/>
       <Row>
-        <Col className="bg-dark border-0 text-white" xs="2">
+        <Col className="sidebar bg-dark border-0 text-white" xs="2">
           <ListGroup className="text-white mt-3 fa-ul">
             <ListGroupItem className="bg-dark border-0">
               <span class="fa-li"><FontAwesomeIcon icon={faThLarge} /></span>Dashboard
@@ -66,7 +66,7 @@ const Dashboard = (props) => {
             </ListGroupItem>
           </ListGroup>
         </Col>
-        <Col className="bg-light" xs="10">
+        <Col className="bg-light content" xs="10">
           <p>hi i change</p>
         </Col>
       </Row>
