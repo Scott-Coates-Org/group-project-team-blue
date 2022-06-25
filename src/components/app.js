@@ -11,6 +11,7 @@ import { Route, Router, Switch } from "react-router-dom";
 import store from 'redux/store';
 import { getData, getDataSuccess } from 'redux/user';
 import ErrorBoundary from 'components/error-boundary';
+import Dashboard from './dashboard/Dashboard';
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
@@ -52,7 +53,8 @@ function App() {
           <Switch>
             <Route path="/login" render={(routeProps) => <Login {...routeProps} {...props} firebase={firebase} />} />
             <Route path="/logout" render={(routeProps) => <Logout {...routeProps} {...props} firebase={firebase} />} />
-
+            <Route path="/admin" component={Dashboard} {...props} />
+            
             {/* this must be on the bottom */}
             <ProtectedRoute path="/" component={Home} {...props} />
           </Switch>

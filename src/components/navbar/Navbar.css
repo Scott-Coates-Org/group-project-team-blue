@@ -1,0 +1,21 @@
+.navbar-admin {
+    height: 60px;
+    padding-top: 3px;
+}
+
+.navend {
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.navend > * {
+    font-size: 1rem;
+    color:  white!important;
+    margin-right: 2rem;
+}
+
+.n-text {
+    padding-top: 0;
+    color: white;
+}

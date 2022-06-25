@@ -1,0 +1,20 @@
+body {
+    margin: 0;
+    overflow-x: hidden;
+}
+.row {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    min-height: calc(100vh - 60px);
+    overflow: hidden;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+.badge {
+    margin-left: 20px;
+    padding: 3px 10px;
+}
