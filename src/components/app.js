@@ -1,18 +1,19 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'styles/custom.css';
-import Home from 'components/home';
-import { AuthProvider, useAuth } from 'components/user/auth';
-import Login from 'components/user/login';
-import Logout from 'components/user/logout';
-import Checkout from 'components/checkout/Checkout';
-import { firebase } from 'firebase/client';
-import { createBrowserHistory } from 'history';
-import { useEffect } from 'react';
-import { Provider, useDispatch } from 'react-redux';
-import { Route, Router, Switch } from 'react-router-dom';
-import store from 'redux/store';
-import { getData, getDataSuccess } from 'redux/user';
-import ErrorBoundary from 'components/error-boundary';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "styles/custom.css";
+import Home from "components/home/Home";
+import { AuthProvider, useAuth } from "components/user/auth";
+import Login from "components/user/login";
+import Logout from "components/user/logout";
+import Checkout from "components/checkout/Checkout";
+import { firebase } from "firebase/client";
+import { createBrowserHistory } from "history";
+import { useEffect } from "react";
+import { Provider, useDispatch } from "react-redux";
+import { Route, Router, Switch } from "react-router-dom";
+import store from "redux/store";
+import { getData, getDataSuccess } from "redux/user";
+import ErrorBoundary from "components/error-boundary";
+import Dashboard from "./dashboard/Dashboard";
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
@@ -64,9 +65,10 @@ function App() {
                 <Logout {...routeProps} {...props} firebase={firebase} />
               )}
             />
+            <Route path="/" render={() => <Home />} />
             <Route path="/checkout" render={() => <Checkout />} />
             {/* this must be on the bottom */}
-            <ProtectedRoute path="/" component={Home} {...props} />
+            {<ProtectedRoute path="/admin" component={Dashboard} {...props} />}
           </Switch>
         </Router>
       </AuthProvider>
@@ -82,7 +84,7 @@ export default AppWithRedux;
 // https://github.com/auth0/auth0-react/blob/master/EXAMPLES.md#1-protecting-a-route-in-a-react-router-dom-app
 const ProtectedRoute = ({ component, ...args }) => {
   const WrappedComponent = withAuthenticationRequired(component, {
-    onRedirecting: () => 'resuming session…',
+    onRedirecting: () => "resuming session…",
   });
 
   const retVal = (
@@ -117,11 +119,11 @@ function withAuthenticationRequired(Component, options) {
             ...loginOptions,
             appState: {
               ...loginOptions.appState,
-              returnTo: typeof returnTo === 'function' ? returnTo() : returnTo,
+              returnTo: typeof returnTo === "function" ? returnTo() : returnTo,
             },
           };
 
-          history.push('/login', opts);
+          history.push("/login", opts);
         }
       }
     }, [history, isAuthenticated, loginOptions, returnTo]);
