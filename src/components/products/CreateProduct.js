@@ -14,7 +14,7 @@ const CreateProduct = (props) => {
   const { ref: titleRef, ...titleRest } = register("title", { required: true });
   const { ref: descRef, ...descRest } = register("desc", { required: true });
   const { ref: typeRef, ...typeRest } = register("type", { required: true });
-  const { ref: priceRef, ...priceRest } = register("price", { required: true });
+  const { ref: priceRef, ...priceRest } = register("price", { required: true, valueAsNumber: true,});
   const { ref: photoRef, ...photoRest } = register("photo", { required: true });
   const { ref: statusRef, ...statusRest } = register("status", { required: true });
 
@@ -65,7 +65,7 @@ const CreateProduct = (props) => {
         <Input id="price" type="number" {...priceRest} innerRef={priceRef} invalid={errors.price} />
       </FormGroup>
       <FormGroup>
-        <Label for="photo">Widget Photo</Label>
+        <Label for="photo">Product Photo</Label>
         <Input
           id="photo"
           type="file"
