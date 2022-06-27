@@ -47,7 +47,9 @@ export const createProduct = createAsyncThunk(
         payload.type,
         payload.price,
         payload.photo,
-        payload.status
+        payload.status,
+        payload.roomId,
+        payload.duration
       );
     } catch (error) {
       console.error("error", error);
@@ -92,7 +94,7 @@ export const savePhoto = createAsyncThunk(
   }
 });
 
-async function _createProduct(title, desc, type, price, photo, status) {
+async function _createProduct(title, desc, type, price, photo, status, roomId = null, duration = null) {
   const doc = await firebaseClient
     .firestore()
     .collection("products")
