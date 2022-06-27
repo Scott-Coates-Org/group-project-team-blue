@@ -5,7 +5,7 @@ const initialState = {
   data: {},
   isLoaded: false,
   hasErrors: false,
-  //add error?
+  errorMsg: {}
 };
 
 const product = createSlice({
@@ -25,9 +25,9 @@ const product = createSlice({
         state.hasErrors = true;
       },
 
-      createDataFailure: (state) => {
+      createDataFailure: (state, action) => {
         state.hasErrors = true;
-        //add errors?
+        state.errorMsg = action.payload
       },
     },
   },
@@ -53,7 +53,7 @@ export const createProduct = createAsyncThunk(
       );
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error));
     }
   }
 );
