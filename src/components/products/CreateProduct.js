@@ -17,6 +17,8 @@ const CreateProduct = (props) => {
   const { ref: priceRef, ...priceRest } = register("price", { required: true, valueAsNumber: true,});
   const { ref: photoRef, ...photoRest } = register("photo", { required: true });
   const { ref: statusRef, ...statusRest } = register("status", { required: true });
+  const { ref: roomIdRef, ...roomIdRest } = register("room", { });
+  const { ref: durationRef, ...durationRest } = register("duration", { });
 
   const onSubmit = (data) => {
     if (Object.keys(errors).length) {
