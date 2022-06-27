@@ -65,7 +65,7 @@ function App() {
                 <Logout {...routeProps} {...props} firebase={firebase} />
               )}
             />
-            <Route path="/" render={() => <Home />} />
+            <Route exact path="/" render={() => <Home />} />
             <Route path="/checkout" render={() => <Checkout />} />
             {/* this must be on the bottom */}
             {<ProtectedRoute path="/admin" component={Dashboard} {...props} />}
