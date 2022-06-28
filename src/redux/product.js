@@ -62,7 +62,7 @@ export const createProduct = createAsyncThunk(
         payload.price,
         payload.photo,
         payload.status,
-        payload.roomId,
+        payload.room,
         payload.duration
       );
     } catch (error) {
@@ -109,7 +109,19 @@ export const savePhoto = createAsyncThunk("product/savePhoto", async (payload) =
 async function _fetchAllProductsFromDb() {
   const snapshot = await firebaseClient.firestore().collection("products").get();
 
-  const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const roomsData = {}
+  const rooms = await firebaseClient.firestore().collection("rooms").get();
+  rooms.docs.forEach((doc) => roomsData[doc.id] = { ...doc.data() });
+
+  const data = snapshot.docs.map((doc) => {
+    const {room, ...rest} = doc.data()
+
+    return {
+      id: doc.id,
+      ...rest,
+      room: roomsData[room] || null,
+    };
+  });
 
   return data;
 }
@@ -121,22 +133,19 @@ async function _createProduct(
   price,
   photo,
   status,
-  roomId = null,
+  room = null,
   duration = null
 ) {
-  const doc = await firebaseClient
-    .firestore()
-    .collection("products")
-    .add({
-      title,
-      desc,
-      type,
-      price,
-      photo,
-      status,
-      roomId: firebaseClient.firestore().doc("rooms/" + roomId),
-      duration,
-    });
+  const doc = await firebaseClient.firestore().collection("products").add({
+    title,
+    desc,
+    type,
+    price,
+    photo,
+    status,
+    room,
+    duration,
+  });
 
   return doc;
 }
