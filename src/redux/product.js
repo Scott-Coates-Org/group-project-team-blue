@@ -103,7 +103,16 @@ async function _createProduct(
   const doc = await firebaseClient
     .firestore()
     .collection("products")
-    .add({ title, desc, type, price, photo, status, roomId, duration });
+    .add({
+      title,
+      desc,
+      type,
+      price,
+      photo,
+      status,
+      roomId: firebaseClient.firestore().doc("rooms/" + roomId),
+      duration,
+    });
 
   return doc;
 }
