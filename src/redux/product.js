@@ -12,7 +12,6 @@ const product = createSlice({
   name: "product",
   initialState,
   reducers: {
-    reducers: {
       getData: (state) => {},
 
       getDataSuccess: (state, action) => {
@@ -28,7 +27,6 @@ const product = createSlice({
       createDataFailure: (state, action) => {
         state.hasErrors = true;
         state.errorMsg = action.payload
-      },
     },
   },
 });
