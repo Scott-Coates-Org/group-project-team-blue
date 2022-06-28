@@ -1,10 +1,17 @@
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 import { createProduct, savePhoto } from "redux/product";
+import { fetchAllRooms } from "redux/room";
 
 const CreateProduct = (props) => {
   const dispatch = useDispatch();
+  const { data, isLoaded, hasErrors } = useSelector((state) => state.room);
+
+  useEffect(() => {
+    dispatch(fetchAllRooms());
+  }, [dispatch]);
 
   const {
     register,
@@ -91,130 +98,143 @@ const CreateProduct = (props) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} className="p-3 my-3 border border-primary">
-      <FormGroup>
-        <Label for="title">
-          Title<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="title"
-          type="text"
-          {...titleRest}
-          innerRef={titleRef}
-          invalid={errors.title ? true : false}
-        />
-      </FormGroup>
-      <FormGroup>
-        <Label for="desc">
-          Description<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="desc"
-          type="text"
-          {...descRest}
-          innerRef={descRef}
-          invalid={errors.desc ? true : false}
-        />
-      </FormGroup>
-      <FormGroup>
-        <Label for="type">
-          Type<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="type"
-          type="select"
-          {...typeRest}
-          innerRef={typeRef}
-          invalid={errors.type ? true : false}
-          onChange={(e) => {typeRest.onChange(e); resetField("room"); resetField("duration");}}
-        >
-          <option value="" hidden></option>
-          <option value="addon">Add-On</option>
-          <option value="product">Product</option>
-        </Input>
-      </FormGroup>
-      <FormGroup>
-        <Label for="room">
-          Room<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="room"
-          type="select"
-          {...roomRest}
-          innerRef={roomRef}
-          invalid={errors.room ? true : false}
-          disabled={watch("type") !== "product"}
-        >
-          <option value="" hidden></option>
-          <option value="Test">Test</option>
-          {/* Get all rooms to display as options. Value = room ID */}
-        </Input>
-      </FormGroup>
-      <FormGroup>
-        <Label for="duration">
-          Duration<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="duration"
-          type="select"
-          {...durationRest}
-          innerRef={durationRef}
-          invalid={errors.duration ? true : false}
-          disabled={watch("type") !== "product"}
-        >
-          <option value="" hidden></option>
-          <option value="0">All Day</option>
-          <option value="60">60min</option>
-          <option value="90">90min</option>
-          <option value="120">120min</option>
-          {/* Get all durations to display as options */}
-        </Input>
-      </FormGroup>
-      <FormGroup>
-        <Label for="price">
-          Price<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="price"
-          type="number"
-          {...priceRest}
-          innerRef={priceRef}
-          invalid={errors.price ? true : false}
-        />
-      </FormGroup>
-      <FormGroup>
-        <Label for="photo">
-          Photo<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="photo"
-          type="file"
-          accept="image/*"
-          {...photoRest}
-          innerRef={photoRef}
-          invalid={errors.photo ? true : false}
-        />
-      </FormGroup>
-      <FormGroup>
-        <Label for="status">
-          Status<span className="text-danger">*</span>
-        </Label>
-        <Input
-          id="status"
-          type="select"
-          {...statusRest}
-          innerRef={statusRef}
-          invalid={errors.status ? true : false}
-        >
-          <option value="" hidden></option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </Input>
-      </FormGroup>
-      <Button type="submit" color="primary">
-        Save Product
-      </Button>
-    </Form>
+    <>
+      {!isLoaded && "Form loading..."}
+      {hasErrors && "Error Loading"}
+      {isLoaded && (
+        <Form onSubmit={handleSubmit(onSubmit)} className="p-3 my-3 border border-primary">
+          <FormGroup>
+            <Label for="title">
+              Title<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="title"
+              type="text"
+              {...titleRest}
+              innerRef={titleRef}
+              invalid={errors.title ? true : false}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="desc">
+              Description<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="desc"
+              type="text"
+              {...descRest}
+              innerRef={descRef}
+              invalid={errors.desc ? true : false}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="type">
+              Type<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="type"
+              type="select"
+              {...typeRest}
+              innerRef={typeRef}
+              invalid={errors.type ? true : false}
+              onChange={(e) => {
+                typeRest.onChange(e);
+                resetField("room");
+                resetField("duration");
+              }}
+            >
+              <option value="" hidden></option>
+              <option value="addon">Add-On</option>
+              <option value="product">Product</option>
+            </Input>
+          </FormGroup>
+          <FormGroup>
+            <Label for="room">
+              Room<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="room"
+              type="select"
+              {...roomRest}
+              innerRef={roomRef}
+              invalid={errors.room ? true : false}
+              disabled={watch("type") !== "product"}
+            >
+              <option value="" hidden></option>
+              {data.map((room) => (
+                <option key={room.id} value={room.id}>
+                  {room.name}
+                </option>
+              ))}
+            </Input>
+          </FormGroup>
+          <FormGroup>
+            <Label for="duration">
+              Duration<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="duration"
+              type="select"
+              {...durationRest}
+              innerRef={durationRef}
+              invalid={errors.duration ? true : false}
+              disabled={watch("type") !== "product"}
+            >
+              <option value="" hidden></option>
+              <option value="0">All Day</option>
+              <option value="60">60min</option>
+              <option value="90">90min</option>
+              <option value="120">120min</option>
+              {/* Get all durations to display as options */}
+            </Input>
+          </FormGroup>
+          <FormGroup>
+            <Label for="price">
+              Price<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="price"
+              type="number"
+              {...priceRest}
+              innerRef={priceRef}
+              invalid={errors.price ? true : false}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="photo">
+              Photo<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="photo"
+              type="file"
+              accept="image/*"
+              {...photoRest}
+              innerRef={photoRef}
+              invalid={errors.photo ? true : false}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="status">
+              Status<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="status"
+              type="select"
+              {...statusRest}
+              innerRef={statusRef}
+              invalid={errors.status ? true : false}
+            >
+              <option value="" hidden></option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </Input>
+          </FormGroup>
+          <Button type="submit" color="primary">
+            Save Product
+          </Button>
+        </Form>
+      )}
+    </>
   );
 };
 
