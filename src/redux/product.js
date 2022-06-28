@@ -5,28 +5,29 @@ const initialState = {
   data: {},
   isLoaded: false,
   hasErrors: false,
-  errorMsg: {}
+  errorMsg: {},
 };
 
 const product = createSlice({
   name: "product",
   initialState,
   reducers: {
-      getData: (state) => {},
+    getData: (state) => {},
 
-      getDataSuccess: (state, action) => {
-        state.isLoaded = true;
-        state.data = action.payload;
-      },
+    getDataSuccess: (state, action) => {
+      state.isLoaded = true;
+      state.data = action.payload;
+    },
 
-      getDataFailure: (state, action) => {
-        state.isLoaded = true;
-        state.hasErrors = true;
-      },
+    getDataFailure: (state, action) => {
+      state.isLoaded = true;
+      state.hasErrors = true;
+      state.errorMsg = action.payload;
+    },
 
-      createDataFailure: (state, action) => {
-        state.hasErrors = true;
-        state.errorMsg = action.payload
+    createDataFailure: (state, action) => {
+      state.hasErrors = true;
+      state.errorMsg = action.payload;
     },
   },
 });
@@ -34,6 +35,21 @@ const product = createSlice({
 export const reducer = product.reducer;
 
 export const { getData, getDataSuccess, getDataFailure, createDataFailure } = product.actions;
+
+export const fetchAllProducts = createAsyncThunk(
+  "product/fetchAllProducts",
+  async (_, thunkAPI) => {
+    thunkAPI.dispatch(getData());
+
+    try {
+      const data = await _fetchAllProductsFromDb();
+      thunkAPI.dispatch(getDataSuccess(data));
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(getDataFailure(error));
+    }
+  }
+);
 
 export const createProduct = createAsyncThunk(
   "product/createProduct",
@@ -89,6 +105,14 @@ export const savePhoto = createAsyncThunk("product/savePhoto", async (payload) =
     alert("Error saving photo: " + JSON.stringify(error));
   }
 });
+
+async function _fetchAllProductsFromDb() {
+  const snapshot = await firebaseClient.firestore().collection("products").get();
+
+  const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  return data;
+}
 
 async function _createProduct(
   title,
