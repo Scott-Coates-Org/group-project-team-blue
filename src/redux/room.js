@@ -8,8 +8,8 @@ const initialState = {
   //add error?
 };
 
-const rooms = createSlice({
-  name: "rooms",
+const room = createSlice({
+  name: "room",
   initialState,
   reducers: {
     getData: (state) => {},
@@ -31,10 +31,10 @@ const rooms = createSlice({
   },
 });
 
-export const reducer = rooms.reducer;
+export const reducer = room.reducer;
 
 export const { getData, getDataSuccess, getDataFailure, createDataFailure } =
-  rooms.actions;
+  room.actions;
 
 export const fetchAllRooms = createAsyncThunk(
   "rooms/fetchAllRooms",
@@ -105,7 +105,6 @@ export const savePhoto = createAsyncThunk(
 
 async function _fetchAllRoomsFromDb() {
   const snapshot = await firebaseClient.firestore().collection("rooms").get();
-  console.log(snapshot);
 
   const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
