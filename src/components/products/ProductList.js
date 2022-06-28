@@ -1,7 +1,7 @@
 import Product from "./Product";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllProducts } from "redux/room";
+import { fetchAllProducts } from "redux/product";
 import { Table } from "reactstrap";
 
 const ProductList = () => {
