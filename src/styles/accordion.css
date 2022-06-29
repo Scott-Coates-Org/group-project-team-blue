@@ -1,12 +1,18 @@
 .accordion-item {
-  padding: 1rem 0;
-  border-bottom: 1px solid grey;
   cursor: pointer;
 }
-
+.accordion-item-content {
+  flex-grow: 1;
+}
+.accordion-header {
+  flex-grow: 1;
+}
 .accordion-chevron {
   transition: transform 0.2s linear;
 }
 .accordion-chevron.open {
   transform: rotate(-180deg);
+}
+.accordion-body {
+  padding-top: 1rem;
 }
