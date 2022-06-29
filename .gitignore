@@ -26,6 +26,7 @@ yarn-error.log*
 
 # hosting
 .firebase
+.firebaserc
 
 # vscode
 /.vscode
