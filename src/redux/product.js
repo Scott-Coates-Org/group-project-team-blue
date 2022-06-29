@@ -5,30 +5,29 @@ const initialState = {
   data: {},
   isLoaded: false,
   hasErrors: false,
-  //add error?
+  errorMsg: {},
 };
 
 const product = createSlice({
   name: "product",
   initialState,
   reducers: {
-    reducers: {
-      getData: (state) => {},
+    getData: (state) => {},
 
-      getDataSuccess: (state, action) => {
-        state.isLoaded = true;
-        state.data = action.payload;
-      },
+    getDataSuccess: (state, action) => {
+      state.isLoaded = true;
+      state.data = action.payload;
+    },
 
-      getDataFailure: (state, action) => {
-        state.isLoaded = true;
-        state.hasErrors = true;
-      },
+    getDataFailure: (state, action) => {
+      state.isLoaded = true;
+      state.hasErrors = true;
+      state.errorMsg = action.payload;
+    },
 
-      createDataFailure: (state) => {
-        state.hasErrors = true;
-        //add errors?
-      },
+    createDataFailure: (state, action) => {
+      state.hasErrors = true;
+      state.errorMsg = action.payload;
     },
   },
 });
@@ -36,6 +35,21 @@ const product = createSlice({
 export const reducer = product.reducer;
 
 export const { getData, getDataSuccess, getDataFailure, createDataFailure } = product.actions;
+
+export const fetchAllProducts = createAsyncThunk(
+  "product/fetchAllProducts",
+  async (_, thunkAPI) => {
+    thunkAPI.dispatch(getData());
+
+    try {
+      const data = await _fetchAllProductsFromDb();
+      thunkAPI.dispatch(getDataSuccess(data));
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(getDataFailure(error));
+    }
+  }
+);
 
 export const createProduct = createAsyncThunk(
   "product/createProduct",
@@ -47,18 +61,18 @@ export const createProduct = createAsyncThunk(
         payload.type,
         payload.price,
         payload.photo,
-        payload.status
+        payload.status,
+        payload.room,
+        payload.duration
       );
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error));
     }
   }
 );
 
-export const savePhoto = createAsyncThunk(
-  "product/savePhoto", 
-  async (payload) => {
+export const savePhoto = createAsyncThunk("product/savePhoto", async (payload) => {
   const file = payload.file;
 
   try {
@@ -92,11 +106,46 @@ export const savePhoto = createAsyncThunk(
   }
 });
 
-async function _createProduct(title, desc, type, price, photo, status) {
-  const doc = await firebaseClient
-    .firestore()
-    .collection("products")
-    .add({ title, desc, type, price, photo, status });
+async function _fetchAllProductsFromDb() {
+  const snapshot = await firebaseClient.firestore().collection("products").get();
+
+  const roomsData = {}
+  const rooms = await firebaseClient.firestore().collection("rooms").get();
+  rooms.docs.forEach((doc) => roomsData[doc.id] = { ...doc.data() });
+
+  const data = snapshot.docs.map((doc) => {
+    const {room, ...rest} = doc.data()
+
+    return {
+      id: doc.id,
+      ...rest,
+      room: roomsData[room] || null,
+    };
+  });
+
+  return data;
+}
+
+async function _createProduct(
+  title,
+  desc,
+  type,
+  price,
+  photo,
+  status,
+  room = null,
+  duration = null
+) {
+  const doc = await firebaseClient.firestore().collection("products").add({
+    title,
+    desc,
+    type,
+    price,
+    photo,
+    status,
+    room,
+    duration,
+  });
 
   return doc;
 }
