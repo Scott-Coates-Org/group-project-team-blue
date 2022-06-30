@@ -15,6 +15,7 @@ import { getData, getDataSuccess } from "redux/user";
 import ErrorBoundary from "components/error-boundary";
 import Dashboard from "./dashboard/Dashboard";
 import CreateProduct from "./products/CreateProduct";
+import ProductList from "./products/ProductList";
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
@@ -70,7 +71,13 @@ function App() {
             <Route exact path="/createproduct" render={() => <CreateProduct />} />
             <Route path="/checkout" render={() => <Checkout />} />
             {/* this must be on the bottom */}
-            {<ProtectedRoute path="/admin" component={Dashboard} {...props} />}
+            <ProtectedRoute path="/admin" component={Dashboard} {...props} />
+                
+                  {/* <Route path="/admin/bookings" component={Dashboard} {...props}/>
+                  <Route path="/admin/createbooking" component={Dashboard} {...props}/> */}
+                  {/* <Route path="/admin/rooms" component={Dashboard} {...props}/>
+                  <Route path="/admin/createroom" component={Dashboard} {...props}/> */}
+              
           </Switch>
         </Router>
       </AuthProvider>
