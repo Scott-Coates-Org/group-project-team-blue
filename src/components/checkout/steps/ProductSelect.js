@@ -70,12 +70,20 @@ const ProductSelect = () => {
   return (
     <WizardStep stepHeader="Select your products">
       <div>
-        {products.map(({ id, title, photo, desc, price, duration }) => (
-          <AccordionItem
-            key={id}
-            {...{ title, photo, desc, price, duration }}
-          />
-        ))}
+        {!isLoaded ? (
+          <div className="py-3 w-100 d-flex justify-content-center">
+            <Spinner color="primary" />
+          </div>
+        ) : (
+          <>
+            {products.map(({ id, title, photo, desc, price, duration }) => (
+              <AccordionItem
+                key={id}
+                {...{ title, photo, desc, price, duration }}
+              />
+            ))}
+          </>
+        )}
       </div>
     </WizardStep>
   );
