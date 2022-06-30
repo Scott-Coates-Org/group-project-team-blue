@@ -1,21 +1,43 @@
 import { Col, List, Button } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const dummyDetails = {
   subtotal: 78.0,
   transactionFee: 0.0,
 };
 
-const dummyCart = {
-  product: 'Junior Jumpers Jam',
-  type: {
-    name: 'Junior Jumper Parent',
+const dummyCart = [
+  {
+    product: 'Junior Jumpers Jam',
+    quantity: 2,
     price: 10.0,
-    quantity: 1,
   },
-};
+  {
+    product: 'Junior Jumpers Jam Adult',
+    quantity: 1,
+    price: 20.0,
+  },
+];
 
 const CartDetails = () => {
-  return <List type="unstyled">test</List>;
+  return (
+    <List flush type="unstyled">
+      {dummyCart.map(({ product, quantity, price }) => (
+        <li className="d-flex justify-content-between">
+          <span>
+            {quantity}
+            <span className="mx-1">x</span>
+            {product}
+          </span>
+          <span>
+            ${(quantity * price).toFixed(2)}
+            <FontAwesomeIcon icon={faTrash} className="text-danger ml-2" />
+          </span>
+        </li>
+      ))}
+    </List>
+  );
 };
 
 const PaymentDetails = ({ details }) => {
