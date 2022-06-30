@@ -1,9 +1,0 @@
-.accordion-item {
-  cursor: pointer;
-}
-.accordion-chevron {
-  transition: transform 0.2s linear;
-}
-.accordion-chevron.open {
-  transform: rotate(-180deg);
-}
