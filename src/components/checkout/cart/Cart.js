@@ -22,18 +22,22 @@ const dummyCart = [
 
 const CartDetails = () => {
   return (
-    <List flush type="unstyled">
+    <List type="unstyled">
       {dummyCart.map(({ product, quantity, price }) => (
-        <li className="d-flex justify-content-between">
-          <span>
+        <li key={product} className="d-flex align-items-start">
+          <p>
             {quantity}
             <span className="mx-1">x</span>
             {product}
-          </span>
-          <span>
+          </p>
+          <p className="ml-auto d-flex align-items-center">
             ${(quantity * price).toFixed(2)}
-            <FontAwesomeIcon icon={faTrash} className="text-danger ml-2" />
-          </span>
+            <FontAwesomeIcon
+              role="button"
+              icon={faTrash}
+              className="text-danger ml-2"
+            />
+          </p>
         </li>
       ))}
     </List>
