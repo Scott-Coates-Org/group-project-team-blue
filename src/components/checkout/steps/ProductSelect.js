@@ -4,7 +4,7 @@ import { fetchAllProducts } from 'redux/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Spinner, InputGroup, Input, Button } from 'reactstrap';
-import '../accordion.css';
+import './productSelect.css';
 import WizardStep from '../WizardStep';
 
 const AccordionItem = ({ ...props }) => {
@@ -30,7 +30,7 @@ const AccordionItem = ({ ...props }) => {
         <div className="pt-3">
           <p>{desc}</p>
           <div className="d-flex justify-content-between align-items-center">
-            <div className="d-flex flex-column flex-sm-row flex-grow-1 w-75">
+            <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
                 {title}
               </span>
@@ -41,7 +41,7 @@ const AccordionItem = ({ ...props }) => {
                 ${price.toFixed(2)}
               </span>
             </div>
-            <InputGroup className="w-50 align-self-md-end">
+            <InputGroup className="align-self-md-end product-checkout-quantity">
               <div className="input-group-prepend">
                 <Button>-</Button>
               </div>
