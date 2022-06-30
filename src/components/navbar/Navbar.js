@@ -11,7 +11,6 @@ export default function AdminNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => {
         setIsOpen(!isOpen);
-        console.log(isOpen)
   }
   // const mouseover = (e) => {
   //   e.target.style.background = "#0a0b0c";
@@ -48,7 +47,6 @@ export default function AdminNavbar() {
                     </ListGroupItem>
                 </ListGroup>
             </Collapse> */}
-            {console.log(isOpen)}
               <Dropdown isOpen={isOpen} toggle={toggle}>
                 <DropdownToggle className='nt' caret>
                 Jan3<br/>LoremLoremLorem

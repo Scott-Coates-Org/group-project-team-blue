@@ -1,4 +1,4 @@
-import { Children, useState } from "react"
+import { Children, createContext, useState } from "react"
 import { Nav, NavLink, NavItem, DropdownItem, Container, Row, Col, ListGroup, ListGroupItem, Badge, Collapse } from "reactstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "./Dashboard.css"
@@ -8,23 +8,18 @@ import Sidebar from "components/sidebar/Sidebar"
 import CreateProduct from "components/products/CreateProduct"
 import Product from "components/products/Product"
 import ProductList from "components/products/ProductList"
-import { Switch, Route, useRouteMatch } from "react-router-dom"
+import { Switch, Route, useRouteMatch, Router } from "react-router-dom"
+
+export const userContext = createContext();
 
 const Dashboard = (props) => {
-  const [isOpen, setIsOpen] = useState({all: [
-    {id: 0, open: false},
-    {id: 1, open: false},
-    {id: 2, open: false}
-]});
-  let { path, url} = useRouteMatch();
-  console.log(path)
 
   return (
     <>
       <AdminNavbar/>
 
       <Row className="row-admin">
-        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} url={url}/>
+        <Sidebar /* setIsOpen={setIsOpen} */ />
         <Col className="bg-light w-auto content " xs="10" style={{flex: 'auto'}}>
           <Switch>
             <Route exact path="/admin">

@@ -3,6 +3,12 @@
     height: 100%;
 }
 
+/*sidebar collapse */
+
+a:hover {
+    text-decoration: none;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .sidebar::-webkit-scrollbar {
     display: none;
@@ -31,4 +37,9 @@
 }
 .content {
     overflow-x: scroll;
+}
+
+/*animation*/
+.show {
+    transition: width 1s linear;
 }
