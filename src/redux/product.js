@@ -1,15 +1,15 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import firebaseClient from "firebase/client";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import firebaseClient from 'firebase/client';
 
 const initialState = {
-  data: {},
+  data: [],
   isLoaded: false,
   hasErrors: false,
   errorMsg: {},
 };
 
 const product = createSlice({
-  name: "product",
+  name: 'product',
   initialState,
   reducers: {
     getData: (state) => {},
@@ -34,10 +34,11 @@ const product = createSlice({
 
 export const reducer = product.reducer;
 
-export const { getData, getDataSuccess, getDataFailure, createDataFailure } = product.actions;
+export const { getData, getDataSuccess, getDataFailure, createDataFailure } =
+  product.actions;
 
 export const fetchAllProducts = createAsyncThunk(
-  "product/fetchAllProducts",
+  'product/fetchAllProducts',
   async (_, thunkAPI) => {
     thunkAPI.dispatch(getData());
 
@@ -45,14 +46,14 @@ export const fetchAllProducts = createAsyncThunk(
       const data = await _fetchAllProductsFromDb();
       thunkAPI.dispatch(getDataSuccess(data));
     } catch (error) {
-      console.error("error", error);
+      console.error('error', error);
       thunkAPI.dispatch(getDataFailure(error));
     }
   }
 );
 
 export const createProduct = createAsyncThunk(
-  "product/createProduct",
+  'product/createProduct',
   async (payload, thunkAPI) => {
     try {
       await _createProduct(
@@ -66,55 +67,62 @@ export const createProduct = createAsyncThunk(
         payload.duration
       );
     } catch (error) {
-      console.error("error", error);
+      console.error('error', error);
       thunkAPI.dispatch(createDataFailure(error));
     }
   }
 );
 
-export const savePhoto = createAsyncThunk("product/savePhoto", async (payload) => {
-  const file = payload.file;
+export const savePhoto = createAsyncThunk(
+  'product/savePhoto',
+  async (payload) => {
+    const file = payload.file;
 
-  try {
-    const fileName = _appendToFilename(file.name, "_" + Date.now());
-    const uploadTask = _uploadFile(fileName, file);
+    try {
+      const fileName = _appendToFilename(file.name, '_' + Date.now());
+      const uploadTask = _uploadFile(fileName, file);
 
-    const uploadPromise = new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("progress:", progress);
-        },
-        (error) => {
-          reject(error);
-        },
-        () => {
-          uploadTask.snapshot.ref
-            .getDownloadURL()
-            .then((downloadURL) => resolve(downloadURL))
-            .catch(reject);
-        }
-      );
-    });
+      const uploadPromise = new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('progress:', progress);
+          },
+          (error) => {
+            reject(error);
+          },
+          () => {
+            uploadTask.snapshot.ref
+              .getDownloadURL()
+              .then((downloadURL) => resolve(downloadURL))
+              .catch(reject);
+          }
+        );
+      });
 
-    const downloadURL = await uploadPromise;
+      const downloadURL = await uploadPromise;
 
-    return downloadURL;
-  } catch (error) {
-    alert("Error saving photo: " + JSON.stringify(error));
+      return downloadURL;
+    } catch (error) {
+      alert('Error saving photo: ' + JSON.stringify(error));
+    }
   }
-});
+);
 
 async function _fetchAllProductsFromDb() {
-  const snapshot = await firebaseClient.firestore().collection("products").get();
+  const snapshot = await firebaseClient
+    .firestore()
+    .collection('products')
+    .get();
 
-  const roomsData = {}
-  const rooms = await firebaseClient.firestore().collection("rooms").get();
-  rooms.docs.forEach((doc) => roomsData[doc.id] = { ...doc.data() });
+  const roomsData = {};
+  const rooms = await firebaseClient.firestore().collection('rooms').get();
+  rooms.docs.forEach((doc) => (roomsData[doc.id] = { ...doc.data() }));
 
   const data = snapshot.docs.map((doc) => {
-    const {room, ...rest} = doc.data()
+    const { room, ...rest } = doc.data();
 
     return {
       id: doc.id,
@@ -136,7 +144,7 @@ async function _createProduct(
   room = null,
   duration = null
 ) {
-  const doc = await firebaseClient.firestore().collection("products").add({
+  const doc = await firebaseClient.firestore().collection('products').add({
     title,
     desc,
     type,
@@ -151,9 +159,12 @@ async function _createProduct(
 }
 
 function _appendToFilename(filename, string) {
-  var dotIndex = filename.lastIndexOf(".");
+  var dotIndex = filename.lastIndexOf('.');
   if (dotIndex == -1) return filename + string;
-  else return filename.substring(0, dotIndex) + string + filename.substring(dotIndex);
+  else
+    return (
+      filename.substring(0, dotIndex) + string + filename.substring(dotIndex)
+    );
 }
 
 function _uploadFile(fileName, file) {
