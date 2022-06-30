@@ -1,6 +1,6 @@
 import { Container, Row } from 'reactstrap';
 import WizardContainer from './WizardContainer';
-import Cart from './Cart';
+import Cart from './cart/Cart';
 
 const Checkout = () => {
   return (
