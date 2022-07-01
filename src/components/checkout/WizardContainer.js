@@ -14,7 +14,7 @@ const WizardContainer = () => {
       <div className="px-4 pt-4 pb-5 bg-white rounded">
         <h1>Buy a Pass</h1>
         <hr />
-        <Wizard header={<WizardHeader />} footer={<WizardButtons />}>
+        <Wizard header={<WizardHeader />}>
           <DateSelect />
           <ProductSelect />
           <AddOns />
