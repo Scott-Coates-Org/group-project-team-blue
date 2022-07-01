@@ -22,25 +22,31 @@ const dummyCart = [
 
 const CartDetails = () => {
   return (
-    <List type="unstyled">
-      {dummyCart.map(({ product, quantity, price }) => (
-        <li key={product} className="d-flex align-items-start">
-          <p>
-            {quantity}
-            <span className="mx-1">x</span>
-            {product}
-          </p>
-          <p className="ml-auto d-flex align-items-center">
-            ${(quantity * price).toFixed(2)}
-            <FontAwesomeIcon
-              role="button"
-              icon={faTrash}
-              className="text-danger ml-2"
-            />
-          </p>
-        </li>
-      ))}
-    </List>
+    <div>
+      <span className="bg-primary px-2 py-1 d-inline-block w-auto mb-3 text-white rounded">
+        Dummy Date
+      </span>
+
+      <List type="unstyled">
+        {dummyCart.map(({ product, quantity, price }) => (
+          <li key={product} className="d-flex align-items-start">
+            <p>
+              {quantity}
+              <span className="mx-1">x</span>
+              {product}
+            </p>
+            <p className="ml-auto d-flex align-items-center">
+              ${(quantity * price).toFixed(2)}
+              <FontAwesomeIcon
+                role="button"
+                icon={faTrash}
+                className="text-danger ml-2"
+              />
+            </p>
+          </li>
+        ))}
+      </List>
+    </div>
   );
 };
 
