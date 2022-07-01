@@ -22,8 +22,19 @@
 .nt {
     line-height: 0.75rem;
 }
+.nt:hover {
+    background-color: #0a0b0c;
+}
 
-.dominant{
+.dropdown-menu {
+    background-color: #343a40;
+    color: white !important;
+}
+.dropdown-menu:hover {
+    background-color: #0a0b0c;
+}
+
+/* .dominant{
     position: relative;
 }
 
@@ -36,10 +47,10 @@
 .matchWidth{
     padding-left: 62px;
     padding-right: 62px;
-}
+} */
 
 @media screen and (max-width: 720px) {
-    .disappear {
+    .nt {
         display: none;
     }
 }

@@ -3,22 +3,28 @@
     height: 100%;
 }
 
+/*sidebar collapse */
+
+a:hover {
+    text-decoration: none;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
-.sidebar::-webkit-scrollbar {
+/* .sidebar::-webkit-scrollbar {
     display: none;
   }
-  
+   */
   /* Hide scrollbar for IE, Edge and Firefox */
-  .sidebar {
+  /* .sidebar {
     -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
+    /* scrollbar-width: none;  Firefox */
+   */
 
-.badge {
+/* .badge {
     margin-left: 20px;
     padding: 3px 10px;
     background-color: #007bff !important;
-}
+} */
 
 .bgdark {
     background-color: #343a40;
@@ -26,9 +32,10 @@
 
 
 /* responsiveness*/
-.sidebar {
+/* .sidebar {
     min-width: 200px;
-}
+} */
 .content {
     overflow-x: scroll;
 }
+
