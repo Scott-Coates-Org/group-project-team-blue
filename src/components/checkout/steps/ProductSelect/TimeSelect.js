@@ -28,7 +28,7 @@ const TimeSelect = () => {
   return (
     <>
       <p className="font-weight-bold">Session time</p>
-      <div className="d-flex flex-wrap mb-2">
+      <div className="d-flex flex-wrap mb-3">
         {timeSlots.map(({ time }) => (
           <Button key={time} className="mx-1 mb-1" outline>
             {time}
