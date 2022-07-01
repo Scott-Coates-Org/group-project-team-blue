@@ -4,43 +4,26 @@ import { fetchAllProducts } from 'redux/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Spinner, InputGroup, Input, Button } from 'reactstrap';
-import './productSelect.css';
+import TimeSelect from './TimeSelect';
 import WizardStep from 'components/checkout/WizardStep';
-
-const dummySessions = [
-  { time: '10.00am' },
-  { time: '10.30am' },
-  { time: '11.00am' },
-  { time: '11.30am' },
-  { time: '12.00pm' },
-  { time: '12.30' },
-  { time: '13.00' },
-  { time: '14.00' },
-  { time: '15.00' },
-  { time: '16.00' },
-  { time: '17.00' },
-  { time: '18.00' },
-  { time: '19.00' },
-  { time: '20.00' },
-];
-
-const Sessions = () => {
-  return (
-    <div className="d-flex flex-wrap mb-2">
-      {dummySessions.map(({ time }) => (
-        <Button className="mx-1 mb-1" outline>
-          {time}
-        </Button>
-      ))}
-    </div>
-  );
-};
+import 'react-calendar/dist/Calendar.css';
+import './productSelect.css';
 
 const AccordionItem = ({ ...props }) => {
+  const [quant, setQuant] = useState(0);
   const { title, photo, desc, price, duration } = props;
   const [open, setOpen] = useState(false);
   const handleToggle = () => {
     setOpen(!open);
+  };
+
+  const increment = () => {
+    console.log('firing');
+    return setQuant(quant + 1);
+  };
+
+  const decrement = () => {
+    return quant - 1;
   };
   return (
     <div role="button" className="px-2 py-3 border-bottom">
@@ -58,8 +41,7 @@ const AccordionItem = ({ ...props }) => {
       {open ? (
         <div className="pt-3">
           <p>{desc}</p>
-          <p className="font-weight-bold">Session time</p>
-          <Sessions />
+          <TimeSelect />
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
@@ -76,9 +58,13 @@ const AccordionItem = ({ ...props }) => {
               <div className="input-group-prepend">
                 <Button>-</Button>
               </div>
-              <Input className="text-center" placeholder="0" />
+              <Input
+                className="text-center"
+                placeholder={quant}
+                defaultValue={quant}
+              />
               <div className="input-group-append">
-                <Button>+</Button>
+                <Button onClick={increment}>+</Button>
               </div>
             </InputGroup>
           </div>
@@ -97,25 +83,33 @@ const ProductSelect = () => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
 
-  // console.log({ data, isLoaded, hasErrors });
+  // Use isLoaded to show or hide spinner whilst product data loads
   return (
     <WizardStep stepHeader="Select your products">
-      <div>
-        {!isLoaded ? (
-          <div className="py-3 w-100 d-flex justify-content-center">
-            <Spinner color="primary" />
-          </div>
-        ) : (
-          <>
+      {!isLoaded ? (
+        <div className="py-3 w-100 d-flex justify-content-center">
+          <Spinner color="primary" />
+        </div>
+      ) : (
+        <div className="mb-3">
+          {/* <p>
+            Your booking is on{' '}
+            {date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p> */}
+          <div>
             {products.map(({ id, title, photo, desc, price, duration }) => (
               <AccordionItem
                 key={id}
                 {...{ title, photo, desc, price, duration }}
               />
             ))}
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
     </WizardStep>
   );
 };
