@@ -12,7 +12,7 @@ const DateSelect = () => {
     console.log(date);
   };
   return (
-    <WizardStep>
+    <WizardStep stepHeader="Select a date">
       <Calendar
         onChange={setDate}
         value={date}
