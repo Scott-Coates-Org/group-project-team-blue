@@ -1,7 +1,7 @@
 import React from 'react'
-import { Navbar, NavbarBrand, NavbarText, ListGroup, ListGroupItem, Collapse, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap"
+import { Navbar, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCaretSquareDown, faBell, faQuestionCircle } from "@fortawesome/free-solid-svg-icons"
+import { faBell, faQuestionCircle } from "@fortawesome/free-solid-svg-icons"
 import "./Navbar.css"
 import { useState } from 'react'
 import { history } from 'components/app'

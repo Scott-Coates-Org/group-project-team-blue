@@ -72,11 +72,6 @@ function App() {
             <Route path="/checkout" render={() => <Checkout />} />
             {/* this must be on the bottom */}
             <ProtectedRoute path="/admin" component={Dashboard} {...props} />
-                
-                  {/* <Route path="/admin/bookings" component={Dashboard} {...props}/>
-                  <Route path="/admin/createbooking" component={Dashboard} {...props}/> */}
-                  {/* <Route path="/admin/rooms" component={Dashboard} {...props}/>
-                  <Route path="/admin/createroom" component={Dashboard} {...props}/> */}
               
           </Switch>
         </Router>

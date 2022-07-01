@@ -34,10 +34,6 @@ body {
     scrollbar-width: none;  /* Firefox */
   }
 
-.badge {
-    margin-left: 20px;
-    padding: 3px 10px;
-}
 
 .bgdark {
     background-color: #343a40;
@@ -45,9 +41,9 @@ body {
 
 
 /* responsiveness*/
-.sidebar {
+/* .sidebar {
     min-width: 200px;
-}
+} */
 .content {
     overflow-x: scroll;
 }
