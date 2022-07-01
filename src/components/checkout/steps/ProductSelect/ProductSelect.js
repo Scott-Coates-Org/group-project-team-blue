@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Spinner, InputGroup, Input, Button } from 'reactstrap';
 import './productSelect.css';
-import WizardStep from '../WizardStep';
+import WizardStep from 'components/checkout/WizardStep';
 
 const dummySessions = [
   { time: '10.00am' },
