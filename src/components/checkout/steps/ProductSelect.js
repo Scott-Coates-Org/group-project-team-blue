@@ -7,6 +7,35 @@ import { Spinner, InputGroup, Input, Button } from 'reactstrap';
 import './productSelect.css';
 import WizardStep from '../WizardStep';
 
+const dummySessions = [
+  { time: '10.00am' },
+  { time: '10.30am' },
+  { time: '11.00am' },
+  { time: '11.30am' },
+  { time: '12.00pm' },
+  { time: '12.30' },
+  { time: '13.00' },
+  { time: '14.00' },
+  { time: '15.00' },
+  { time: '16.00' },
+  { time: '17.00' },
+  { time: '18.00' },
+  { time: '19.00' },
+  { time: '20.00' },
+];
+
+const Sessions = () => {
+  return (
+    <div className="d-flex flex-wrap mb-2">
+      {dummySessions.map(({ time }) => (
+        <Button className="mx-1 mb-1" outline>
+          {time}
+        </Button>
+      ))}
+    </div>
+  );
+};
+
 const AccordionItem = ({ ...props }) => {
   const { title, photo, desc, price, duration } = props;
   const [open, setOpen] = useState(false);
@@ -29,6 +58,8 @@ const AccordionItem = ({ ...props }) => {
       {open ? (
         <div className="pt-3">
           <p>{desc}</p>
+          <p className="font-weight-bold">Session time</p>
+          <Sessions />
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
