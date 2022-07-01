@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Col } from 'reactstrap';
 import { Wizard } from 'react-use-wizard';
 import WizardHeader from './WizardHeader';
@@ -8,8 +7,6 @@ import ContactDetails from './steps/ContactDetails';
 import PaymentDetails from './steps/PaymentDetails';
 
 const WizardContainer = () => {
-  const [dateSelect, setDateSelect] = useState(true);
-
   return (
     <Col className="col-md-7 pb-2 pb-md-0">
       <div className="px-4 pt-4 pb-5 bg-white rounded">
