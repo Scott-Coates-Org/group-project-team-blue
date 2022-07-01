@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Col } from 'reactstrap';
 import { Wizard } from 'react-use-wizard';
 import WizardHeader from './WizardHeader';
-import WizardButtons from './WizardButtons';
 import ProductSelect from './steps/ProductSelect/ProductSelect';
 import AddOns from './steps/AddOns';
 import ContactDetails from './steps/ContactDetails';
