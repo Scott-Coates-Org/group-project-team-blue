@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Spinner, InputGroup, Input, Button } from 'reactstrap';
 import TimeSelect from './TimeSelect';
+import { useWizard } from 'react-use-wizard';
 import WizardStep from 'components/checkout/WizardStep';
 import 'react-calendar/dist/Calendar.css';
 import './productSelect.css';
@@ -17,14 +18,19 @@ const AccordionItem = ({ ...props }) => {
     setOpen(!open);
   };
 
+  const handleQuantity = () => {
+    setQuant(e.target.value);
+  };
+
   const increment = () => {
-    console.log('firing');
-    return setQuant(quant + 1);
+    setQuant(quant + 1);
   };
 
   const decrement = () => {
     return quant - 1;
   };
+
+  console.log(quant);
   return (
     <div role="button" className="px-2 py-3 border-bottom">
       <div
@@ -61,7 +67,8 @@ const AccordionItem = ({ ...props }) => {
               <Input
                 className="text-center"
                 placeholder={quant}
-                defaultValue={quant}
+                value={quant}
+                onChange={handleQuantity}
               />
               <div className="input-group-append">
                 <Button onClick={increment}>+</Button>
@@ -76,6 +83,7 @@ const AccordionItem = ({ ...props }) => {
 
 const ProductSelect = () => {
   const dispatch = useDispatch();
+  const { nextStep, previousStep } = useWizard();
   const { data, isLoaded, hasErrors } = useSelector((state) => state.product);
   const products = data.filter(({ type }) => type === 'product');
 
@@ -91,8 +99,9 @@ const ProductSelect = () => {
           <Spinner color="primary" />
         </div>
       ) : (
-        <div className="mb-3">
-          {/* <p>
+        <div>
+          <div className="mb-4">
+            {/* <p>
             Your booking is on{' '}
             {date.toLocaleDateString('en-US', {
               year: 'numeric',
@@ -100,13 +109,33 @@ const ProductSelect = () => {
               day: 'numeric',
             })}
           </p> */}
-          <div>
-            {products.map(({ id, title, photo, desc, price, duration }) => (
-              <AccordionItem
-                key={id}
-                {...{ title, photo, desc, price, duration }}
-              />
-            ))}
+            <div className="mb-3">
+              {products.map(
+                ({ id, title, photo, desc, price, duration, room }) => (
+                  <AccordionItem
+                    key={id}
+                    {...{ title, photo, desc, price, duration }}
+                  />
+                )
+              )}
+            </div>
+          </div>
+          <div className="d-flex">
+            <Button
+              color="secondary"
+              onClick={() => previousStep()}
+              className={'flex-grow-1 w-50 mr-2'}
+              outline
+            >
+              Back
+            </Button>
+            <Button
+              color="warning"
+              onClick={() => nextStep()}
+              className="flex-grow-1 w-75"
+            >
+              Continue
+            </Button>
           </div>
         </div>
       )}
