@@ -27,7 +27,9 @@ const AccordionItem = ({ ...props }) => {
   };
 
   const decrement = () => {
-    return quant - 1;
+    if (quant > 0) {
+      setQuant(quant - 1);
+    }
   };
 
   console.log(quant);
@@ -47,22 +49,26 @@ const AccordionItem = ({ ...props }) => {
       {open ? (
         <div className="pt-3">
           <p>{desc}</p>
-          <TimeSelect />
+          <TimeSelect duration={duration} />
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
                 {title}
               </span>
-              <span className="mr-2 text-gray d-block d-md-inline">
-                {duration} mins
-              </span>
+              {duration > 0 ? (
+                <span className="mr-2 text-gray d-block d-md-inline">
+                  {duration} mins
+                </span>
+              ) : (
+                <span></span>
+              )}
               <span className="font-weight-bold mr-2 d-block d-md-inline">
                 ${price.toFixed(2)}
               </span>
             </div>
             <InputGroup className="align-self-md-end product-checkout-quantity">
               <div className="input-group-prepend">
-                <Button>-</Button>
+                <Button onClick={decrement}>-</Button>
               </div>
               <Input
                 className="text-center"
@@ -101,23 +107,13 @@ const ProductSelect = () => {
       ) : (
         <div>
           <div className="mb-4">
-            {/* <p>
-            Your booking is on{' '}
-            {date.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p> */}
-            <div className="mb-3">
-              {products.map(
-                ({ id, title, photo, desc, price, duration, room }) => (
-                  <AccordionItem
-                    key={id}
-                    {...{ title, photo, desc, price, duration }}
-                  />
-                )
-              )}
+            <div>
+              {products.map(({ id, title, photo, desc, price, duration }) => (
+                <AccordionItem
+                  key={id}
+                  {...{ title, photo, desc, price, duration }}
+                />
+              ))}
             </div>
           </div>
           <div className="d-flex">
