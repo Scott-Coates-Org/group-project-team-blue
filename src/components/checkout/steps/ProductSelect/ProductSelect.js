@@ -49,7 +49,7 @@ const AccordionItem = ({ ...props }) => {
       {open ? (
         <div className="pt-3">
           <p>{desc}</p>
-          <TimeSelect duration={duration} />
+          {duration > 0 ? <TimeSelect duration={duration} /> : null}
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
