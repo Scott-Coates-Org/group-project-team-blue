@@ -13,7 +13,7 @@ const generateTimeBlocks = (duration) => {
     times.push(time);
   };
 
-  if (duration === 60 || duration === 120) {
+  if (duration === 60) {
     for (let i = startTime; i < 20; i++) {
       if (i < 12) {
         parseTime(i, 'am');
@@ -29,7 +29,18 @@ const generateTimeBlocks = (duration) => {
     for (let i = startTime; i < 19; i += 1.5) {
       if (i < 12) {
         parseTime(i, 'am');
-      } else if (i === 12.0) {
+      } else if (i === 12) {
+        parseTime(i, 'pm');
+      } else {
+        parseTime(i, 'pm');
+      }
+    }
+  }
+  if (duration === 120) {
+    for (let i = startTime; i < 20; i += 2) {
+      if (i < 12) {
+        parseTime(i, 'am');
+      } else if (i === 12) {
         parseTime(i, 'pm');
       } else {
         parseTime(i, 'pm');
