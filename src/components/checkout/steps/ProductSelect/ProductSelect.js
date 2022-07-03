@@ -32,7 +32,6 @@ const AccordionItem = ({ ...props }) => {
     }
   };
 
-  console.log(quant);
   return (
     <div role="button" className="px-2 py-3 border-bottom">
       <div
