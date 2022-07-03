@@ -15,7 +15,6 @@ const generateTimeBlocks = (duration) => {
 
   if (duration === 60 || duration === 120) {
     for (let i = startTime; i < 20; i++) {
-      let hour;
       if (i < 12) {
         parseTime(i, 'am');
       } else if (i === 12) {
@@ -27,7 +26,6 @@ const generateTimeBlocks = (duration) => {
   }
   // Given a 90 min long activity, the last slot should end at 7.00pm at the latest
   if (duration === 90) {
-    // let startTime = 10.0;
     for (let i = startTime; i < 19; i += 1.5) {
       if (i < 12) {
         parseTime(i, 'am');
