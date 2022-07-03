@@ -9,12 +9,12 @@ const dummyDetails = {
 
 const dummyCart = [
   {
-    product: 'Junior Jumpers Jam',
+    product: 'Product 1',
     quantity: 2,
     price: 10.0,
   },
   {
-    product: 'Junior Jumpers Jam Adult',
+    product: 'Product 2',
     quantity: 1,
     price: 20.0,
   },
