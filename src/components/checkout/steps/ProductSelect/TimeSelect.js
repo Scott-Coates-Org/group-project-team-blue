@@ -1,36 +1,53 @@
 import { Button } from 'reactstrap';
 
-const timeSlots = [
-  { time: '10:00am' },
-  { time: '10:30am' },
-  { time: '11:00am' },
-  { time: '11:30am' },
-  { time: '12:00pm' },
-  { time: '12:30pm' },
-  { time: '1:00pm' },
-  { time: '1:30pm' },
-  { time: '2:00pm' },
-  { time: '2:30pm' },
-  { time: '3:00pm' },
-  { time: '3:30pm' },
-  { time: '4:00pm' },
-  { time: '4:30pm' },
-  { time: '5:00pm' },
-  { time: '5:30pm' },
-  { time: '6:00pm' },
-  { time: '6:30pm' },
-  { time: '7:00pm' },
-  { time: '7:30pm' },
-  { time: '8:00pm' },
-];
+// Calculate the number of minutes between opening and closing hours. In this case: 10.00-20.00 (10AM-8PM)
+const generateTimeBlocks = (duration) => {
+  let times = [];
+  const startTime = 10;
 
-const TimeSelect = () => {
+  // Generates array of time strings from hours and a set time of day (eg. am, pm)
+  const parseTime = (hh, timeOfDay) => {
+    const min = ((hh * 10) % 10) / 10;
+    const hour = hh - min;
+    const time = `${hour}:${min * 6}0${timeOfDay}`;
+    times.push(time);
+  };
+
+  if (duration === 60 || duration === 120) {
+    for (let i = startTime; i < 20; i++) {
+      let hour;
+      if (i < 12) {
+        parseTime(i, 'am');
+      } else if (i === 12) {
+        parseTime(i, 'pm');
+      } else {
+        parseTime(i, 'pm');
+      }
+    }
+  }
+  // Given a 90 min long activity, the last slot should end at 7.00pm at the latest
+  if (duration === 90) {
+    // let startTime = 10.0;
+    for (let i = startTime; i < 19; i += 1.5) {
+      if (i < 12) {
+        parseTime(i, 'am');
+      } else if (i === 12.0) {
+        parseTime(i, 'pm');
+      } else {
+        parseTime(i, 'pm');
+      }
+    }
+  }
+  return times;
+};
+const TimeSelect = ({ duration }) => {
+  const sessions = generateTimeBlocks(duration);
   return (
     <>
       <p className="font-weight-bold">Session time</p>
       <div className="d-flex flex-wrap mb-3">
-        {timeSlots.map(({ time }) => (
-          <Button key={time} className="mx-1 mb-1" outline>
+        {sessions.map((time) => (
+          <Button key={time} data-time={time} className="mr-1 mb-1" outline>
             {time}
           </Button>
         ))}
