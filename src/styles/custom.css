@@ -1,3 +1,7 @@
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
 .homepage-bg {
   background-image: url('../assets/checkout-bg.webp');
   background-repeat: no-repeat;

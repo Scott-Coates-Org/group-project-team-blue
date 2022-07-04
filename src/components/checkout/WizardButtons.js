@@ -9,9 +9,7 @@ const WizardButtons = () => {
         <Button
           color="secondary"
           onClick={() => previousStep()}
-          className={`font-weight-bold flex-grow-1 w-50 ${
-            isLastStep ? '' : 'mr-2'
-          }`}
+          className={`flex-grow-1 w-50 ${isLastStep ? '' : 'mr-2'}`}
           outline
         >
           Back
@@ -21,7 +19,7 @@ const WizardButtons = () => {
         <Button
           color="warning"
           onClick={() => nextStep()}
-          className="font-weight-bold flex-grow-1 w-75"
+          className="flex-grow-1 w-75"
         >
           Continue
         </Button>
