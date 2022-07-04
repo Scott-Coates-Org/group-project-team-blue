@@ -43,10 +43,12 @@ Try This
 ## Team Members Roll Call
 
 - [x] Marge
-- [X] Khant
-- [X] Alec
+- [x] Khant
+- [x] Alec
 - [x] Patrick
 
 ## Sprint Progress
+
+Website URL: https://team-blue-8951b.web.app
 
 We **will** be using issues for the group project. Go to the issues list to manage your progress.
