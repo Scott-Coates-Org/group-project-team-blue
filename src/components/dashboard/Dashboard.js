@@ -1,20 +1,18 @@
-
-import {  Row, Col } from "reactstrap"
-import "./Dashboard.css"
-import AdminNavbar from "components/navbar/Navbar"
-import Sidebar from "components/sidebar/Sidebar"
-import CreateProduct from "components/products/CreateProduct"
-import ProductList from "components/products/ProductList"
-import { Switch, Route } from "react-router-dom"
-import RoomList from "components/rooms/RoomList"
-import CreateRoom from "components/rooms/CreateRoom"
-
+import { Row, Col } from "reactstrap";
+import "./Dashboard.css";
+import AdminNavbar from "components/navbar/Navbar";
+import Sidebar from "components/sidebar/Sidebar";
+import CreateProduct from "components/products/CreateProduct";
+import ProductList from "components/products/ProductList";
+import { Switch, Route } from "react-router-dom";
+import RoomList from "components/rooms/RoomList";
+import CreateRoom from "components/rooms/CreateRoom";
+import AdminBooking from "components/AdminBooking/AdminBooking";
 
 const Dashboard = (props) => {
-
   return (
     <>
-      <AdminNavbar/>
+      <AdminNavbar />
 
       <Row className="row-admin">
         <Sidebar />
@@ -24,25 +22,25 @@ const Dashboard = (props) => {
               <h3>Admin area</h3>
             </Route>
             <Route path="/admin/products">
-              <ProductList/>
+              <ProductList />
             </Route>
-            <Route path="/admin/createproduct" >
-              <CreateProduct/>
+            <Route path="/admin/createproduct">
+              <CreateProduct />
             </Route>
-            <Route path="/admin/rooms" >
-              <RoomList/>
+            <Route path="/admin/createbooking">
+              <AdminBooking />
             </Route>
-            <Route path="/admin/createroom" >
-              <CreateRoom/>
+            <Route path="/admin/rooms">
+              <RoomList />
+            </Route>
+            <Route path="/admin/createroom">
+              <CreateRoom />
             </Route>
           </Switch>
-          
         </Col>
-        
       </Row>
     </>
-    )
-}
+  );
+};
 
-
-export default Dashboard
+export default Dashboard;
