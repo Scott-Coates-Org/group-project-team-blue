@@ -2,11 +2,11 @@ import { useWizard } from 'react-use-wizard';
 import { Button } from 'reactstrap';
 import WizardStep from '../WizardStep';
 
-const ProductSelect = () => {
+const ContactDetails = () => {
   const { nextStep, previousStep } = useWizard();
   return (
-    <WizardStep stepHeader="Select add-ons">
-      <p>List of add-ons goes here</p>
+    <WizardStep stepHeader="Enter your details">
+      <p>User inputs their contact details in this bit.</p>
       <div className="d-flex">
         <Button
           color="secondary"
@@ -28,4 +28,4 @@ const ProductSelect = () => {
   );
 };
 
-export default ProductSelect;
+export default ContactDetails;
