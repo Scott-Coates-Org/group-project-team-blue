@@ -8,6 +8,7 @@ import { Switch, Route } from "react-router-dom";
 import RoomList from "components/rooms/RoomList";
 import CreateRoom from "components/rooms/CreateRoom";
 import AdminBooking from "components/AdminBooking/AdminBooking";
+import CalendarView from "components/AdminBooking/CalendarView";
 
 const Dashboard = (props) => {
   return (
@@ -26,6 +27,9 @@ const Dashboard = (props) => {
             </Route>
             <Route path="/admin/createproduct">
               <CreateProduct />
+            </Route>
+            <Route path="/admin/calendarview">
+              <CalendarView />
             </Route>
             <Route path="/admin/createbooking">
               <AdminBooking />

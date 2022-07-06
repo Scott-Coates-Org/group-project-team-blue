@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import firebaseClient from "firebase/client";
 
 const initialState = {
-  data: {},
+  data: [],
   isLoaded: false,
   hasErrors: false,
   //add error?

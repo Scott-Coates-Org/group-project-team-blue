@@ -31,7 +31,9 @@ const ProductList = () => {
             </tr>
           </thead>
           {data.map((product, idx) => {
-            <Product key={product.id} product={product} idx={idx} />
+            return (
+              <Product key={product.id} product={product} idx={idx} />
+            )
           })}
         </Table>
       )}

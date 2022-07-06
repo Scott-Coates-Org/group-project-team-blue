@@ -2,9 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import firebaseClient from "firebase/client";
 
 const initialState = {
-  data: {},
-  isLoaded: false,
-  hasErrors: false,
+  timedata: {},
+  timeisLoaded: false,
+  timehasErrors: false,
   //add error?
 };
 
@@ -15,17 +15,17 @@ const opentime = createSlice({
     getData: (state) => {},
 
     getDataSuccess: (state, action) => {
-      state.isLoaded = true;
-      state.data = action.payload;
+      state.timeisLoaded = true;
+      state.timedata = action.payload;
     },
 
     getDataFailure: (state, action) => {
-      state.isLoaded = true;
-      state.hasErrors = true;
+      state.timeisLoaded = true;
+      state.timehasErrors = true;
     },
 
     createDataFailure: (state) => {
-      state.hasErrors = true;
+      state.timehasErrors = true;
       //add errors?
     },
   },
