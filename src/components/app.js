@@ -17,6 +17,7 @@ import Dashboard from "./dashboard/Dashboard";
 import CreateProduct from "./products/CreateProduct";
 import ProductList from "./products/ProductList";
 
+
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
 // https://github.com/ReactTraining/react-router/issues/4059#issuecomment-254437084
