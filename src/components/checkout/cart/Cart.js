@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { Col, List, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -21,10 +22,11 @@ const dummyCart = [
 ];
 
 const CartDetails = () => {
+  let bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
   return (
     <div>
       <span className="bg-primary px-2 py-1 d-inline-block w-auto mb-3 text-white rounded">
-        Dummy Date
+        {bookingDate}
       </span>
 
       <List type="unstyled">
