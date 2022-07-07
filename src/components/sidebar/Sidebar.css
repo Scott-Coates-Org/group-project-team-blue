@@ -1,5 +1,6 @@
 .sidebar, .content {
     overflow-y: scroll;
+    overflow-x: visible;
     height: 100%;
 }
 
@@ -35,7 +36,7 @@ a:hover {
 /* .sidebar {
     min-width: 200px;
 } */
-.content {
+/* .content {
     overflow-x: scroll;
-}
+} */
 

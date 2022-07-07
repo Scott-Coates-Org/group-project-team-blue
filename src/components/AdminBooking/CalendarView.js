@@ -17,7 +17,6 @@ export default function CalendarView() {
     const {timedata, timeisLoaded, timehasErrors} = useSelector((state) => state.opentime)
     // console.log(timedata)
     // console.log(data)
-    console.log(format(startdate, 'yyyy-MM-dd'));
 
     useEffect(() => {
         console.log("called")
@@ -25,9 +24,15 @@ export default function CalendarView() {
         dispatch(fetchOpenTimes());
     }, [dispatch]);
 
-    const open = timedata[0]?.open;
-    const close = timedata[0]?.close;
+    const open = timedata[1]?.open;
+    const close = timedata[1]?.close;
+    const date = timedata[1]?.date;
     const cell = [];
+    
+    // let openDateObj = new Date(parseInt(dateArr[0]),parseInt(dateArr[1])-1,parseInt(dateArr[2]),parseInt(opentimeArr[0]),parseInt(opentimeArr[1]))
+    // let closeDateObj = new Date(parseInt(dateArr[0]),parseInt(dateArr[1])-1,parseInt(dateArr[2]),parseInt(closetimeArr[0]),parseInt(closetimeArr[1]))
+    // const totaltime = closeDateObj - openDateObj;
+    // console.log(totaltime)
     let noOfCells = parseInt(close?.split(':')[0]) - parseInt(open?.split(':')[0]);
     for (let i=0; i <= noOfCells; i++ ) {
         cell.push(i);
@@ -43,7 +48,7 @@ export default function CalendarView() {
 
     return (
         <section>
-            <Card className='p-3 w-100'>
+            <Card className='p-3 w-auto'>
                 <h5 className="text-muted">Bookings</h5>
                 <h3 className="mb-5">Daily Capacity</h3>
                 <DatePicker 
@@ -55,14 +60,16 @@ export default function CalendarView() {
             {!isLoaded && "Products loading..."}
             {hasErrors && "Error Loading"}
             {isLoaded && (
+            <div className='section'>
             <Table bordered>
                 <thead>
                     <tr>
                         <th></th>
                         {cell.map((num) => {
+                            // if (num % 2 != 0) {
                             return (
                                 <th colSpan='2'>{timeadd(open, num)}</th>
-                            )
+                            )//}
                         })}
                     </tr>
                 </thead>
@@ -87,6 +94,7 @@ export default function CalendarView() {
                 </tbody>
                 
             </Table>
+            </div>
             )}
         </section>
     )

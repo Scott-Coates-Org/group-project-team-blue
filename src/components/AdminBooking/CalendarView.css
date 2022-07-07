@@ -11,3 +11,8 @@ td:hover {
 td:hover .cell {
     visibility: visible;
 }
+
+.section {
+    overflow-x: scroll;
+    overflow-y: scroll;
+  }
