@@ -22,7 +22,10 @@ const dummyCart = [
 ];
 
 const CartDetails = () => {
+  // bookingDate defaults to the current date
   let bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
+  let products = useSelector(({ cartDetails }) => cartDetails.products);
+
   return (
     <div>
       <span className="bg-primary px-2 py-1 d-inline-block w-auto mb-3 text-white rounded">
@@ -89,17 +92,21 @@ const PaymentDetails = ({ details }) => {
 };
 
 const Cart = () => {
+  let products = useSelector(({ cartDetails }) => cartDetails.products);
   return (
     <Col className="col-md-5">
       <div className="bg-white px-4 pt-4 pb-5 rounded ">
         <h2>Your Cart</h2>
         <hr />
-        <CartDetails />
-        <hr />
-        <PaymentDetails details={dummyDetails} />
-        <Button color="warning" block>
-          Continue
-        </Button>
+        {products.length === 0 ? (
+          <p>Your cart is currently empty.</p>
+        ) : (
+          <>
+            <CartDetails />
+            <hr />
+            <PaymentDetails details={dummyDetails} />
+          </>
+        )}
       </div>
     </Col>
   );
