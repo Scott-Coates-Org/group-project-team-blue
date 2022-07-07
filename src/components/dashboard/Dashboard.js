@@ -8,7 +8,8 @@ import { Switch, Route } from "react-router-dom";
 import RoomList from "components/rooms/RoomList";
 import CreateRoom from "components/rooms/CreateRoom";
 import AdminBooking from "components/AdminBooking/AdminBooking";
-import BookingList from "components/AdminBooking/BookingList";
+import BookingView from "components/AllBooking/BookingView";
+import BookingList from "components/AllBooking/BookingList";
 
 const Dashboard = (props) => {
   return (
