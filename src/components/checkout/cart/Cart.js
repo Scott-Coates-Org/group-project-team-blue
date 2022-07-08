@@ -1,29 +1,14 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { removeFromCart } from 'redux/cartDetails';
 import { Col, List, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const dummyDetails = {
-  subtotal: 78.0,
-  transactionFee: 0.0,
-};
-
-const dummyCart = [
-  {
-    product: 'Product 1',
-    quantity: 2,
-    price: 10.0,
-  },
-  {
-    product: 'Product 2',
-    quantity: 1,
-    price: 20.0,
-  },
-];
-
 const CartDetails = () => {
+  const dispatch = useDispatch();
   // bookingDate defaults to the current date
   let bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
+
   let products = useSelector(({ cartDetails }) => cartDetails.products);
 
   return (
@@ -33,12 +18,12 @@ const CartDetails = () => {
       </span>
 
       <List type="unstyled">
-        {dummyCart.map(({ product, quantity, price }) => (
-          <li key={product} className="d-flex align-items-start">
+        {products.map(({ quantity, title, price, id }) => (
+          <li key={id} className="d-flex align-items-start">
             <p>
               {quantity}
               <span className="mx-1">x</span>
-              {product}
+              {title}
             </p>
             <p className="ml-auto d-flex align-items-center">
               ${(quantity * price).toFixed(2)}
@@ -46,6 +31,7 @@ const CartDetails = () => {
                 role="button"
                 icon={faTrash}
                 className="text-danger ml-2"
+                onClick={() => dispatch(removeFromCart(id))}
               />
             </p>
           </li>
@@ -56,11 +42,11 @@ const CartDetails = () => {
 };
 
 const PaymentDetails = ({ details }) => {
-  const { subtotal, transactionFee, tax } = details;
+  // const { subtotal, transactionFee, tax } = details;
   return (
     <div>
       <h3>Total payment required</h3>
-      <List type="unstyled">
+      {/* <List type="unstyled">
         <li className="d-flex justify-content-between">
           <span>Subtotal</span>
           <span>${subtotal.toFixed(2)}</span>
@@ -86,13 +72,14 @@ const PaymentDetails = ({ details }) => {
             ).toFixed(2)}
           </span>
         </li>
-      </List>
+      </List> */}
     </div>
   );
 };
 
 const Cart = () => {
   let products = useSelector(({ cartDetails }) => cartDetails.products);
+  console.log(products);
   return (
     <Col className="col-md-5">
       <div className="bg-white px-4 pt-4 pb-5 rounded ">
@@ -104,7 +91,7 @@ const Cart = () => {
           <>
             <CartDetails />
             <hr />
-            <PaymentDetails details={dummyDetails} />
+            <PaymentDetails />
           </>
         )}
       </div>
