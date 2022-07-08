@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { addToCart, reduceQty, removeFromCart } from 'redux/cartDetails';
 import { fetchAllProducts } from 'redux/product';
 import { useWizard } from 'react-use-wizard';
 import { Button, Spinner, InputGroup, Input } from 'reactstrap';
@@ -7,20 +8,53 @@ import socks from 'assets/socks.jpeg';
 import WizardStep from '../../WizardStep';
 
 const Addon = ({ ...props }) => {
-  let { title, price, desc } = props;
+  let { id, title, price, type } = props;
+  const dispatch = useDispatch();
+  const [quant, setQuant] = useState(0);
+
+  const handleQuantity = () => {
+    setQuant(e.target.value);
+  };
+  const increment = (id, title, price, type) => {
+    setQuant(quant + 1);
+    dispatch(
+      addToCart({
+        id: id,
+        title: title,
+        price: price,
+        duration: null,
+        timeSlot: null,
+        quantity: 0,
+      })
+    );
+  };
+
+  const decrement = (id) => {
+    if (quant > 0) {
+      setQuant(quant - 1);
+
+      dispatch(reduceQty(id));
+      console.log('current quant', quant);
+    }
+  };
   return (
     <div className="d-flex align-items-center mb-3">
       <p className="mr-auto mb-0">
         <span className="d-block">{title}</span>
         <span className="font-weight-bold d-block">${price.toFixed(2)}</span>
       </p>
-      <InputGroup className="product-checkout-quantity">
+      <InputGroup className="align-self-md-end product-checkout-quantity">
         <div className="input-group-prepend">
-          <Button>-</Button>
+          <Button onClick={() => decrement(id)}>-</Button>
         </div>
-        <Input className="text-center" placeholder="0" />
+        <Input
+          className="text-center"
+          placeholder={quant}
+          value={quant}
+          onChange={handleQuantity}
+        />
         <div className="input-group-append">
-          <Button>+</Button>
+          <Button onClick={() => increment(id, title, price)}>+</Button>
         </div>
       </InputGroup>
     </div>
@@ -30,9 +64,9 @@ const Addon = ({ ...props }) => {
 const AddonSelect = () => {
   const { nextStep, previousStep } = useWizard();
   const dispatch = useDispatch();
+  const [quant, setQuant] = useState(0);
   const { data, isLoaded, hasErrors } = useSelector((state) => state.product);
   const addons = data.filter(({ type }) => type === 'addon');
-  console.log(addons);
 
   useEffect(() => {
     dispatch(fetchAllProducts());
@@ -62,8 +96,8 @@ const AddonSelect = () => {
       ) : (
         <div className="mb-4">
           <div>
-            {addons.map(({ id, title, price, desc }) => (
-              <Addon key={id} {...{ title, price, desc }} />
+            {addons.map(({ id, title, price, type }) => (
+              <Addon key={id} {...{ id, title, price, type }} />
             ))}
           </div>
         </div>
