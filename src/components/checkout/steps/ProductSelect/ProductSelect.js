@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { addToCart, reduceQty } from 'redux/cartDetails';
 import { fetchAllProducts } from 'redux/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -11,24 +12,37 @@ import 'react-calendar/dist/Calendar.css';
 import './productSelect.css';
 
 const AccordionItem = ({ ...props }) => {
+  const dispatch = useDispatch();
   const [quant, setQuant] = useState(0);
-  const { title, photo, desc, price, duration } = props;
+  const { id, title, photo, desc, price, duration } = props;
   const [open, setOpen] = useState(false);
+  console.log(price);
+
   const handleToggle = () => {
     setOpen(!open);
   };
-
   const handleQuantity = () => {
     setQuant(e.target.value);
   };
 
-  const increment = () => {
+  const increment = (id, title, price, duration) => {
     setQuant(quant + 1);
+    console.log(price);
+    dispatch(
+      addToCart({
+        id: id,
+        title: title,
+        price: price,
+        duration: duration,
+        quantity: 0,
+      })
+    );
   };
 
-  const decrement = () => {
+  const decrement = (id) => {
     if (quant > 0) {
       setQuant(quant - 1);
+      dispatch(reduceQty(id));
     }
   };
 
@@ -67,7 +81,7 @@ const AccordionItem = ({ ...props }) => {
             </div>
             <InputGroup className="align-self-md-end product-checkout-quantity">
               <div className="input-group-prepend">
-                <Button onClick={decrement}>-</Button>
+                <Button onClick={() => decrement(id)}>-</Button>
               </div>
               <Input
                 className="text-center"
@@ -76,7 +90,9 @@ const AccordionItem = ({ ...props }) => {
                 onChange={handleQuantity}
               />
               <div className="input-group-append">
-                <Button onClick={increment}>+</Button>
+                <Button onClick={() => increment(id, title, price, duration)}>
+                  +
+                </Button>
               </div>
             </InputGroup>
           </div>
@@ -110,30 +126,30 @@ const ProductSelect = () => {
               {products.map(({ id, title, photo, desc, price, duration }) => (
                 <AccordionItem
                   key={id}
-                  {...{ title, photo, desc, price, duration }}
+                  {...{ id, title, photo, desc, price, duration }}
                 />
               ))}
             </div>
           </div>
-          <div className="d-flex">
-            <Button
-              color="secondary"
-              onClick={() => previousStep()}
-              className={'flex-grow-1 w-50 mr-2'}
-              outline
-            >
-              Back
-            </Button>
-            <Button
-              color="warning"
-              onClick={() => nextStep()}
-              className="flex-grow-1 w-75"
-            >
-              Continue
-            </Button>
-          </div>
         </div>
       )}
+      <div className="d-flex">
+        <Button
+          color="secondary"
+          onClick={() => previousStep()}
+          className={'flex-grow-1 w-50 mr-2'}
+          outline
+        >
+          Back
+        </Button>
+        <Button
+          color="warning"
+          onClick={() => nextStep()}
+          className="flex-grow-1 w-75"
+        >
+          Continue
+        </Button>
+      </div>
     </WizardStep>
   );
 };
