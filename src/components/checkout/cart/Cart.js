@@ -1,15 +1,14 @@
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { getCosts } from 'redux/cartDetails';
 import { removeFromCart } from 'redux/cartDetails';
-import { Col, List, Button } from 'reactstrap';
+import { Col, List } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const CartDetails = () => {
+const CartDetails = ({ products }) => {
   const dispatch = useDispatch();
-  // bookingDate defaults to the current date
   let bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
-
-  let products = useSelector(({ cartDetails }) => cartDetails.products);
 
   return (
     <div>
@@ -41,12 +40,14 @@ const CartDetails = () => {
   );
 };
 
-const PaymentDetails = ({ details }) => {
-  // const { subtotal, transactionFee, tax } = details;
+const PaymentDetails = ({ costs }) => {
+  const { subtotal, total } = costs;
+  const transactionFee = 5.0;
+  const taxRate = 0.05;
   return (
     <div>
       <h3>Total payment required</h3>
-      {/* <List type="unstyled">
+      <List type="unstyled">
         <li className="d-flex justify-content-between">
           <span>Subtotal</span>
           <span>${subtotal.toFixed(2)}</span>
@@ -57,29 +58,27 @@ const PaymentDetails = ({ details }) => {
         </li>
         <li className="d-flex justify-content-between">
           <span>Tax</span>
-          <span>${((transactionFee + subtotal) * 0.1).toFixed(2)}</span>
+          <span>${(subtotal * taxRate).toFixed(2)}</span>
         </li>
         <li className="d-flex justify-content-between">
           <span>
             <strong>Total (Inc. Tax)</strong>
           </span>
-          <span>
-            $
-            {(
-              subtotal +
-              transactionFee +
-              (transactionFee + subtotal) * 0.1
-            ).toFixed(2)}
-          </span>
+          <span>${total.toFixed(2)}</span>
         </li>
-      </List> */}
+      </List>
     </div>
   );
 };
 
 const Cart = () => {
-  let products = useSelector(({ cartDetails }) => cartDetails.products);
-  console.log(products);
+  const dispatch = useDispatch();
+  const products = useSelector(({ cartDetails }) => cartDetails.products);
+  const costs = useSelector(({ cartDetails }) => cartDetails.costs);
+
+  useEffect(() => {
+    dispatch(getCosts());
+  }, [products]);
   return (
     <Col className="col-md-5">
       <div className="bg-white px-4 pt-4 pb-5 rounded ">
@@ -89,9 +88,9 @@ const Cart = () => {
           <p>Your cart is currently empty.</p>
         ) : (
           <>
-            <CartDetails />
+            <CartDetails products={products} />
             <hr />
-            <PaymentDetails />
+            <PaymentDetails costs={costs} />
           </>
         )}
       </div>
