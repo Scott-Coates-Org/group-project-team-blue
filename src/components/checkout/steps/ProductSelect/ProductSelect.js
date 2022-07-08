@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addToCart, reduceQty } from 'redux/cartDetails';
+import { addToCart, reduceQty, removeFromCart } from 'redux/cartDetails';
 import { fetchAllProducts } from 'redux/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -13,10 +13,10 @@ import './productSelect.css';
 
 const AccordionItem = ({ ...props }) => {
   const dispatch = useDispatch();
+  const [time, setTime] = useState();
   const [quant, setQuant] = useState(0);
-  const { id, title, photo, desc, price, duration } = props;
+  const { id, title, photo, desc, price, duration, type } = props;
   const [open, setOpen] = useState(false);
-  console.log(price);
 
   const handleToggle = () => {
     setOpen(!open);
@@ -24,16 +24,20 @@ const AccordionItem = ({ ...props }) => {
   const handleQuantity = () => {
     setQuant(e.target.value);
   };
-
-  const increment = (id, title, price, duration) => {
+  const handleSetTime = (time) => {
+    setTime(time);
+    console.log(time);
+  };
+  const increment = (id, title, price, duration, time, type) => {
     setQuant(quant + 1);
-    console.log(price);
     dispatch(
       addToCart({
         id: id,
         title: title,
         price: price,
+        type: type,
         duration: duration,
+        timeSlot: time,
         quantity: 0,
       })
     );
@@ -42,7 +46,9 @@ const AccordionItem = ({ ...props }) => {
   const decrement = (id) => {
     if (quant > 0) {
       setQuant(quant - 1);
+
       dispatch(reduceQty(id));
+      console.log('current quant', quant);
     }
   };
 
@@ -62,7 +68,9 @@ const AccordionItem = ({ ...props }) => {
       {open ? (
         <div className="pt-3">
           <p>{desc}</p>
-          {duration > 0 ? <TimeSelect duration={duration} /> : null}
+          {duration > 0 ? (
+            <TimeSelect duration={duration} handleSetTime={handleSetTime} />
+          ) : null}
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
@@ -90,7 +98,11 @@ const AccordionItem = ({ ...props }) => {
                 onChange={handleQuantity}
               />
               <div className="input-group-append">
-                <Button onClick={() => increment(id, title, price, duration)}>
+                <Button
+                  onClick={() =>
+                    increment(id, title, price, duration, time, type)
+                  }
+                >
                   +
                 </Button>
               </div>
@@ -123,12 +135,14 @@ const ProductSelect = () => {
         <div>
           <div className="mb-4">
             <div>
-              {products.map(({ id, title, photo, desc, price, duration }) => (
-                <AccordionItem
-                  key={id}
-                  {...{ id, title, photo, desc, price, duration }}
-                />
-              ))}
+              {products.map(
+                ({ id, title, photo, desc, price, duration, type }) => (
+                  <AccordionItem
+                    key={id}
+                    {...{ id, title, photo, desc, price, duration, type }}
+                  />
+                )
+              )}
             </div>
           </div>
         </div>

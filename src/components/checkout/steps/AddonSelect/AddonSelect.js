@@ -22,6 +22,7 @@ const Addon = ({ ...props }) => {
         id: id,
         title: title,
         price: price,
+        type: type,
         duration: null,
         timeSlot: null,
         quantity: 0,
@@ -54,7 +55,7 @@ const Addon = ({ ...props }) => {
           onChange={handleQuantity}
         />
         <div className="input-group-append">
-          <Button onClick={() => increment(id, title, price)}>+</Button>
+          <Button onClick={() => increment(id, title, price, type)}>+</Button>
         </div>
       </InputGroup>
     </div>
