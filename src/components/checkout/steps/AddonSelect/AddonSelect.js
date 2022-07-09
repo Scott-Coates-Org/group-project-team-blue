@@ -33,9 +33,7 @@ const Addon = ({ ...props }) => {
   const decrement = (id) => {
     if (quant > 0) {
       setQuant(quant - 1);
-
       dispatch(reduceQty(id));
-      console.log('current quant', quant);
     }
   };
   return (
