@@ -31,16 +31,25 @@ const cartDetails = createSlice({
         });
       } else {
         state.products = state.products.map((product) => {
-          if (product.id !== action.payload.id) {
-            return product;
+          if (product.id === action.payload.id) {
+            return {
+              ...product,
+              quantity: product.quantity + 1,
+            };
           } else {
-            return { ...product, quantity: product.quantity + 1 };
+            return product;
           }
         });
       }
     },
-    changeBookingTime: (state, action) => {
-      console.log(action.payload);
+    setBookingTime: (state, action) => {
+      state.products = state.products.map((product) => {
+        if (product.id === action.payload.id) {
+          return { ...product, time: action.payload.time };
+        } else {
+          return product;
+        }
+      });
     },
     reduceQty: (state, action) => {
       state.products = state.products.map((product) => {
