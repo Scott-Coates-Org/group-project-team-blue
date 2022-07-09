@@ -8,7 +8,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const CartDetails = ({ products }) => {
   const dispatch = useDispatch();
-  let bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
+  const bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
 
   return (
     <div>
@@ -17,24 +17,36 @@ const CartDetails = ({ products }) => {
       </span>
 
       <List type="unstyled">
-        {products.map(({ quantity, title, price, id }) => (
-          <li key={id} className="d-flex align-items-start">
-            <p>
-              {quantity}
-              <span className="mx-1">x</span>
-              {title}
-            </p>
-            <p className="ml-auto d-flex align-items-center">
-              ${(quantity * price).toFixed(2)}
-              <FontAwesomeIcon
-                role="button"
-                icon={faTrash}
-                className="text-danger ml-2"
-                onClick={() => dispatch(removeFromCart(id))}
-              />
-            </p>
-          </li>
-        ))}
+        {products.map(({ quantity, title, price, id, time, duration }) => {
+          let isAllDay = duration === 0 && time.length === 0;
+          return (
+            <li key={id} className="d-flex align-items-start">
+              <div className="mb-2">
+                <p className="mb-0">
+                  {quantity}
+                  <span className="mx-1">x</span>
+                  {title}
+                </p>
+                {duration > 0 ? (
+                  <small className="mt-0 d-inline-block text-muted">
+                    {!isAllDay && time.length > 0
+                      ? `${time}`
+                      : `Please select a booking time`}
+                  </small>
+                ) : null}
+              </div>
+              <p className="ml-auto d-flex align-items-center">
+                ${(quantity * price).toFixed(2)}
+                <FontAwesomeIcon
+                  role="button"
+                  icon={faTrash}
+                  className="text-danger ml-2"
+                  onClick={() => dispatch(removeFromCart(id))}
+                />
+              </p>
+            </li>
+          );
+        })}
       </List>
     </div>
   );
@@ -82,7 +94,7 @@ const Cart = () => {
 
   return (
     <Col className="col-md-5">
-      <div className="bg-white px-4 pt-4 pb-5 rounded ">
+      <div className="bg-white p-4 rounded ">
         <h2>Your Cart</h2>
         <hr />
         {products.length === 0 ? (
