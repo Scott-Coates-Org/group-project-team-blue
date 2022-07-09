@@ -30,7 +30,7 @@ const CartDetails = ({ products }) => {
                 {duration > 0 ? (
                   <small className="mt-0 d-inline-block text-muted">
                     {!isAllDay && time.length > 0
-                      ? `${time}`
+                      ? `Booking time: ${time}`
                       : `Please select a booking time`}
                   </small>
                 ) : null}
