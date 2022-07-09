@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addToCart, reduceQty, removeFromCart } from 'redux/cartDetails';
+import { addToCart, reduceQty, setBookingTime } from 'redux/cartDetails';
 import { fetchAllProducts } from 'redux/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -13,22 +13,22 @@ import './productSelect.css';
 
 const AccordionItem = ({ ...props }) => {
   const dispatch = useDispatch();
-  const [time, setTime] = useState();
   const [quant, setQuant] = useState(0);
-  const { id, title, photo, desc, price, duration, type } = props;
+  const [time, setTime] = useState('');
+  const { id, title, photo, desc, price, duration, type, room } = props;
   const [open, setOpen] = useState(false);
 
+  const handleSetTime = (id, time) => {
+    setTime(time);
+    dispatch(setBookingTime({ id: id, time: time }));
+  };
   const handleToggle = () => {
     setOpen(!open);
   };
-  const handleQuantity = () => {
+  const handleQuantity = (e) => {
     setQuant(e.target.value);
   };
-  const handleSetTime = (time) => {
-    setTime(time);
-    console.log(time);
-  };
-  const increment = (id, title, price, duration, time, type) => {
+  const increment = (id, title, price, duration, type, time, room) => {
     setQuant(quant + 1);
     dispatch(
       addToCart({
@@ -37,8 +37,9 @@ const AccordionItem = ({ ...props }) => {
         price: price,
         type: type,
         duration: duration,
-        timeSlot: time,
+        time: time,
         quantity: 0,
+        room: room,
       })
     );
   };
@@ -46,9 +47,7 @@ const AccordionItem = ({ ...props }) => {
   const decrement = (id) => {
     if (quant > 0) {
       setQuant(quant - 1);
-
       dispatch(reduceQty(id));
-      console.log('current quant', quant);
     }
   };
 
@@ -69,7 +68,11 @@ const AccordionItem = ({ ...props }) => {
         <div className="pt-3">
           <p>{desc}</p>
           {duration > 0 ? (
-            <TimeSelect duration={duration} handleSetTime={handleSetTime} />
+            <TimeSelect
+              duration={duration}
+              id={id}
+              handleSetTime={handleSetTime}
+            />
           ) : null}
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
@@ -93,14 +96,14 @@ const AccordionItem = ({ ...props }) => {
               </div>
               <Input
                 className="text-center"
-                placeholder={quant}
+                min="0"
                 value={quant}
                 onChange={handleQuantity}
               />
               <div className="input-group-append">
                 <Button
                   onClick={() =>
-                    increment(id, title, price, duration, time, type)
+                    increment(id, title, price, duration, type, time, room)
                   }
                 >
                   +
@@ -123,12 +126,10 @@ const ProductSelect = () => {
   useEffect(() => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
-
-  // Use isLoaded to show or hide spinner whilst product data loads
   return (
     <WizardStep stepHeader="Select your products">
       {!isLoaded ? (
-        <div className="py-3 w-100 d-flex justify-content-center">
+        <div className="py-3 w-100 d-flex my-4 justify-content-center">
           <Spinner color="primary" />
         </div>
       ) : (
@@ -136,10 +137,10 @@ const ProductSelect = () => {
           <div className="mb-4">
             <div>
               {products.map(
-                ({ id, title, photo, desc, price, duration, type }) => (
+                ({ id, title, photo, desc, price, duration, type, room }) => (
                   <AccordionItem
                     key={id}
-                    {...{ id, title, photo, desc, price, duration, type }}
+                    {...{ id, title, photo, desc, price, duration, type, room }}
                   />
                 )
               )}
