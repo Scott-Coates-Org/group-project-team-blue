@@ -26,6 +26,15 @@ const cartDetails = createSlice({
     setBookingDate: (state, action) => {
       state.bookingDate = action.payload;
     },
+    setBookingTime: (state, action) => {
+      state.products = state.products.map((product) => {
+        if (product.id === action.payload.id) {
+          return { ...product, time: action.payload.time };
+        } else {
+          return product;
+        }
+      });
+    },
     addToCart: (state, action) => {
       if (
         state.products.find((product) => product.id === action.payload.id) ==
@@ -48,22 +57,24 @@ const cartDetails = createSlice({
         });
       }
     },
-    setBookingTime: (state, action) => {
-      state.products = state.products.map((product) => {
-        if (product.id === action.payload.id) {
-          return { ...product, time: action.payload.time };
-        } else {
-          return product;
-        }
-      });
-    },
     reduceQty: (state, action) => {
-      state.products = state.products.map((product) => {
-        if (product.id === action.payload) {
-          return { ...product, quantity: product.quantity - 1 };
-        }
-        return product;
-      });
+      const productToRemove = state.products.find(
+        (product) => product.id === action.payload
+      );
+
+      if (productToRemove.quantity > 0) {
+        state.products = state.products.map((product) => {
+          if (product.id === action.payload) {
+            return { ...product, quantity: product.quantity - 1 };
+          }
+          return product;
+        });
+      }
+      if (productToRemove.quantity === 1) {
+        state.products = state.products.filter(
+          (product) => product.id !== action.payload
+        );
+      }
     },
     removeFromCart: (state, action) => {
       state.products = state.products.filter(
@@ -80,7 +91,7 @@ export const {
   getCosts,
   setBookingDate,
   setBookingTime,
-  addToCart,
   reduceQty,
+  addToCart,
   removeFromCart,
 } = cartDetails.actions;
