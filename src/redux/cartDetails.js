@@ -7,8 +7,14 @@ const cartDetails = createSlice({
     products: [],
     costs: { subtotal: 0, total: 0 },
     contactDetails: [],
+    headcount: 0,
   },
   reducers: {
+    getHeadcount: (state, action) => {
+      state.headcount = state.products
+        .filter((product) => product.type === 'product')
+        .reduce((total, { quantity }) => total + quantity, 0);
+    },
     getCosts: (state, action) => {
       let productSubtotal = state.products.reduce(
         (subtotal, { price, quantity }) => subtotal + price * quantity,
@@ -70,6 +76,7 @@ const cartDetails = createSlice({
 export const reducer = cartDetails.reducer;
 
 export const {
+  getHeadcount,
   getCosts,
   setBookingDate,
   setBookingTime,
