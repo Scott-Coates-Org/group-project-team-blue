@@ -9,7 +9,7 @@
     padding: 8px;
   }
   
-  .mytable tr:nth-child(even){background-color: #f2f2f2;}
+  /* .mytable tr:nth-child(even){background-color: #f2f2f2;} */
   
   .mytable tr:hover {background-color: #ddd;}
   
@@ -17,6 +17,8 @@
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #343a40;
-    color: white;
+    background-color: #f2f2f2;
+    color: black;
+    position: sticky;
+    top: 0;
   }

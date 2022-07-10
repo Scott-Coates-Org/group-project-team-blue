@@ -39,6 +39,16 @@ export default function BookingList() {
   return (
     <>
     <BookingView filter={globalFilter} setFilter={setGlobalFilter}/>
+    <div className="d-flex justify-content-start mb-5">
+      <div className="mr-5">
+        <h5 className="mb-0">$ 100,000</h5>
+        <span>Sales</span>
+      </div>
+      <div>
+        <h5 className="mb-0">435</h5>
+        <span>Tickets</span>
+      </div>
+    </div>
     <table className="mytable" {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => {
@@ -82,7 +92,7 @@ export default function BookingList() {
         <ButtonGroup>
           {[5,10,15].map((pageSize) => {
             return (
-              <Button onClick={() => setPageSize(pageSize)}>{pageSize}</Button>
+              <Button className="btn-light border " onClick={() => setPageSize(pageSize)}>{pageSize}</Button>
             )
           })}
         </ButtonGroup>
@@ -100,16 +110,16 @@ export default function BookingList() {
           Page {" "}<strong>{pageIndex +1 } of {pageOptions.length}</strong>
         </span>
         <ButtonGroup className="ml-2">
-          <Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          <Button className="btn-light border" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {"<<"}
           </Button>
-          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          <Button className="btn-light border" onClick={() => previousPage()} disabled={!canPreviousPage}>
             Prev
           </Button>
-          <Button onClick={() => nextPage()} disabled={!canNextPage}>
+          <Button className="btn-light border"onClick={() => nextPage()} disabled={!canNextPage}>
             Next
           </Button>
-          <Button onClick={() => gotoPage(pageCount-1)} disabled={!canNextPage}>
+          <Button className="btn-light border " onClick={() => gotoPage(pageCount-1)} disabled={!canNextPage}>
             {">>"}
           </Button>
         </ButtonGroup>

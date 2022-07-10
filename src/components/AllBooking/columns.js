@@ -5,22 +5,22 @@ export const COLUMNS = [
     },
     {
         Header: "BOOKING DATE",
-        accessor: "CustomerID"
+        accessor: "BookingDate"
     },
     {
         Header: "SESSION TIME",
-        accessor: "OrderDate"
+        accessor: "SessionTime"
     },
     {
         Header: "HEADCOUNT",
-        accessor: "Freight"
+        accessor: "HeadCount"
     },
     {
         Header: "AMOUNT",
-        accessor: "ShipRegion"
+        accessor: "Amount"
     },
     {
         Header: "BOOKING NAME",
-        accessor: "ShipCountry"
+        accessor: "ShipName"
     },
 ]
