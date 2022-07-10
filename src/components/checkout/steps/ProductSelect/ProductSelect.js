@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { addToCart, reduceQty, setBookingTime } from 'redux/cartDetails';
 import { fetchAllProducts } from 'redux/product';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -11,24 +12,42 @@ import 'react-calendar/dist/Calendar.css';
 import './productSelect.css';
 
 const AccordionItem = ({ ...props }) => {
+  const dispatch = useDispatch();
   const [quant, setQuant] = useState(0);
-  const { title, photo, desc, price, duration } = props;
+  const [time, setTime] = useState('');
+  const { id, title, photo, desc, price, duration, type, room } = props;
   const [open, setOpen] = useState(false);
+
+  const handleSetTime = (id, time) => {
+    setTime(time);
+    dispatch(setBookingTime({ id: id, time: time }));
+  };
   const handleToggle = () => {
     setOpen(!open);
   };
-
-  const handleQuantity = () => {
+  const handleQuantity = (e) => {
     setQuant(e.target.value);
   };
-
-  const increment = () => {
+  const increment = (id, title, price, duration, type, time, room) => {
     setQuant(quant + 1);
+    dispatch(
+      addToCart({
+        id: id,
+        title: title,
+        price: price,
+        type: type,
+        duration: duration,
+        time: time,
+        quantity: 0,
+        room: room,
+      })
+    );
   };
 
-  const decrement = () => {
+  const decrement = (id) => {
     if (quant > 0) {
       setQuant(quant - 1);
+      dispatch(reduceQty(id));
     }
   };
 
@@ -48,7 +67,13 @@ const AccordionItem = ({ ...props }) => {
       {open ? (
         <div className="pt-3">
           <p>{desc}</p>
-          {duration > 0 ? <TimeSelect duration={duration} /> : null}
+          {duration > 0 ? (
+            <TimeSelect
+              duration={duration}
+              id={id}
+              handleSetTime={handleSetTime}
+            />
+          ) : null}
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex flex-column flex-sm-row flex-grow-1 w-100">
               <span className="font-weight-bold d-block d-md-inline mr-auto">
@@ -67,16 +92,22 @@ const AccordionItem = ({ ...props }) => {
             </div>
             <InputGroup className="align-self-md-end product-checkout-quantity">
               <div className="input-group-prepend">
-                <Button onClick={decrement}>-</Button>
+                <Button onClick={() => decrement(id)}>-</Button>
               </div>
               <Input
                 className="text-center"
-                placeholder={quant}
+                min="0"
                 value={quant}
                 onChange={handleQuantity}
               />
               <div className="input-group-append">
-                <Button onClick={increment}>+</Button>
+                <Button
+                  onClick={() =>
+                    increment(id, title, price, duration, type, time, room)
+                  }
+                >
+                  +
+                </Button>
               </div>
             </InputGroup>
           </div>
@@ -95,45 +126,45 @@ const ProductSelect = () => {
   useEffect(() => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
-
-  // Use isLoaded to show or hide spinner whilst product data loads
   return (
     <WizardStep stepHeader="Select your products">
       {!isLoaded ? (
-        <div className="py-3 w-100 d-flex justify-content-center">
+        <div className="py-3 w-100 d-flex my-4 justify-content-center">
           <Spinner color="primary" />
         </div>
       ) : (
         <div>
           <div className="mb-4">
             <div>
-              {products.map(({ id, title, photo, desc, price, duration }) => (
-                <AccordionItem
-                  key={id}
-                  {...{ title, photo, desc, price, duration }}
-                />
-              ))}
+              {products.map(
+                ({ id, title, photo, desc, price, duration, type, room }) => (
+                  <AccordionItem
+                    key={id}
+                    {...{ id, title, photo, desc, price, duration, type, room }}
+                  />
+                )
+              )}
             </div>
-          </div>
-          <div className="d-flex">
-            <Button
-              color="secondary"
-              onClick={() => previousStep()}
-              className={'flex-grow-1 w-50 mr-2'}
-              outline
-            >
-              Back
-            </Button>
-            <Button
-              color="warning"
-              onClick={() => nextStep()}
-              className="flex-grow-1 w-75"
-            >
-              Continue
-            </Button>
           </div>
         </div>
       )}
+      <div className="d-flex">
+        <Button
+          color="secondary"
+          onClick={() => previousStep()}
+          className={'flex-grow-1 w-50 mr-2'}
+          outline
+        >
+          Back
+        </Button>
+        <Button
+          color="warning"
+          onClick={() => nextStep()}
+          className="flex-grow-1 w-75"
+        >
+          Continue
+        </Button>
+      </div>
     </WizardStep>
   );
 };

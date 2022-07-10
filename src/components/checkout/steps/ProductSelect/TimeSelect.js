@@ -9,18 +9,18 @@ const generateTimeBlocks = (duration) => {
   const parseTime = (hh, timeOfDay) => {
     const min = ((hh * 10) % 10) / 10;
     const hour = hh - min;
-    const time = `${hour}:${min * 6}0${timeOfDay}`;
+    const time = `${hour}:${min * 6}0`;
     times.push(time);
   };
 
   if (duration === 60) {
     for (let i = startTime; i < 20; i++) {
       if (i < 12) {
-        parseTime(i, 'am');
+        parseTime(i);
       } else if (i === 12) {
-        parseTime(i, 'pm');
+        parseTime(i);
       } else {
-        parseTime(i, 'pm');
+        parseTime(i);
       }
     }
   }
@@ -28,35 +28,42 @@ const generateTimeBlocks = (duration) => {
   if (duration === 90) {
     for (let i = startTime; i < 19; i += 1.5) {
       if (i < 12) {
-        parseTime(i, 'am');
+        parseTime(i);
       } else if (i === 12) {
-        parseTime(i, 'pm');
+        parseTime(i);
       } else {
-        parseTime(i, 'pm');
+        parseTime(i);
       }
     }
   }
   if (duration === 120) {
     for (let i = startTime; i < 20; i += 2) {
       if (i < 12) {
-        parseTime(i, 'am');
+        parseTime(i);
       } else if (i === 12) {
-        parseTime(i, 'pm');
+        parseTime(i);
       } else {
-        parseTime(i, 'pm');
+        parseTime(i);
       }
     }
   }
   return times;
 };
-const TimeSelect = ({ duration }) => {
+const TimeSelect = ({ duration, id, handleSetTime }) => {
   const sessions = generateTimeBlocks(duration);
+
   return (
     <>
       <p className="font-weight-bold">Session time</p>
-      <div className="d-flex flex-wrap mb-3">
+      <div role="group" data-toggle="buttons" className="d-flex flex-wrap mb-3">
         {sessions.map((time) => (
-          <Button key={time} data-time={time} className="mr-1 mb-1" outline>
+          <Button
+            data-toggle="button"
+            key={time}
+            className="mr-1 mb-1"
+            onClick={() => handleSetTime(id, time)}
+            outline
+          >
             {time}
           </Button>
         ))}

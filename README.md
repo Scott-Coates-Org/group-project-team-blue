@@ -52,3 +52,16 @@ Try This
 Website URL: https://team-blue-8951b.web.app
 
 We **will** be using issues for the group project. Go to the issues list to manage your progress.
+
+# Requirements
+
+## Restrictions
+
+**Bookings**
+
+- Cannot book on a non-working day
+- Cannot book at a non-working hour (Last timeslot should be: Closing time - smallest product by time)
+- Cannot book a product that expires after close of day
+- Cannot book a product at a time if capacity has been met (i.e. room capacity - current bookings < desired quantity)
+- Date & Times that are fully booked should not be displayed
+- Admin: Open/Closing times should be restricted to 15min intervals

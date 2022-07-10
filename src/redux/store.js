@@ -15,6 +15,7 @@ const reducer = combineReducers({
   room,
   opentime,
   customer,
+  cartDetails,
 });
 
 const store = configureStore({
