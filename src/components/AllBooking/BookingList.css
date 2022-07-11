@@ -22,3 +22,8 @@
     position: sticky;
     top: 0;
   }
+
+/*test*/
+#extra {
+  display: none;
+}

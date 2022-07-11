@@ -35,6 +35,12 @@ export default function BookingList() {
 
   const { globalFilter, pageIndex, pageSize } = state;
 
+  // const handleClick = () => {
+  //   const element = document.getElementById('extra');
+  //   element.style.display = 'block';
+  //   console.log('clicked')
+  // }
+
 
   return (
     <>
@@ -77,6 +83,7 @@ export default function BookingList() {
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
                 return(
+                
                 <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 )
               })}

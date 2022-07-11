@@ -10,6 +10,7 @@ import CreateRoom from "components/rooms/CreateRoom";
 import AdminBooking from "components/AdminBooking/AdminBooking";
 import BookingView from "components/AllBooking/BookingView";
 import BookingList from "components/AllBooking/BookingList";
+import BookingDetails from "components/AllBooking/BookingDetails";
 
 const Dashboard = (props) => {
   return (
@@ -29,11 +30,14 @@ const Dashboard = (props) => {
             <Route path="/admin/createproduct">
               <CreateProduct />
             </Route>
-            <Route path="/admin/createbooking">
+            <Route path="/admin/createopentime">
               <AdminBooking />
             </Route>
-            <Route path="/admin/bookings">
+            <Route exact path="/admin/bookings">
               <BookingList />
+            </Route>
+            <Route path="/admin/bookings/:id">
+              <BookingDetails />
             </Route>
             <Route path="/admin/rooms">
               <RoomList />
