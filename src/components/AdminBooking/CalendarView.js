@@ -16,12 +16,9 @@ export default function CalendarView() {
     const dispatch = useDispatch();
     const {data, isLoaded, hasErrors} = useSelector((state) => state.room)
     const {data: timedata, isLoaded: timeisLoaded, hasErrors: timehasErrors} = useSelector((state) => state.opentime)
-    // console.log(timedata)
-    // console.log(data)
 
     useEffect(() => {
         dispatch(fetchAllRooms());
-        // dispatch(fetchOpenTimes());
         const mydate = format(startdate, "yyyy-MM-dd")
         firebase.firestore().collection('opentime').where("date", "==", mydate).get()
         .then((collections) => {
@@ -39,12 +36,7 @@ export default function CalendarView() {
     const closeHour = new Date(`${date}T${close}:00Z`)
     const totalOpenTime = closeHour.getTime() - openHour.getTime()
     const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
-    
-    // let openDateObj = new Date(parseInt(dateArr[0]),parseInt(dateArr[1])-1,parseInt(dateArr[2]),parseInt(opentimeArr[0]),parseInt(opentimeArr[1]))
-    // let closeDateObj = new Date(parseInt(dateArr[0]),parseInt(dateArr[1])-1,parseInt(dateArr[2]),parseInt(closetimeArr[0]),parseInt(closetimeArr[1]))
-    // const totaltime = closeDateObj - openDateObj;
-    // console.log(totaltime)
-    // let noOfCells = parseInt(close?.split(':')[0]) - parseInt(open?.split(':')[0]);
+
     for (let i=0; i < noOfCells; i++ ) {
         cell.push(i);
     }
