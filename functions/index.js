@@ -6,6 +6,11 @@ const {Stripe} = require("stripe");
 const stripe = new Stripe(functions.config().stripe.secret, {
   apiVersion: "2020-08-27",
 });
+const stripeWebhook = require("stripe")(functions.config().keys.webhooks);
+const endpointSecret = functions.config().keys.signing;
+
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(functions.config().sendgrid.api);
 
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
   const fullName = `${data.firstName} ${data.lastName}`;
@@ -46,4 +51,51 @@ exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
   return {
     clientSecret: paymentIntent.client_secret,
   };
+});
+
+exports.events = functions.https.onRequest((request, response) => {
+  const sig = request.headers["stripe-signature"];
+
+  try {
+    // Validate the request
+    const event = stripeWebhook.webhooks
+        .constructEvent(request.rawBody, sig, endpointSecret);
+
+    // Add the event to the database
+    return admin.database().ref("/events").push(event)
+        .then((snapshot) => {
+        // Return a successful response to
+        // acknowledge the event was processed successfully
+          return response.json({
+            received: true, ref: snapshot.ref.toString(),
+          });
+        })
+        .catch((err) => {
+        // Catch any errors saving to the database
+          console.error(err);
+          return response.status(500).end();
+        });
+  } catch (err) {
+    // Signing signature failure, return an error 400
+    return response.status(400).end();
+  }
+});
+
+exports.sendEmail = functions.https.onCall(async (data, context) => {
+  const msg = {
+    to: "alechooyman@gmail.com", // Change to your recipient
+    from: "mentorshipteamblue@gmail.com", // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+  };
+
+  sgMail
+      .send(msg)
+      .then(() => {
+        console.log("Email sent");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 });
