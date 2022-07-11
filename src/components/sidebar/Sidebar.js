@@ -36,6 +36,10 @@ const sidebarItems = [
                 text: 'Create bookings',
                 path: '/admin/createbooking'
             },
+            {
+                text: 'Calendar View',
+                path: '/admin/calendarview'
+            },
         ]
     },
     
