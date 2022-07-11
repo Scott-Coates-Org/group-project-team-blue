@@ -33,8 +33,8 @@ const sidebarItems = [
                 path: '/admin/bookings'
             },
             {
-                text: 'Create bookings',
-                path: '/admin/createbooking'
+                text: 'Create Opentimes',
+                path: '/admin/createopentime'
             },
             {
                 text: 'Calendar View',
