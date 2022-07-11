@@ -7,7 +7,7 @@ import Logout from "components/user/logout";
 import Checkout from "components/checkout/Checkout";
 import { firebase } from "firebase/client";
 import { createBrowserHistory } from "history";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { Route, Router, Switch } from "react-router-dom";
 import store from "redux/store";
@@ -16,6 +16,15 @@ import ErrorBoundary from "components/error-boundary";
 import Dashboard from "./dashboard/Dashboard";
 import CreateProduct from "./products/CreateProduct";
 import ProductList from "./products/ProductList";
+import Stripe from "./stripe/Stripe";
+import SendGrid from "./sendgrid/SendGrid";
+
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+require("firebase/functions");
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
@@ -39,6 +48,18 @@ function App() {
 
   const dispatch = useDispatch();
 
+  const [clientSecret, setClientSecret] = useState("");
+
+  useEffect(() => {
+    const createPaymentIntent = firebase
+      .functions()
+      .httpsCallable("createPaymentIntent");
+
+    createPaymentIntent().then((result) =>
+      setClientSecret(result.data.clientSecret)
+    );
+  }, []);
+
   useEffect(() => {
     dispatch(getData());
   }, []);
@@ -49,6 +70,11 @@ function App() {
     const userData = { ...providerData, uid: user.uid };
 
     dispatch(getDataSuccess(userData));
+  };
+
+  const options = {
+    // passing the client secret obtained from the server
+    clientSecret: clientSecret,
   };
 
   const appElement = (
@@ -69,11 +95,23 @@ function App() {
               )}
             />
             <Route exact path="/" render={() => <Home />} />
-            <Route exact path="/createproduct" render={() => <CreateProduct />} />
+            <Route
+              exact
+              path="/createproduct"
+              render={() => <CreateProduct />}
+            />
             <Route path="/checkout" render={() => <Checkout />} />
+            <Route path="/sendgrid" render={() => <SendGrid />} />
+            {clientSecret && (
+              <Elements options={options} stripe={stripePromise}>
+                <Route
+                  path="/stripe"
+                  render={() => <Stripe props={clientSecret} />}
+                />
+              </Elements>
+            )}
             {/* this must be on the bottom */}
             <ProtectedRoute path="/admin" component={Dashboard} {...props} />
-              
           </Switch>
         </Router>
       </AuthProvider>

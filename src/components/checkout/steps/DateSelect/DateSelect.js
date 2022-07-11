@@ -1,6 +1,8 @@
 import { Button } from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { setBookingDate } from 'redux/cartDetails';
 import { useWizard } from 'react-use-wizard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import WizardStep from 'components/checkout/WizardStep';
 import 'react-calendar/dist/Calendar.css';
@@ -8,7 +10,16 @@ import './dateSelect.css';
 
 const DateSelect = () => {
   const { nextStep } = useWizard();
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(new Date());
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setBookingDate(
+        `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
+      )
+    );
+  }, [date]);
 
   return (
     <WizardStep stepHeader="Select a date">

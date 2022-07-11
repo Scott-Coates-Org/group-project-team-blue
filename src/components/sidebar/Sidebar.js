@@ -36,6 +36,10 @@ const sidebarItems = [
                 text: 'Create Opentimes',
                 path: '/admin/createopentime'
             },
+            {
+                text: 'Calendar View',
+                path: '/admin/calendarview'
+            },
         ]
     },
     

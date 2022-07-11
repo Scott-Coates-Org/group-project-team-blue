@@ -112,3 +112,33 @@ body {
     hsl(162deg 88% 48%) 100%
   );
 }
+
+.bubble {
+  position: absolute;
+  font-family: 'Concert One', sans-serif;
+  font-size: 28px;
+  line-height: 30px;
+  height: min-content;
+  background: #fff;
+  border-radius: 40px;
+  padding: 0.2rem 1rem 1rem 1rem;
+  text-align: center;
+  font-weight: bold;
+  color: #000;
+  top: 45px;
+  left: -25px;
+}
+
+.bubble-bottom-left:before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  border-left: 32px solid #fff;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #fff;
+  border-bottom: 28px solid transparent;
+  right: 0;
+  bottom: -10px;
+  transform: rotate(60deg);
+}
