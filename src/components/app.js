@@ -17,9 +17,12 @@ import Dashboard from "./dashboard/Dashboard";
 import CreateProduct from "./products/CreateProduct";
 import ProductList from "./products/ProductList";
 import Stripe from "./stripe/Stripe";
+import SendGrid from "./sendgrid/SendGrid";
 
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+
+require("firebase/functions");
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -97,6 +100,7 @@ function App() {
               render={() => <CreateProduct />}
             />
             <Route path="/checkout" render={() => <Checkout />} />
+            <Route path="/sendgrid" render={() => <SendGrid />} />
             {clientSecret && (
               <Elements options={options} stripe={stripePromise}>
                 <Route
