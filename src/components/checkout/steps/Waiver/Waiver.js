@@ -1,6 +1,6 @@
 import { useWizard } from 'react-use-wizard';
 import { Button } from 'reactstrap';
-import WizardStep from 'components/checkout/WizardStep';
+import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 
 const Waiver = () => {
   const { nextStep, previousStep } = useWizard();

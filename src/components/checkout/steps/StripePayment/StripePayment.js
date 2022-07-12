@@ -1,8 +1,8 @@
 import { useWizard } from 'react-use-wizard';
 import { Button } from 'reactstrap';
-import WizardStep from '../WizardStep';
+import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 
-const PaymentDetails = () => {
+const StripePayment = () => {
   const { previousStep } = useWizard();
   return (
     <WizardStep stepHeader="Select payment details">
@@ -23,4 +23,4 @@ const PaymentDetails = () => {
   );
 };
 
-export default PaymentDetails;
+export default StripePayment;

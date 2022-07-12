@@ -5,7 +5,7 @@ import { fetchAllProducts } from 'redux/product';
 import { useWizard } from 'react-use-wizard';
 import { Button, Spinner, InputGroup, Input } from 'reactstrap';
 import socks from 'assets/socks.jpeg';
-import WizardStep from '../../WizardStep';
+import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 
 const Addon = ({ ...props }) => {
   let { id, title, price, type } = props;

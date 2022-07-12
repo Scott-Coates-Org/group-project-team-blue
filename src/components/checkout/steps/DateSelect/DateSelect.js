@@ -4,7 +4,7 @@ import { setBookingDate } from 'redux/cartDetails';
 import { useWizard } from 'react-use-wizard';
 import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
-import WizardStep from 'components/checkout/WizardStep';
+import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 import 'react-calendar/dist/Calendar.css';
 import './dateSelect.css';
 
