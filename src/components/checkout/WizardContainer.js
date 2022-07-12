@@ -4,7 +4,8 @@ import WizardHeader from './WizardHeader';
 import DateSelect from './steps/DateSelect/DateSelect';
 import ProductSelect from './steps/ProductSelect/ProductSelect';
 import AddonSelect from './steps/AddonSelect/AddonSelect';
-import ContactDetails from './steps/ContactDetails';
+import ContactDetails from './steps/ContactDetails/ContactDetails';
+import Waiver from './steps/Waiver/Waiver';
 import PaymentDetails from './steps/PaymentDetails';
 
 const WizardContainer = () => {
@@ -18,6 +19,7 @@ const WizardContainer = () => {
           <ProductSelect />
           <AddonSelect />
           <ContactDetails />
+          <Waiver />
           <PaymentDetails />
         </Wizard>
       </div>
