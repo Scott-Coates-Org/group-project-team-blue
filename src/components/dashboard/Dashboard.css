@@ -18,8 +18,7 @@ body {
   margin-right: 0;
 }
 
-.sidebar,
-.content {
+.sidebar {
   overflow-y: scroll;
   height: 100%;
 }
@@ -43,6 +42,10 @@ body {
 /* .sidebar {
     min-width: 200px;
 } */
-.content {
+/* .content {
   overflow-x: scroll;
+} */
+
+.list-group-item {
+  cursor: pointer;
 }

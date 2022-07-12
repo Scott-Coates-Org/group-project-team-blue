@@ -1,0 +1,41 @@
+.cell {
+    width: 100px;
+    height: 75px;
+    visibility:hidden;
+}
+ 
+td:hover {
+    background-color: lightgray;
+    
+}
+td:hover .cell {
+    visibility: visible;
+}
+
+.section {
+    overflow-x: scroll;
+    overflow-y: scroll;
+    height: 100%;
+  }
+
+.tableh {
+    position: sticky;
+    top: 0;
+}
+
+tbody:before {
+    line-height:1em;
+    content:"-";
+    color:white; /* to hide text */
+    display:block;
+}
+
+.table-bordered thead th {
+    border: none;
+    border-color: white;
+    background-color: lightgrey;
+}
+
+.fs-6 {
+    font-size: 0.75rem;
+}
