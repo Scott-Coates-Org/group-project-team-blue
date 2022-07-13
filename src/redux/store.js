@@ -7,6 +7,7 @@ import { reducer as product } from "./product";
 import { reducer as room } from "./room";
 import { reducer as opentime } from "./opentime";
 import { reducer as customer } from "./customer";
+import {reducer as cartDetails } from "./cartDetails"
 
 const reducer = combineReducers({
   user,
@@ -15,7 +16,7 @@ const reducer = combineReducers({
   room,
   opentime,
   customer,
-  //cartDetails,
+  cartDetails,
 });
 
 const store = configureStore({

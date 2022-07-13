@@ -8,14 +8,19 @@ import "./CalendarView.css"
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllRooms } from 'redux/room';
 import { fetchOpenTimes, getDataSuccess } from 'redux/opentime';
-import { format, millisecondsToMinutes, minutesToSeconds, secondsToHours } from 'date-fns';
+import { format, millisecondsToMinutes, minutesToSeconds, secondsToHours, secondsToMinutes } from 'date-fns';
 import { firebase } from 'firebase/client';
+import BOOKING from "../datasrc.json"
+import { createDraftSafeSelector } from '@reduxjs/toolkit';
+import CalendarCell from './CalendarCell';
 
 export default function CalendarView() {
     const [startdate, setStartDate] = useState(new Date());
     const dispatch = useDispatch();
     const {data, isLoaded, hasErrors} = useSelector((state) => state.room)
     const {data: timedata, isLoaded: timeisLoaded, hasErrors: timehasErrors} = useSelector((state) => state.opentime)
+    const { data: productdata } = useSelector((state) => state.product)
+    // console.log(productdata)
 
     useEffect(() => {
         dispatch(fetchAllRooms());
@@ -38,16 +43,27 @@ export default function CalendarView() {
     const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
 
     for (let i=0; i < noOfCells; i++ ) {
-        cell.push(i);
+        cell.push(eachCellTime(open, i));
     }
-    const headers = cell.slice(0, Math.round(cell.length / 2))
+    const headers = cell.filter((value, index) => index % 2 == 0)
+    console.log(headers)
 
-    function timeadd(time, plus) {
-        let hr = parseInt(time?.split(':')[0]);
+    // function timeadd(time, plus) {
+    //     let hr = time?.split(':')[0];
+    //     let min = time?.split(':')[1];
+    //     let inseconds = hoursToSeconds(hr) + minutesToSeconds(min) + plus*3600;
+    //     let newtime = secondsToHours(inseconds)
+    //     return newtime + `:${min}`
+    // }
+    function eachCellTime(time, plus) {
+        let hr = time?.split(':')[0];
         let min = time?.split(':')[1];
-        let inseconds = hoursToSeconds(hr) + minutesToSeconds(min) + plus*3600;
+        let inseconds = hoursToSeconds(hr) + minutesToSeconds(min) + plus * 1800;
         let newtime = secondsToHours(inseconds)
-        return newtime + `:${min}`
+        if (inseconds % 3600 != 0) {
+            return newtime +":"+ secondsToMinutes(inseconds % 3600)
+        }
+        return newtime+ ':00'
     }
 
     return (
@@ -69,15 +85,14 @@ export default function CalendarView() {
                 <thead>
                     <tr>
                         <th className='tableh'></th>
-                        {headers.map((num) => {
+                        {headers.map((value) => {
                             return (
-                                <th className='tableh p-0' colSpan='2'>{timeadd(open, num)}</th>
+                                <th className='tableh p-0' colSpan='2'>{value}</th>
                             )
                         })}
                     </tr>
                 </thead>
-                
-                
+
                 <tbody>
                     {data.map((room) => {
 
@@ -87,7 +102,7 @@ export default function CalendarView() {
                         {cell.map((value, index) => {
                             return (
                                 <React.Fragment key={value}>
-                                <td className="p-0"><div className="cell">content</div></td>
+                                    <CalendarCell />
                                 </React.Fragment>
                             )
                         } )}

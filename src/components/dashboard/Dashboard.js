@@ -32,6 +32,8 @@ const Dashboard = (props) => {
               <CreateProduct />
             </Route>
             <Route path="/admin/createopentime">
+              <AdminBooking/>
+            </Route>
             <Route path="/admin/calendarview">
               <CalendarView />
             </Route>
