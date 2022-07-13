@@ -1,15 +1,15 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 admin.initializeApp();
 
-const { Stripe } = require('stripe');
+const {Stripe} = require("stripe");
 const stripe = new Stripe(functions.config().stripe.secret, {
-  apiVersion: '2020-08-27',
+  apiVersion: "2020-08-27",
 });
-const stripeWebhook = require('stripe')(functions.config().keys.webhooks);
+const stripeWebhook = require("stripe")(functions.config().keys.webhooks);
 const endpointSecret = functions.config().keys.signing;
 
-const sgMail = require('@sendgrid/mail');
+const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(functions.config().sendgrid.api);
 
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
@@ -19,16 +19,16 @@ exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
     email: data.email,
     phone: data.phone,
   });
-  const intent = await stripe.setupIntents.create({ customer: customer.id });
-  await admin.firestore().collection('stripe_customers').add({
+  const intent = await stripe.setupIntents.create({customer: customer.id});
+  await admin.firestore().collection("stripe_customers").add({
     customer_id: customer.id,
     setup_secret: intent.client_secret,
   });
   const snapshot = await admin
-    .firestore()
-    .collection('stripe_customers')
-    .where('customer_id', '==', customer.id)
-    .get();
+      .firestore()
+      .collection("stripe_customers")
+      .where("customer_id", "==", customer.id)
+      .get();
   const snap = snapshot.docs[0].id;
   return {
     customerID: customer.id,
@@ -45,20 +45,13 @@ exports.calculateOrderAmount = functions.https.onCall(async (data, context) => {
 });
 
 exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
-  // const {items} = data;
   const paymentIntent = await stripe.paymentIntents.create({
     // amount: calculateOrderAmount(items),
     amount: 1400,
-    currency: 'usd',
+    currency: "usd",
     automatic_payment_methods: {
       enabled: true,
     },
-  });
-
-  console.log('payment data', data);
-
-  await admin.firestore().collection('bookings').add({
-    test: 'test',
   });
 
   return {
@@ -67,34 +60,34 @@ exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
 });
 
 exports.events = functions.https.onRequest((request, response) => {
-  const sig = request.headers['stripe-signature'];
+  const sig = request.headers["stripe-signature"];
 
   try {
     // Validate the request
     const event = stripeWebhook.webhooks.constructEvent(
-      request.rawBody,
-      sig,
-      endpointSecret
+        request.rawBody,
+        sig,
+        endpointSecret,
     );
 
     // Add the event to the database
     return admin
-      .database()
-      .ref('/events')
-      .push(event)
-      .then((snapshot) => {
+        .database()
+        .ref("/events")
+        .push(event)
+        .then((snapshot) => {
         // Return a successful response to
         // acknowledge the event was processed successfully
-        return response.json({
-          received: true,
-          ref: snapshot.ref.toString(),
-        });
-      })
-      .catch((err) => {
+          return response.json({
+            received: true,
+            ref: snapshot.ref.toString(),
+          });
+        })
+        .catch((err) => {
         // Catch any errors saving to the database
-        console.error(err);
-        return response.status(500).end();
-      });
+          console.error(err);
+          return response.status(500).end();
+        });
   } catch (err) {
     // Signing signature failure, return an error 400
     return response.status(400).end();
@@ -103,19 +96,19 @@ exports.events = functions.https.onRequest((request, response) => {
 
 exports.sendEmail = functions.https.onCall(async (data, context) => {
   const msg = {
-    to: 'alechooyman@gmail.com', // Change to your recipient
-    from: 'mentorshipteamblue@gmail.com', // Change to your verified sender
-    subject: 'Sending with SendGrid is Fun',
-    text: 'and easy to do anywhere, even with Node.js',
-    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    to: "alechooyman@gmail.com", // Change to your recipient
+    from: "mentorshipteamblue@gmail.com", // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    html: "<strong>and easy to do anywhere, even with Node.js</strong>",
   };
 
   sgMail
-    .send(msg)
-    .then(() => {
-      console.log('Email sent');
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .send(msg)
+      .then(() => {
+        console.log("Email sent");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 });
