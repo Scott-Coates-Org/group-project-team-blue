@@ -15,14 +15,20 @@ sgMail.setApiKey(functions.config().sendgrid.api);
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
   const fullName = `${data.firstName} ${data.lastName}`;
   const customer = await stripe.customers.create({
-    name: fullName, email: data.email, phone: data.phone,
+    name: fullName,
+    email: data.email,
+    phone: data.phone,
   });
   const intent = await stripe.setupIntents.create({customer: customer.id});
   await admin.firestore().collection("stripe_customers").add({
-    customer_id: customer.id, setup_secret: intent.client_secret,
+    customer_id: customer.id,
+    setup_secret: intent.client_secret,
   });
-  const snapshot = await admin.firestore().collection("stripe_customers")
-      .where("customer_id", "==", customer.id).get();
+  const snapshot = await admin
+      .firestore()
+      .collection("stripe_customers")
+      .where("customer_id", "==", customer.id)
+      .get();
   const snap = snapshot.docs[0].id;
   return {
     customerID: customer.id,
@@ -39,7 +45,6 @@ exports.calculateOrderAmount = functions.https.onCall(async (data, context) => {
 });
 
 exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
-  // const {items} = data;
   const paymentIntent = await stripe.paymentIntents.create({
     // amount: calculateOrderAmount(items),
     amount: 1400,
@@ -48,6 +53,7 @@ exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
       enabled: true,
     },
   });
+
   return {
     clientSecret: paymentIntent.client_secret,
   };
@@ -58,16 +64,23 @@ exports.events = functions.https.onRequest((request, response) => {
 
   try {
     // Validate the request
-    const event = stripeWebhook.webhooks
-        .constructEvent(request.rawBody, sig, endpointSecret);
+    const event = stripeWebhook.webhooks.constructEvent(
+        request.rawBody,
+        sig,
+        endpointSecret,
+    );
 
     // Add the event to the database
-    return admin.database().ref("/events").push(event)
+    return admin
+        .database()
+        .ref("/events")
+        .push(event)
         .then((snapshot) => {
         // Return a successful response to
         // acknowledge the event was processed successfully
           return response.json({
-            received: true, ref: snapshot.ref.toString(),
+            received: true,
+            ref: snapshot.ref.toString(),
           });
         })
         .catch((err) => {
