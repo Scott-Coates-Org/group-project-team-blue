@@ -7,7 +7,7 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Spinner, InputGroup, Input, Button } from 'reactstrap';
 import TimeSelect from './TimeSelect';
 import { useWizard } from 'react-use-wizard';
-import WizardStep from 'components/checkout/WizardStep';
+import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 import 'react-calendar/dist/Calendar.css';
 import './productSelect.css';
 
