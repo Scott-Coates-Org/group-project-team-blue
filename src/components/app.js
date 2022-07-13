@@ -1,30 +1,22 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'styles/custom.css';
-import Home from 'components/home/Home';
-import { AuthProvider, useAuth } from 'components/user/auth';
-import Login from 'components/user/login';
-import Logout from 'components/user/logout';
-import Checkout from 'components/checkout/Checkout';
-import { firebase } from 'firebase/client';
-import { createBrowserHistory } from 'history';
-import { useEffect, useState } from 'react';
-import { Provider, useDispatch } from 'react-redux';
-import { Route, Router, Switch } from 'react-router-dom';
-import store from 'redux/store';
-import { getData, getDataSuccess } from 'redux/user';
-import ErrorBoundary from 'components/error-boundary';
-import Dashboard from './dashboard/Dashboard';
-import CreateProduct from './products/CreateProduct';
-import ProductList from './products/ProductList';
-import Stripe from './stripe/Stripe';
-import SendGrid from './sendgrid/SendGrid';
-
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-
-require('firebase/functions');
-
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+import "bootstrap/dist/css/bootstrap.min.css";
+import "styles/custom.css";
+import Home from "components/home/Home";
+import { AuthProvider, useAuth } from "components/user/auth";
+import Login from "components/user/login";
+import Logout from "components/user/logout";
+import Checkout from "components/checkout/Checkout";
+import { firebase } from "firebase/client";
+import { createBrowserHistory } from "history";
+import { useEffect, useState } from "react";
+import { Provider, useDispatch } from "react-redux";
+import { Route, Router, Switch } from "react-router-dom";
+import store from "redux/store";
+import { getData, getDataSuccess } from "redux/user";
+import ErrorBoundary from "components/error-boundary";
+import Dashboard from "./dashboard/Dashboard";
+import CreateProduct from "./products/CreateProduct";
+import ProductList from "./products/ProductList";
+import SendGrid from "./sendgrid/SendGrid";
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
@@ -47,18 +39,6 @@ function App() {
 
   const dispatch = useDispatch();
 
-  const [clientSecret, setClientSecret] = useState('');
-
-  // useEffect(() => {
-  //   const createPaymentIntent = firebase
-  //     .functions()
-  //     .httpsCallable('createPaymentIntent');
-
-  //   createPaymentIntent().then((result) =>
-  //     setClientSecret(result.data.clientSecret)
-  //   );
-  // }, []);
-
   useEffect(() => {
     dispatch(getData());
   }, []);
@@ -69,11 +49,6 @@ function App() {
     const userData = { ...providerData, uid: user.uid };
 
     dispatch(getDataSuccess(userData));
-  };
-
-  const options = {
-    // passing the client secret obtained from the server
-    clientSecret: clientSecret,
   };
 
   const appElement = (
@@ -101,14 +76,6 @@ function App() {
             />
             <Route path="/checkout" render={() => <Checkout />} />
             <Route path="/sendgrid" render={() => <SendGrid />} />
-            {clientSecret && (
-              <Elements options={options} stripe={stripePromise}>
-                <Route
-                  path="/stripe"
-                  render={() => <Stripe props={clientSecret} />}
-                />
-              </Elements>
-            )}
             {/* this must be on the bottom */}
             <ProtectedRoute path="/admin" component={Dashboard} {...props} />
           </Switch>
@@ -126,7 +93,7 @@ export default AppWithRedux;
 // https://github.com/auth0/auth0-react/blob/master/EXAMPLES.md#1-protecting-a-route-in-a-react-router-dom-app
 const ProtectedRoute = ({ component, ...args }) => {
   const WrappedComponent = withAuthenticationRequired(component, {
-    onRedirecting: () => 'resuming session…',
+    onRedirecting: () => "resuming session…",
   });
 
   const retVal = (
@@ -161,11 +128,11 @@ function withAuthenticationRequired(Component, options) {
             ...loginOptions,
             appState: {
               ...loginOptions.appState,
-              returnTo: typeof returnTo === 'function' ? returnTo() : returnTo,
+              returnTo: typeof returnTo === "function" ? returnTo() : returnTo,
             },
           };
 
-          history.push('/login', opts);
+          history.push("/login", opts);
         }
       }
     }, [history, isAuthenticated, loginOptions, returnTo]);
