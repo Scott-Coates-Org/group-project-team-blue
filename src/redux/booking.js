@@ -66,23 +66,46 @@ export const createBooking = createAsyncThunk(
   }
 );
 
+export const updateBooking = createAsyncThunk(
+  'booking/createBooking',
+  async (payload, thunkAPI) => {
+    try {
+      await _updateBooking(
+        payload.docID,
+        payload.customer,
+        payload.order,
+        payload.stripe,
+        payload.waiver
+      );
+    } catch (error) {
+      console.error('error', error);
+      thunkAPI.dispatch(createDataFailure());
+    }
+  }
+);
+
 async function _fetchAllBookingsFromDb() {
-  const snapshot = await firebaseClient.firestore().collection('booking').get();
+  const snapshot = await firebaseClient.firestore().collection('bookings').get();
 
   const bookingData = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
 
-  return bookingdata;
+  return bookingData;
 }
 
 async function _createBooking(customer, order, stripe, waiver) {
-  const doc = await firebaseClient.firestore().collection('booking').add({
+  const doc = await firebaseClient.firestore().collection('bookings').add({
     customer,
     order,
     stripe,
     waiver,
   });
+  return doc;
+}
+
+async function _updateCustomer(customer, order, stripe, waiver) {
+  const doc = await firebaseClient.firestore().collection('bookings').doc(docID).update({ stripe });
   return doc;
 }
