@@ -6,7 +6,18 @@ const cartDetails = createSlice({
     bookingDate: '',
     products: [],
     costs: { subtotal: 0, total: 0 },
-    contactDetails: [],
+    customerDetails: {
+      first: '',
+      last: '',
+      address: '',
+      zip: '',
+      email: ''
+    },
+    waiver: {
+      waiverURL: '',
+      ipAddress: '',
+      userAgent: ''
+    },
     headcount: 0,
   },
   reducers: {
