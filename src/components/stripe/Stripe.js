@@ -1,19 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   PaymentElement,
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
 import { firebase } from 'firebase/client';
+import { createBooking } from 'redux/booking';
 require('firebase/functions');
 
 const Stripe = (props) => {
-  const cartDetails = useSelector(({ cartDetails }) => cartDetails);
-  const cartItems = cartDetails.products;
+  const dispatch = useDispatch();
+  const { bookingDate, products, customerDetails, waiver } = useSelector(({ cartDetails }) => cartDetails);
   const stripe = useStripe();
   const elements = useElements();
+
+  const bookingDetails = {
+    customer: customerDetails,
+    orders: {
+      bookingDate: bookingDate,
+      products: products
+    },
+    stripe: 'test',
+    waiver: waiver
+  };
 
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,6 +69,26 @@ const Stripe = (props) => {
 
     setIsLoading(true);
 
+    const createPaymentIntent = firebase
+      .functions()
+      .httpsCallable('createPaymentIntent');
+
+    createPaymentIntent(bookingDetails)
+      .then((res) => {
+        console.log('firing createPaymentIntent', bookingDetails);
+        dispatch(
+          createBooking({
+            customer: bookingDetails.customer,
+            order: bookingDetails.orders,
+            stripe: bookingDetails.stripe,
+            waiver: bookingDetails.waiver
+          })
+        );
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+      
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -65,7 +96,6 @@ const Stripe = (props) => {
         return_url: 'http://localhost:3000',
       },
     });
-
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
     // your `return_url`. For some payment methods like iDEAL, your customer will
@@ -76,16 +106,6 @@ const Stripe = (props) => {
     } else {
       setMessage('An unexpected error occurred.');
     }
-
-    firebase.functions().httpsCallable('createPaymentIntent');
-    createPaymentIntent(cartItems)
-      .then((res) => {
-        const sanitizedMsg = res.data;
-        console.log(sanitizedMsg);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
 
     setIsLoading(false);
   };
