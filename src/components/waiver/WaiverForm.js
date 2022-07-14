@@ -62,8 +62,31 @@ const WaiverForm = () => {
   });
 
   const onSubmit = (data) => {
-    
+    if (Object.keys(errors).length) {
+      alert("Error saving product: " + JSON.stringify(errors));
+    } else {
+      
+    }
   }
+
+//   <body>
+//   <!-- Button to send AJAX -->
+//   <button id="btn" onclick="javascript:send()">Send Doc via AJAX</button>
+//   <script>
+//     function send() {
+//       var doc = new jsPDF();
+//       doc.fromHTML('<h1>Hello World!</h1>', 20, 20);
+
+//       var formData = new FormData();
+//       var blob = new Blob([doc.output("blob")], { type: "application/pdf" });
+//       formData.append("file", blob, "document.pdf");
+
+//       var request = new XMLHttpRequest();
+//       request.open("POST", "/upload");
+//       request.send(formData);
+//     }
+//   </script>
+// </html>
 
   return (
     <section className="p-sm-3 checkout-bg">
