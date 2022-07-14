@@ -19,13 +19,13 @@ import { fetchAllBookings } from 'redux/booking';
 export default function CalendarView() {
     const [startdate, setStartDate] = useState(new Date());
     const dispatch = useDispatch();
-    const {data, isLoaded, hasErrors} = useSelector((state) => state.room)
+    const {data: roomdata, isLoaded, hasErrors} = useSelector((state) => state.room)
     const {data: timedata, isLoaded: timeisLoaded, hasErrors: timehasErrors} = useSelector((state) => state.opentime)
     const { data: productdata } = useSelector((state) => state.product)
     const { data: bookingdata } = useSelector((state) => state.booking)
     // console.log(productdata)
-    const roomdata= data.filter((room) => room.capacity == 50);
-
+    // const roomdata= data.filter((room) => room.capacity == 50);
+    // console.log(roomdata)
     useEffect(() => {
         dispatch(fetchAllRooms());
         dispatch(fetchAllProducts());
@@ -35,7 +35,6 @@ export default function CalendarView() {
         .then((collections) => {
             const mydata = collections.docs.map(time => time.data())
             dispatch(getDataSuccess(mydata));
-            console.log(timedata)
         })
     }, [dispatch, startdate]);
 
@@ -70,11 +69,10 @@ export default function CalendarView() {
         }
         return newtime+ ':00'
     }
-    console.log(eachCellTime('9:00', 1))
 
     return (
-        <section style={{height: '65%'}}>
-            <Card className='p-3 mb-3'>
+        <section style={{height: '100%'}}>
+            <Card className='p-3 mb-3' style={{height: '30%'}}>
                 <h5 className="text-muted">Bookings</h5>
                 <h3 className="mb-5">Daily Capacity</h3>
                 <DatePicker 
@@ -86,8 +84,9 @@ export default function CalendarView() {
             {!isLoaded && "Products loading..."}
             {hasErrors && "Error Loading"}
             {isLoaded && (
+            <>
             <div className='section'>
-            <Table bordered>
+            <Table bordered >
                 <thead>
                     <tr>
                         <th className='tableh'></th>
@@ -125,6 +124,22 @@ export default function CalendarView() {
                 
             </Table>
             </div>
+            <div className='colorindicate mt-1'>
+                <div className='colordiv mr-1' style={{backgroundColor: 'green'}}>
+                </div>
+                <span className='mr-3'>More than 50% Availability</span>
+                <div className='colordiv mr-1' style={{backgroundColor: 'orange'}}>
+                </div>
+                <span className='mr-3'>less than 50% Availability</span>
+                <div className='colordiv mr-1' style={{backgroundColor: '#d3d3d3'}}>
+                </div>
+                <span className='mr-3'>FullyBooked</span>
+                <div className='colordiv mr-1' style={{backgroundColor: 'red'}}>
+                </div>
+                <span>OverBooked</span>
+
+            </div>
+            </>
             )}
         </section>
     )
