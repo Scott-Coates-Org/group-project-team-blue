@@ -1,15 +1,4 @@
 // https://dev.to/thatgalnatalie/how-to-get-started-with-redux-toolkit-41e
-<<<<<<< HEAD
-import { configureStore } from "@reduxjs/toolkit";
-import { combineReducers } from "redux";
-import { reducer as user } from "./user";
-import { reducer as widget } from "./widget";
-import { reducer as product } from "./product";
-import { reducer as room } from "./room";
-import { reducer as opentime } from "./opentime";
-import { reducer as customer } from "./customer";
-import {reducer as cartDetails } from "./cartDetails"
-=======
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import { reducer as user } from './user';
@@ -19,7 +8,7 @@ import { reducer as room } from './room';
 import { reducer as opentime } from './opentime';
 import { reducer as customer } from './customer';
 import { reducer as cartDetails } from './cartDetails';
->>>>>>> main
+import { reducer as booking } from './booking';
 
 const reducer = combineReducers({
   user,
@@ -29,6 +18,7 @@ const reducer = combineReducers({
   opentime,
   customer,
   cartDetails,
+  booking
 });
 
 const store = configureStore({

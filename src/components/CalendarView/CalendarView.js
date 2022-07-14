@@ -13,6 +13,8 @@ import { firebase } from 'firebase/client';
 import BOOKING from "../datasrc.json"
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
 import CalendarCell from './CalendarCell';
+import { fetchAllProducts } from 'redux/product';
+import { fetchAllBookings } from 'redux/booking';
 
 export default function CalendarView() {
     const [startdate, setStartDate] = useState(new Date());
@@ -20,10 +22,14 @@ export default function CalendarView() {
     const {data, isLoaded, hasErrors} = useSelector((state) => state.room)
     const {data: timedata, isLoaded: timeisLoaded, hasErrors: timehasErrors} = useSelector((state) => state.opentime)
     const { data: productdata } = useSelector((state) => state.product)
+    const { data: bookingdata } = useSelector((state) => state.booking)
     // console.log(productdata)
+    const roomdata= data.filter((room) => room.capacity == 50);
 
     useEffect(() => {
         dispatch(fetchAllRooms());
+        dispatch(fetchAllProducts());
+        dispatch(fetchAllBookings());
         const mydate = format(startdate, "yyyy-MM-dd")
         firebase.firestore().collection('opentime').where("date", "==", mydate).get()
         .then((collections) => {
@@ -46,8 +52,7 @@ export default function CalendarView() {
         cell.push(eachCellTime(open, i));
     }
     const headers = cell.filter((value, index) => index % 2 == 0)
-    console.log(headers)
-
+    console.log(bookingdata)
     // function timeadd(time, plus) {
     //     let hr = time?.split(':')[0];
     //     let min = time?.split(':')[1];
@@ -65,6 +70,7 @@ export default function CalendarView() {
         }
         return newtime+ ':00'
     }
+    console.log(eachCellTime('9:00', 1))
 
     return (
         <section style={{height: '65%'}}>
@@ -94,7 +100,7 @@ export default function CalendarView() {
                 </thead>
 
                 <tbody>
-                    {data.map((room) => {
+                    {roomdata.map((room) => {
 
                     return (
                     <tr key={room.name}>
@@ -102,7 +108,14 @@ export default function CalendarView() {
                         {cell.map((value, index) => {
                             return (
                                 <React.Fragment key={value}>
-                                    <CalendarCell />
+                                    <CalendarCell
+                                        cellValue={value}
+                                        productdata={productdata}
+                                        roomdata={roomdata}
+                                        currentRoom={room}
+                                        bookingdata={bookingdata}
+                                        datepick={startdate}
+                                     />
                                 </React.Fragment>
                             )
                         } )}

@@ -52,15 +52,10 @@ function App() {
   // useEffect(() => {
   //   const createPaymentIntent = firebase
   //     .functions()
-<<<<<<< HEAD
+
   //     .httpsCallable("createPaymentIntent");
-=======
-<<<<<<< HEAD
-  //     .httpsCallable("createPaymentIntent");
-=======
-  //     .httpsCallable('createPaymentIntent');
->>>>>>> 3901d91f374ceb40dc12cac23a34b4d5d93a7b25
->>>>>>> main
+
+
 
   //   createPaymentIntent().then((result) =>
   //     setClientSecret(result.data.clientSecret)
