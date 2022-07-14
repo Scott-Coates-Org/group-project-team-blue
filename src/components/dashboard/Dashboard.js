@@ -32,11 +32,7 @@ const Dashboard = (props) => {
               <CreateProduct />
             </Route>
             <Route path="/admin/createopentime">
-<<<<<<< HEAD
-              <AdminBooking/>
-=======
               <AdminBooking />
->>>>>>> 3901d91f374ceb40dc12cac23a34b4d5d93a7b25
             </Route>
             <Route path="/admin/calendarview">
               <CalendarView />

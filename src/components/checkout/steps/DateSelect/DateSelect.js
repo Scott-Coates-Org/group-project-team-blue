@@ -16,7 +16,7 @@ const DateSelect = () => {
   useEffect(() => {
     dispatch(
       setBookingDate(
-        `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`
+        `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
       )
     );
   }, [date]);
