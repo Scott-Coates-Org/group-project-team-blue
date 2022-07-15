@@ -7,13 +7,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { saveFile } from "redux/waiver";
 import { useParams } from "react-router-dom";
 import { fetchBookingById } from "redux/booking";
-import { fetchWaiverById } from "redux/waiver";
+import { fetchWaiverById, updateWaiver } from "redux/waiver";
 
 const WaiverForm = () => {
   const dispatch = useDispatch();
   const { bookingId, waiverId } = useParams();
-  const [ip, setIp] = useState("");
-  const [uag, setUag] = useState("");
   const [sig, setSig] = useState(false);
   const {
     data: bookingData,
@@ -41,19 +39,17 @@ const WaiverForm = () => {
             return (obj[pair[0]] = pair[1]), obj;
           }, {});
 
-        if (data.ip) setIp(data.ip);
-        if (data.uag) setUag(data.uag);
+        if (data.ip) setValue("ipAddress", data.ip);
+        if (data.uag) setValue("userAgent", data.uag);
       });
 
     dispatch(fetchBookingById({ id: bookingId }));
     dispatch(fetchWaiverById({ id: waiverId }));
 
-    if(waiverIsLoaded) {
-      setValue(
-        "name", waiverData.name
-      )
+    if (waiverIsLoaded) {
+      setValue("name", waiverData.name);
     }
-  }, [dispatch, waiverIsLoaded]);
+  }, [fetch, dispatch, waiverIsLoaded]);
 
   const reservationDate = () => {
     if (!bookingIsLoaded) return null;
@@ -96,6 +92,12 @@ const WaiverForm = () => {
   const { ref: dateRef, ...dateRest } = register("date", {
     required: msgIfEmpty("Date"),
   });
+  const { ref: ipAddressRef, ...ipAddressRest } = register("ipAddress", {
+    required: msgIfEmpty("IP Address"),
+  });
+  const { ref: userAgentRef, ...userAgentRest } = register("userAgent", {
+    required: msgIfEmpty("User Agent"),
+  });
 
   const requireSignature = (v) => {
     if (!sig) return msgIfEmpty("Signature");
@@ -120,7 +122,6 @@ const WaiverForm = () => {
 
       doc.html(waiverPDF, {
         callback: function (doc) {
-          doc.save();
           const blob = new Blob([doc.output("blob")], { type: "application/pdf" });
           const file = new File([blob], "waiver.pdf");
 
@@ -129,6 +130,7 @@ const WaiverForm = () => {
             if (fileUrl) {
               dispatch(
                 updateWaiver({
+                  id: waiverId,
                   name: data.name,
                   guardian: data.guardian,
                   email: data.email,
@@ -354,8 +356,20 @@ const WaiverForm = () => {
                 </Button>
               </Col>
             </FormGroup>
-            <input hidden id="ipAddress" value={ip} readOnly />
-            <input hidden id="userAgent" value={uag} readOnly />
+            <Input
+              hidden
+              id="ipAddress"
+              innerRef={ipAddressRef}
+              invalid={errors.ipAddress ? true : false}
+              readOnly
+            />
+            <Input
+              hidden
+              id="userAgent"
+              innerRef={userAgentRef}
+              invalid={errors.userAgent ? true : false}
+              readOnly
+            />
             <Button type="submit" color="primary" className="mt-5 ml-0" size="lg">
               Submit Waiver
             </Button>

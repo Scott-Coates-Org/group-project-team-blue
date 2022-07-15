@@ -51,8 +51,29 @@ export const fetchWaiverById = createAsyncThunk(
   }
 );
 
-export const saveFile = 
-createAsyncThunk("waiver/saveFile", async (payload) => {
+export const updateWaiver = createAsyncThunk(
+  "waiver/updateWaiver",
+  async (payload, thunkAPI) => {
+    try {
+      await _updateWaiver(
+        payload.id,
+        payload.name,
+        payload.guardian,
+        payload.email,
+        payload.date,
+        payload.ipAddress,
+        payload.userAgent,
+        payload.submitted,
+        payload.waiverURL
+      );
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(createDataFailure());
+    }
+  }
+);
+
+export const saveFile = createAsyncThunk("waiver/saveFile", async (payload) => {
   const file = payload.file;
 
   try {
@@ -104,4 +125,29 @@ async function _fetchWaiverByIdFromDb(id) {
   const waiverData = snapshot ? { id: snapshot.id, ...snapshot.data() } : null;
 
   return waiverData;
+}
+
+async function _updateWaiver(
+  id,
+  name,
+  guardian,
+  email,
+  date,
+  ipAddress,
+  userAgent,
+  submitted,
+  waiverURL
+) {
+  const doc = await firebaseClient.firestore().collection("waivers").doc(id).update({
+    name,
+    guardian,
+    email,
+    date,
+    ipAddress,
+    userAgent,
+    submitted,
+    waiverURL,
+  });
+
+  return doc;
 }
