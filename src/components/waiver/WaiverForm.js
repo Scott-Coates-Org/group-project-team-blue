@@ -2,13 +2,19 @@ import { Button, Container, Form, FormGroup, Input, Label, Col } from "reactstra
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
+import { jsPDF } from "jspdf";
+import { useDispatch } from "react-redux";
+import { saveFile } from "redux/waiver";
+import { useParams } from "react-router-dom";
 
 const WaiverForm = () => {
+  const dispatch = useDispatch();
+  const { bookingId, waiverId } = useParams();
   const company = "Hopper";
   const state = "New York";
   const [ip, setIp] = useState("");
   const [uag, setUag] = useState("");
-  let sigPad
+  let sigPad;
 
   useEffect(() => {
     fetch("https://www.cloudflare.com/cdn-cgi/trace")
@@ -22,11 +28,11 @@ const WaiverForm = () => {
             return (obj[pair[0]] = pair[1]), obj;
           }, {});
 
-          if (data.ip) setIp(data.ip);
-          if (data.uag) setUag(data.uag);
+        if (data.ip) setIp(data.ip);
+        if (data.uag) setUag(data.uag);
       });
 
-    
+    dispatch()
   }, []);
 
   const {
@@ -65,32 +71,67 @@ const WaiverForm = () => {
     if (Object.keys(errors).length) {
       alert("Error saving product: " + JSON.stringify(errors));
     } else {
-      
+      const doc = new jsPDF("p", "pt", "letter");
+      const waiverPDF = document.getElementById("waiverPDF")
+      doc.setFont("arial", "regular");
+      // waiverPDF.style.fontSize = "10px"
+
+      doc.html(waiverPDF, {
+        callback: function (doc) {
+          // doc.save();
+
+          const blob = new Blob([doc.output("blob")], { type: "application/pdf" });
+          const file = new File([blob], "waiver.pdf");
+
+          dispatch(saveFile({ file })).then((action) => {
+            const fileUrl = action.payload;
+            console.log({ fileUrl });
+          });
+        },
+        autoPaging: "text",
+        x: -20,
+        y: 0,
+        windowWidth: 1200,
+        width: 650
+        // margin: [80, 40, 60, 40]
+      });
+
+      //   const blob = new Blob([doc.output("blob")], { type: "application/pdf" });
+      //   const file = new File([blob], "waiver.pdf");
+
+      // console.log({ file });
+
+      // dispatch(saveFile({ file })).then((action) => {
+      //   const fileUrl = action.payload;
+      //   console.log({ fileUrl });
+      // });
     }
-  }
+  };
 
-//   <body>
-//   <!-- Button to send AJAX -->
-//   <button id="btn" onclick="javascript:send()">Send Doc via AJAX</button>
-//   <script>
-//     function send() {
-//       var doc = new jsPDF();
-//       doc.fromHTML('<h1>Hello World!</h1>', 20, 20);
+  // var file = new File([myBlob], "name");
 
-//       var formData = new FormData();
-//       var blob = new Blob([doc.output("blob")], { type: "application/pdf" });
-//       formData.append("file", blob, "document.pdf");
+  //   <body>
+  //   <!-- Button to send AJAX -->
+  //   <button id="btn" onclick="javascript:send()">Send Doc via AJAX</button>
+  //   <script>
+  //     function send() {
+  //       var doc = new jsPDF();
+  //       doc.fromHTML('<h1>Hello World!</h1>', 20, 20);
 
-//       var request = new XMLHttpRequest();
-//       request.open("POST", "/upload");
-//       request.send(formData);
-//     }
-//   </script>
-// </html>
+  //       var formData = new FormData();
+  //       var blob = new Blob([doc.output("blob")], { type: "application/pdf" });
+  //       formData.append("file", blob, "document.pdf");
+
+  //       var request = new XMLHttpRequest();
+  //       request.open("POST", "/upload");
+  //       request.send(formData);
+  //     }
+  //   </script>
+  // </html>
 
   return (
     <section className="p-sm-3 checkout-bg">
-      <Container fluid="sm" className="bg-white border p-sm-5 pt-3 pb-3">
+      <Container fluid="sm" id="waiverPDF" className="bg-white border p-sm-5 pt-3 pb-3">
         <div className="mb-5">
           <h2 className="text-center mb-4">ACCIDENT WAIVER AND RELEASE OF LIABILITY FORM</h2>
           <p>
