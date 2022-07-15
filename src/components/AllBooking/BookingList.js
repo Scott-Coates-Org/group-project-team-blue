@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import datasource from '../datasource.json'
 import { COLUMNS } from './columns'
 import { useTable, useSortBy, useGlobalFilter, usePagination } from 'react-table'
@@ -7,10 +7,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import BookingView from './BookingView';
 import { ButtonGroup, Button, ButtonToolbar } from 'reactstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchAllBookings } from 'redux/booking'
 
 export default function BookingList() {
+  const dispatch = useDispatch();
+  const {data : bookingdata, isLoaded, hasErrors} = useSelector(state => state.booking)
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => datasource, []);
+  const data = useMemo(() => bookingdata, [bookingdata]);
+  console.log(bookingdata)
+
+  useEffect(() => {
+    dispatch(fetchAllBookings())
+  }, [])
 
   const {
     getTableProps,
