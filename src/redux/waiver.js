@@ -51,6 +51,21 @@ export const fetchWaiverById = createAsyncThunk(
   }
 );
 
+export const fetchWaiversByBookingId = createAsyncThunk(
+  "waiver/fetchWaiversByBookingId",
+  async (payload, thunkAPI) => {
+    thunkAPI.dispatch(getData());
+
+    try {
+      const data = await _fetchWaiversByBookingIdFromDb(payload.id);
+      thunkAPI.dispatch(getDataSuccess(data));
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(getDataFailure(error));
+    }
+  }
+);
+
 export const updateWaiver = createAsyncThunk(
   "waiver/updateWaiver",
   async (payload, thunkAPI) => {
@@ -123,6 +138,21 @@ async function _fetchWaiverByIdFromDb(id) {
   const snapshot = await firebaseClient.firestore().collection("waivers").doc(id).get();
 
   const waiverData = snapshot ? { id: snapshot.id, ...snapshot.data() } : null;
+
+  return waiverData;
+}
+
+async function _fetchWaiversByBookingIdFromDb(bookingId) {
+  const snapshot = await firebaseClient
+    .firestore()
+    .collection("waivers")
+    .where("bookingId", "==", bookingId)
+    .get();
+
+  const waiverData = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 
   return waiverData;
 }
