@@ -201,7 +201,8 @@ const WaiverForm = () => {
         </div>
         <div>
           <p>
-            <b>Reservation date:</b> {}
+            <b>Reservation date:</b>{" "}
+            {bookingData.order?.bookingDate.toDate().toISOString().split("T")[0]}
           </p>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <FormGroup row>
