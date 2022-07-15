@@ -36,6 +36,21 @@ export const reducer = waiver.reducer;
 
 export const { getData, getDataSuccess, getDataFailure, createDataFailure } = waiver.actions;
 
+export const fetchWaiverById = createAsyncThunk(
+  "waiver/fetchWaiverById",
+  async (payload, thunkAPI) => {
+    thunkAPI.dispatch(getData());
+
+    try {
+      const data = await _fetchWaiverByIdFromDb(payload.id);
+      thunkAPI.dispatch(getDataSuccess(data));
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(getDataFailure(error));
+    }
+  }
+);
+
 export const saveFile = 
 createAsyncThunk("waiver/saveFile", async (payload) => {
   const file = payload.file;
@@ -81,4 +96,12 @@ function _uploadFile(fileName, file) {
   const uploadTask = firebaseClient.storage().ref(`/${fileName}`).put(file);
 
   return uploadTask;
+}
+
+async function _fetchWaiverByIdFromDb(id) {
+  const snapshot = await firebaseClient.firestore().collection("waivers").doc(id).get();
+
+  const waiverData = snapshot ? { id: snapshot.id, ...snapshot.data() } : null;
+
+  return waiverData;
 }

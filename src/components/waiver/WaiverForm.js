@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { saveFile } from "redux/waiver";
 import { useParams } from "react-router-dom";
 import { fetchBookingById } from "redux/booking";
-// import { fetchWaiverById, updateWaiver } from "redux/waiver";
+import { fetchWaiverById } from "redux/waiver";
 
 const WaiverForm = () => {
   const dispatch = useDispatch();
@@ -46,8 +46,14 @@ const WaiverForm = () => {
       });
 
     dispatch(fetchBookingById({ id: bookingId }));
-    // dispatch(fetchWaiverById(waiverId));
-  }, [dispatch]);
+    dispatch(fetchWaiverById({ id: waiverId }));
+
+    if(waiverIsLoaded) {
+      setValue(
+        "name", waiverData.name
+      )
+    }
+  }, [dispatch, waiverIsLoaded]);
 
   const reservationDate = () => {
     if (!bookingIsLoaded) return null;
@@ -63,6 +69,7 @@ const WaiverForm = () => {
     reset,
     resetField,
     getValues,
+    setValue,
     control,
     formState: { errors },
   } = useForm({
