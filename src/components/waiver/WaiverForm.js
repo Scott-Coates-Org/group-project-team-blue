@@ -6,7 +6,7 @@ import { jsPDF } from "jspdf";
 import { useDispatch, useSelector } from "react-redux";
 import { saveFile } from "redux/waiver";
 import { useParams } from "react-router-dom";
-// import { fetchBookingById } from "redux/booking";
+import { fetchBookingById } from "redux/booking";
 // import { fetchWaiverById, updateWaiver } from "redux/waiver";
 
 const WaiverForm = () => {
@@ -45,7 +45,7 @@ const WaiverForm = () => {
         if (data.uag) setUag(data.uag);
       });
 
-    // dispatch(fetchBookingById(bookingId));
+    dispatch(fetchBookingById({id: bookingId}));
     // dispatch(fetchWaiverById(waiverId));
   }, [dispatch]);
 
@@ -139,8 +139,6 @@ const WaiverForm = () => {
       });
     }
   };
-
-  console.log(errors);
 
   return (
     <section className="p-sm-3 checkout-bg">
