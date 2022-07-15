@@ -1,4 +1,4 @@
-import { Button, Container, Form, FormGroup, Input, Label, Col } from "reactstrap";
+import { Button, Container, Form, FormGroup, Input, Label, Col, Row } from "reactstrap";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
@@ -45,9 +45,17 @@ const WaiverForm = () => {
         if (data.uag) setUag(data.uag);
       });
 
-    dispatch(fetchBookingById({id: bookingId}));
+    dispatch(fetchBookingById({ id: bookingId }));
     // dispatch(fetchWaiverById(waiverId));
   }, [dispatch]);
+
+  const reservationDate = () => {
+    if (!bookingIsLoaded) return null;
+
+    const date = new Date(bookingData.order?.bookingDate);
+
+    return date.toISOString().split("T")[0];
+  };
 
   const {
     register,
@@ -121,7 +129,7 @@ const WaiverForm = () => {
                   ipAddress: data.ipAddress,
                   userAgent: data.userAgent,
                   submitted: true,
-                  waiverURL: fileUrl
+                  waiverURL: fileUrl,
                 })
               ).then(() => {
                 reset();
@@ -231,10 +239,12 @@ const WaiverForm = () => {
           </p>
         </div>
         <div>
-          <p>
-            <b>Reservation date:</b>{" "}
-            {bookingData.order?.bookingDate.toDate().toISOString().split("T")[0]}
-          </p>
+          <FormGroup row>
+            <Col sm={2}>
+              <b>Reservation date:</b>
+            </Col>
+            <Col sm={6}>{reservationDate()}</Col>
+          </FormGroup>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <FormGroup row>
               <Label for="name" sm={2}>
