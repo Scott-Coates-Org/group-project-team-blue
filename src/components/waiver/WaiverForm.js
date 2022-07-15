@@ -3,17 +3,29 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { jsPDF } from "jspdf";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { saveFile } from "redux/waiver";
 import { useParams } from "react-router-dom";
+// import { fetchBookingById } from "redux/booking";
+// import { fetchWaiverById } from "redux/waiver";
 
 const WaiverForm = () => {
   const dispatch = useDispatch();
   const { bookingId, waiverId } = useParams();
-  const company = "Hopper";
-  const state = "New York";
   const [ip, setIp] = useState("");
   const [uag, setUag] = useState("");
+  const {
+    data: bookingData,
+    isLoaded: bookingIsLoaded,
+    hasErrors: bookingHasErrors,
+  } = useSelector((state) => state.booking);
+  const {
+    data: waiverData,
+    isLoaded: waiverIsLoaded,
+    hasErrors: waiverHasErrors,
+  } = useSelector((state) => state.waiver);
+  const company = "Hopper";
+  const state = "New York";
   let sigPad;
 
   useEffect(() => {
@@ -32,8 +44,9 @@ const WaiverForm = () => {
         if (data.uag) setUag(data.uag);
       });
 
-    dispatch()
-  }, []);
+    // dispatch(fetchBookingById(bookingId));
+    // dispatch(fetchWaiverById(waiverId));
+  }, [dispatch]);
 
   const {
     register,
@@ -45,7 +58,7 @@ const WaiverForm = () => {
   } = useForm({
     mode: "onChange",
     defaultValues: {
-      name: "First Last",
+      name: waiverData.name,
       guardian: "",
       email: "",
       date: new Date().toISOString().split("T")[0],
@@ -72,14 +85,12 @@ const WaiverForm = () => {
       alert("Error saving product: " + JSON.stringify(errors));
     } else {
       const doc = new jsPDF("p", "pt", "letter");
-      const waiverPDF = document.getElementById("waiverPDF")
+      const waiverPDF = document.getElementById("waiverPDF");
       doc.setFont("arial", "regular");
       // waiverPDF.style.fontSize = "10px"
 
       doc.html(waiverPDF, {
         callback: function (doc) {
-          // doc.save();
-
           const blob = new Blob([doc.output("blob")], { type: "application/pdf" });
           const file = new File([blob], "waiver.pdf");
 
@@ -92,42 +103,11 @@ const WaiverForm = () => {
         x: -20,
         y: 0,
         windowWidth: 1200,
-        width: 650
+        width: 650,
         // margin: [80, 40, 60, 40]
       });
-
-      //   const blob = new Blob([doc.output("blob")], { type: "application/pdf" });
-      //   const file = new File([blob], "waiver.pdf");
-
-      // console.log({ file });
-
-      // dispatch(saveFile({ file })).then((action) => {
-      //   const fileUrl = action.payload;
-      //   console.log({ fileUrl });
-      // });
     }
   };
-
-  // var file = new File([myBlob], "name");
-
-  //   <body>
-  //   <!-- Button to send AJAX -->
-  //   <button id="btn" onclick="javascript:send()">Send Doc via AJAX</button>
-  //   <script>
-  //     function send() {
-  //       var doc = new jsPDF();
-  //       doc.fromHTML('<h1>Hello World!</h1>', 20, 20);
-
-  //       var formData = new FormData();
-  //       var blob = new Blob([doc.output("blob")], { type: "application/pdf" });
-  //       formData.append("file", blob, "document.pdf");
-
-  //       var request = new XMLHttpRequest();
-  //       request.open("POST", "/upload");
-  //       request.send(formData);
-  //     }
-  //   </script>
-  // </html>
 
   return (
     <section className="p-sm-3 checkout-bg">
