@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { saveFile } from "redux/waiver";
 import { useParams } from "react-router-dom";
 // import { fetchBookingById } from "redux/booking";
-// import { fetchWaiverById } from "redux/waiver";
+// import { fetchWaiverById, updateWaiver } from "redux/waiver";
 
 const WaiverForm = () => {
   const dispatch = useDispatch();
@@ -111,7 +111,23 @@ const WaiverForm = () => {
 
           dispatch(saveFile({ file })).then((action) => {
             const fileUrl = action.payload;
-            console.log({ fileUrl });
+            if (fileUrl) {
+              dispatch(
+                updateWaiver({
+                  name: data.name,
+                  guardian: data.guardian,
+                  email: data.email,
+                  date: data.date,
+                  ipAddress: data.ipAddress,
+                  userAgent: data.userAgent,
+                  submitted: true,
+                  waiverURL: fileUrl
+                })
+              ).then(() => {
+                reset();
+                console.log("added to DB");
+              });
+            }
           });
         },
         autoPaging: "text",
