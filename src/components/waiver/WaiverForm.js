@@ -1,6 +1,6 @@
 import { Button, Container, Form, FormGroup, Input, Label, Col } from "reactstrap";
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { jsPDF } from "jspdf";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +14,7 @@ const WaiverForm = () => {
   const { bookingId, waiverId } = useParams();
   const [ip, setIp] = useState("");
   const [uag, setUag] = useState("");
+  const [sig, setSig] = useState(false);
   const {
     data: bookingData,
     isLoaded: bookingIsLoaded,
@@ -54,6 +55,7 @@ const WaiverForm = () => {
     reset,
     resetField,
     getValues,
+    control,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -80,17 +82,30 @@ const WaiverForm = () => {
     required: msgIfEmpty("Date"),
   });
 
+  const requireSignature = (v) => {
+    if (!sig) return msgIfEmpty("Signature");
+    return true;
+  };
+
+  const handleSigClear = () => {
+    sigPad.clear();
+    setSig(false);
+  };
+
+  const handleSig = () => {
+    setSig(true);
+  };
+
   const onSubmit = (data) => {
     if (Object.keys(errors).length) {
       alert("Error saving product: " + JSON.stringify(errors));
     } else {
       const doc = new jsPDF("p", "pt", "letter");
       const waiverPDF = document.getElementById("waiverPDF");
-      doc.setFont("arial", "regular");
-      // waiverPDF.style.fontSize = "10px"
 
       doc.html(waiverPDF, {
         callback: function (doc) {
+          doc.save();
           const blob = new Blob([doc.output("blob")], { type: "application/pdf" });
           const file = new File([blob], "waiver.pdf");
 
@@ -108,6 +123,8 @@ const WaiverForm = () => {
       });
     }
   };
+
+  console.log(errors);
 
   return (
     <section className="p-sm-3 checkout-bg">
@@ -283,18 +300,25 @@ const WaiverForm = () => {
                 </b>
               </Label>
               <Col sm={6}>
-                <SignatureCanvas
-                  penColor="blue"
-                  clearOnResize={false}
-                  canvasProps={{
-                    style: { maxHeight: "200px" },
-                    className: "sigPad border w-100 h-100",
-                  }}
-                  ref={(ref) => {
-                    sigPad = ref;
-                  }}
+                <Controller
+                  name="signature"
+                  control={control}
+                  rules={{ validate: (v) => requireSignature(v) }}
+                  render={({ field }) => (
+                    <SignatureCanvas
+                      penColor="blue"
+                      clearOnResize={false}
+                      onEnd={handleSig}
+                      canvasProps={{
+                        style: { maxHeight: "200px" },
+                        className: "sigPad border w-100 h-100",
+                      }}
+                      ref={(ref) => (sigPad = ref)}
+                    />
+                  )}
                 />
-                <Button block outline color="secondary" onClick={() => sigPad.clear()}>
+
+                <Button block outline color="secondary" onClick={handleSigClear}>
                   Clear
                 </Button>
               </Col>
