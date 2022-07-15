@@ -66,6 +66,18 @@ export const fetchWaiversByBookingId = createAsyncThunk(
   }
 );
 
+export const createWaiver = createAsyncThunk(
+  "waiver/createWaiver",
+  async (payload, thunkAPI) => {
+    try {
+      await _createWaiver(payload.name, payload.bookingId);
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(createDataFailure());
+    }
+  }
+);
+
 export const updateWaiver = createAsyncThunk(
   "waiver/updateWaiver",
   async (payload, thunkAPI) => {
@@ -155,6 +167,14 @@ async function _fetchWaiversByBookingIdFromDb(bookingId) {
   }));
 
   return waiverData;
+}
+
+async function _createWaiver(name, bookingId) {
+  const doc = await firebaseClient.firestore().collection("waivers").add({
+    name,
+    bookingId,
+  });
+  return doc;
 }
 
 async function _updateWaiver(
