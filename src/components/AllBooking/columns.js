@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom"
-import {useState} from 'react'
+
+import React, {useState} from 'react'
 import { Badge } from "reactstrap"
+import { format } from "date-fns"
 
 export const COLUMNS = [
     {
@@ -10,7 +12,8 @@ export const COLUMNS = [
     },
     {
         Header: "BOOKING DATE",
-        accessor: "order.bookingDate"
+        accessor: "order.bookingDate",
+        Cell: ({ value }) => format(new Date(value), 'M/d/yyyy')
     },
     {
         Header: "SESSION TIME",
@@ -22,7 +25,8 @@ export const COLUMNS = [
         Cell: ({value}) => 
         value.map(time  => {
             return <Badge className='mr-2 py-2' color="info" pill>{time}</Badge>
-        })
+        }),
+        sortType: "customTimeSort"
     },
     {
         Header: "HEADCOUNT",

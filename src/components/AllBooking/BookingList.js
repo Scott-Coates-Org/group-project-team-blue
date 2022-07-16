@@ -15,7 +15,27 @@ export default function BookingList() {
   const {data : bookingdata, isLoaded, hasErrors} = useSelector(state => state.booking)
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => bookingdata, [bookingdata]);
-  console.log(bookingdata)
+  // console.log(bookingdata)
+
+  const customTimeSort = (rowA, rowB, id, desc) => {
+    // console.log(rowA.values[id])
+    let valueA = rowA.values[id].sort()[1];
+    let valueB = rowB.values[id].sort()[1];
+    // console.log(valueA, valueB)
+    if (!valueA ) {
+      valueA = desc ? "ZZZZZZ" : "AAAAAAA";
+    }
+    if (!valueB ) {
+      valueB = desc ? "ZZZZZZ" : "AAAAAAA";
+    }
+    if (valueA >valueB) return 1;
+    if (valueB > valueA) return -1;
+     return 0;
+}
+
+  const sortTypes = {
+    customTimeSort: customTimeSort,
+  };
 
   useEffect(() => {
     dispatch(fetchAllBookings())
@@ -39,7 +59,8 @@ export default function BookingList() {
     setGlobalFilter
   } = useTable({
     columns,
-    data
+    data,
+    sortTypes
   }, useGlobalFilter, useSortBy, usePagination);
 
   const { globalFilter, pageIndex, pageSize } = state;
