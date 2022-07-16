@@ -22,18 +22,16 @@ export default function CalendarCell(props) {
             }
         }
     }
-console.log(arr, cellValue)
-// testing();
-
+// console.log(arr, cellValue, currentRoom.name)
 useEffect(() => {
     setCellCapacity(currentRoom.capacity)
-    hello()
+    calculate()
 }, [datepick])
 
 
-const hello = () => {
+const calculate = () => {
     for (let x of arr) {
-        console.log("loop start", cellCapacity)
+        // console.log("loop start", cellCapacity)
         const session  = []
         for (let i=0; i< x.duration / 30; i++) {
             session.push(eachCellTime(x.time, i))
@@ -42,9 +40,6 @@ const hello = () => {
             setCellCapacity((cellCapacity) => cellCapacity - x.quantity)
             // console.log(cellCapacity - x.quantity, cellValue)
         }
-        //  else if (x.title == 'All Day Pass') {
-        //     setCellCapacity((cellCapacity) => cellCapacity - x.quantity)
-        // }
     }
 }
 
@@ -76,7 +71,7 @@ const hello = () => {
             onMouseOver={mouseOver} onMouseOut={mouseOut}
             id={`${cellCapacity > currentRoom.capacity * 0.5 ? 'available' : ''}`}
             className={`p-0 
-            ${cellCapacity > 0 && cellCapacity < currentRoom.capacity * 0.5 ? 'halfbooked' : ''}
+            ${cellCapacity > 0 && cellCapacity < currentRoom.capacity * 0.5 ? 'halfbooked' : ''} 
             ${cellCapacity < 0 ? 'overbooked' : ''}
         `}>
             <div 
@@ -84,7 +79,7 @@ const hello = () => {
                 ${cellCapacity < 0 || cellCapacity == 0 ? 'display' : ''}
                
             `}>
-                {cellCapacity == 0 ? "All Occupied" : (cellCapacity < 0 ? "Over booked" : `available ${cellCapacity}`)}
+                {cellCapacity == 0 ? "All Occupied" : (cellCapacity < 0 ? "Over booked" : `available spot ${cellCapacity}`)}
 
             </div>
         </td>

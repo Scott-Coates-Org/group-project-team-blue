@@ -92,13 +92,13 @@ export default function CalendarView() {
                         <th className='tableh'></th>
                         {headers.map((value) => {
                             return (
-                                <th className='tableh p-0' colSpan='2'>{value}</th>
+                                <th key={value} className='tableh p-0' colSpan='2'>{value}</th>
                             )
                         })}
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody className='tablegap'>
                     {roomdata.map((room) => {
 
                     return (
@@ -106,7 +106,7 @@ export default function CalendarView() {
                         <th className="pr-5" scope="row">{room.name}<br/><span className='fs-6 text-muted'>Holds {room.capacity} </span></th>
                         {cell.map((value, index) => {
                             return (
-                                <React.Fragment key={value}>
+                                <React.Fragment key={index}>
                                     <CalendarCell
                                         cellValue={value}
                                         productdata={productdata}

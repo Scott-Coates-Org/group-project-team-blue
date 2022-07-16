@@ -1,10 +1,12 @@
-.table-bordered td {
+/* .table-bordered td {
     border: 1.5px solid #dee2e6;
-}
+} */
 .cell {
     width: 120px;
     height: 75px;
     visibility:hidden;
+    text-align: center;
+    
 }
 th {
     white-space: nowrap;
@@ -21,15 +23,14 @@ th {
     visibility: visible;
 }
 
-.overbooked {
+.table-bordered .overbooked {
     visibility: visible;
-    border: 1.5px solid red !important;
+    border: 1.6px solid red !important;
 }
-.halfbooked {
+.table-bordered .halfbooked {
     visibility: visible;
     background-color: #d3d3d3;
-    border-left: 1.5px solid orange !important;
-    border-right: 1.5px solid orange !important;
+    border: 1.5px solid orange;
 }
  
 td:hover {
@@ -51,7 +52,7 @@ td:hover .cell {
     top: 0;
 }
 
-tbody:before {
+.tablegap:before {
     line-height:1em;
     content:"-";
     color:white; /* to hide text */
