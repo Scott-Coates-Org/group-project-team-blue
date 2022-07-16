@@ -12,7 +12,6 @@ export default function CalendarCell(props) {
 
     const arr = []
     
-    // const testing = () => {
     for (let product of dateFilter) {
         for (let x of product.order.products) {
             if (x.room?.name == currentRoom.name) {

@@ -10,8 +10,6 @@ import { fetchAllRooms } from 'redux/room';
 import { fetchOpenTimes, getDataSuccess } from 'redux/opentime';
 import { format, millisecondsToMinutes, minutesToSeconds, secondsToHours, secondsToMinutes } from 'date-fns';
 import { firebase } from 'firebase/client';
-import BOOKING from "../datasrc.json"
-import { createDraftSafeSelector } from '@reduxjs/toolkit';
 import CalendarCell from './CalendarCell';
 import { fetchAllProducts } from 'redux/product';
 import { fetchAllBookings } from 'redux/booking';
@@ -23,9 +21,7 @@ export default function CalendarView() {
     const {data: timedata, isLoaded: timeisLoaded, hasErrors: timehasErrors} = useSelector((state) => state.opentime)
     const { data: productdata } = useSelector((state) => state.product)
     const { data: bookingdata } = useSelector((state) => state.booking)
-    // console.log(productdata)
-    // const roomdata= data.filter((room) => room.capacity == 50);
-    // console.log(roomdata)
+
     useEffect(() => {
         dispatch(fetchAllRooms());
         dispatch(fetchAllProducts());
@@ -51,14 +47,8 @@ export default function CalendarView() {
         cell.push(eachCellTime(open, i));
     }
     const headers = cell.filter((value, index) => index % 2 == 0)
-    console.log(bookingdata)
-    // function timeadd(time, plus) {
-    //     let hr = time?.split(':')[0];
-    //     let min = time?.split(':')[1];
-    //     let inseconds = hoursToSeconds(hr) + minutesToSeconds(min) + plus*3600;
-    //     let newtime = secondsToHours(inseconds)
-    //     return newtime + `:${min}`
-    // }
+    // console.log(bookingdata)
+    
     function eachCellTime(time, plus) {
         let hr = time?.split(':')[0];
         let min = time?.split(':')[1];
@@ -81,7 +71,7 @@ export default function CalendarView() {
                 onSelect={() => console.log(startdate)}
                 />
             </Card>
-            {!isLoaded && "Products loading..."}
+            {!isLoaded && "Calendar loading..."}
             {hasErrors && "Error Loading"}
             {isLoaded && (
             <>

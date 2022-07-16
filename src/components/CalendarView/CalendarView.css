@@ -1,6 +1,4 @@
-/* .table-bordered td {
-    border: 1.5px solid #dee2e6;
-} */
+
 .cell {
     width: 120px;
     height: 75px;
@@ -12,6 +10,7 @@ th {
     white-space: nowrap;
 }
 
+/*higher precedence than default reactstrap style*/
 .table-bordered #available {
     border-left: 1.5px solid green;
     border-right: 1.5px solid green;
