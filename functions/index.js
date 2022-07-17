@@ -37,20 +37,33 @@ exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
   };
 });
 
-exports.calculateOrderAmount = functions.https.onCall(async (data, context) => {
-  // Replace this constant with a calculation of the order's amount
-  // Calculate the order total on the server to prevent
-  // people from directly manipulating the amount on the client
+const calculateOrderAmount = (data) => {
+  let subtotal = 0;
+  let total = 0;
+  const transactionFee = 500;
+  const tax = 1.05;
+  if (data[0] != undefined) {
+    for (const item of data) {
+      subtotal += (item.price * item.quantity);
+    }
+    total = Math.round(((subtotal * 100) * tax)) + transactionFee;
+    return total;
+  }
   return 1400;
-});
+};
 
 exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
+  const products = data.orders.products;
+
   const paymentIntent = await stripe.paymentIntents.create({
-    // amount: calculateOrderAmount(items),
-    amount: 1400,
+    amount: calculateOrderAmount(products),
+    // amount: 1400,
     currency: "usd",
     automatic_payment_methods: {
       enabled: true,
+    },
+    metadata: {
+      docID: data.docID,
     },
   });
 
@@ -70,7 +83,7 @@ exports.events = functions.https.onRequest((request, response) => {
         endpointSecret,
     );
 
-    // Add the event to the database
+    // Add the event to the database`
     return admin
         .database()
         .ref("/events")
@@ -112,3 +125,27 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
         console.error(error);
       });
 });
+
+// want transactionId, confirmDate, amount, receiptURL
+
+exports.addStripeDataToDB = functions.database.ref("/events/{eventId}")
+    .onCreate( async (snapshot, context) => {
+      const docID = snapshot.val().data.object.metadata.docID;
+      const amount = snapshot.val().data.object.amount_received;
+      const transactionID = snapshot.val().data.object.id;
+      const receiptURL = snapshot.val().data.object.charges.data[0].receipt_url;
+      const unixTime = snapshot.val().created;
+      const milliseconds = unixTime * 1000;
+      const dateObject = new Date(milliseconds);
+      const dbTime = dateObject.toString();
+      await admin.firestore().collection("bookings").doc(docID).update({
+        "stripe.amount": amount,
+        "stripe.receiptURL": receiptURL,
+        "stripe.transactionID": transactionID,
+        "stripe.confirmDate": dbTime,
+      });
+      return console.log({
+        eventId: context.params.eventId,
+        data: snapshot.val().data.object.metadata.docID,
+      });
+    });
