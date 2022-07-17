@@ -1,33 +1,68 @@
-import { useWizard } from 'react-use-wizard';
-import { useState, useEffect } from 'react';
-import { Button } from 'reactstrap';
-import WizardStep from 'components/checkout/wizard-parts/WizardStep';
-import Stripe from 'components/stripe/Stripe';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { firebase } from 'firebase/client';
-require('firebase/functions');
+import { useWizard } from "react-use-wizard";
+import { useState, useEffect } from "react";
+import { Button } from "reactstrap";
+import WizardStep from "components/checkout/wizard-parts/WizardStep";
+import Stripe from "components/stripe/Stripe";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { firebase } from "firebase/client";
+require("firebase/functions");
+import { useDispatch, useSelector } from "react-redux";
+import { createBookingWithID } from "redux/booking";
+import uniqid from "uniqid";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const StripePayment = () => {
   const { previousStep } = useWizard();
-  const [clientSecret, setClientSecret] = useState('');
+  const [clientSecret, setClientSecret] = useState("");
+  const dispatch = useDispatch();
+  const { bookingDate, products, customerDetails, waiver } = useSelector(
+    ({ cartDetails }) => cartDetails
+  );
+
+  const newDocID = uniqid();
+
+  const bookingDetails = {
+    docID: newDocID,
+    customer: customerDetails,
+    orders: {
+      bookingDate: bookingDate,
+      products: products,
+    },
+    stripe: {
+      transactionID: "",
+      confirmDate: "",
+      amount: "",
+      receiptURL: "",
+    },
+    waiver: waiver,
+  };
 
   useEffect(() => {
-    const createPaymentIntent = firebase
-      .functions()
-      .httpsCallable('createPaymentIntent');
+    dispatch(
+      createBookingWithID({
+        docID: bookingDetails.docID,
+        customer: bookingDetails.customer,
+        order: bookingDetails.orders,
+        stripe: bookingDetails.stripe,
+        waiver: bookingDetails.waiver,
+      })
+    ).then(() => {
+      const createPaymentIntent = firebase
+        .functions()
+        .httpsCallable("createPaymentIntent");
 
-    createPaymentIntent().then((result) =>
-      setClientSecret(result.data.clientSecret)
-    );
+      createPaymentIntent(bookingDetails).then((result) =>
+        setClientSecret(result.data.clientSecret)
+      );
+    });
   }, []);
 
   const options = {
     // passing the client secret obtained from the server
     clientSecret: clientSecret,
-    loader: 'always',
+    loader: "always",
   };
   return (
     <WizardStep stepHeader="Select payment details">
@@ -42,7 +77,7 @@ const StripePayment = () => {
         <Button
           color="secondary"
           onClick={() => previousStep()}
-          className={'flex-grow-1 w-50'}
+          className={"flex-grow-1 w-50"}
           outline
         >
           Back
