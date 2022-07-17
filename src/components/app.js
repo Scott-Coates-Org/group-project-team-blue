@@ -39,6 +39,7 @@ function App() {
   const props = {};
 
   const dispatch = useDispatch();
+  const [clientSecret, setClientSecret] = useState('');
 
   useEffect(() => {
     dispatch(getData());
