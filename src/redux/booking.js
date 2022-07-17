@@ -31,8 +31,7 @@ const booking = createSlice({
 
 export const reducer = booking.reducer;
 
-export const { getData, getDataSuccess, getDataFailure, createDataFailure } =
-  booking.actions;
+export const { getData, getDataSuccess, getDataFailure, createDataFailure } = booking.actions;
 
 export const fetchAllBookings = createAsyncThunk(
   "booking/fetchAllBookings",
@@ -49,16 +48,26 @@ export const fetchAllBookings = createAsyncThunk(
   }
 );
 
+export const fetchBookingById = createAsyncThunk(
+  "booking/fetchBookingById",
+  async (payload, thunkAPI) => {
+    thunkAPI.dispatch(getData());
+
+    try {
+      const data = await _fetchBookingByIdFromDb(payload.id);
+      thunkAPI.dispatch(getDataSuccess(data));
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(getDataFailure(error));
+    }
+  }
+);
+
 export const createBooking = createAsyncThunk(
   "booking/createBooking",
   async (payload, thunkAPI) => {
     try {
-      await _createBooking(
-        payload.customer,
-        payload.order,
-        payload.stripe,
-        payload.waiver
-      );
+      await _createBooking(payload.customer, payload.order, payload.stripe, payload.waiver);
     } catch (error) {
       console.error("error", error);
       thunkAPI.dispatch(createDataFailure());
@@ -103,15 +112,20 @@ export const createBookingWithID = createAsyncThunk(
 );
 
 async function _fetchAllBookingsFromDb() {
-  const snapshot = await firebaseClient
-    .firestore()
-    .collection("bookings")
-    .get();
+  const snapshot = await firebaseClient.firestore().collection("bookings").get();
 
   const bookingData = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
+
+  return bookingData;
+}
+
+async function _fetchBookingByIdFromDb(id) {
+  const snapshot = await firebaseClient.firestore().collection("bookings").doc(id).get();
+
+  const bookingData = snapshot ? { id: snapshot.id, ...snapshot.data() } : null;
 
   return bookingData;
 }
