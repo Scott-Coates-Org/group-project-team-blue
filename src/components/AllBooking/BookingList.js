@@ -7,7 +7,7 @@ import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import BookingView from './BookingView';
 import { ButtonGroup, Button, ButtonToolbar } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAllBookings } from 'redux/booking'
+import { fetchAllBookings, getData } from 'redux/booking'
 
 export default function BookingList() {
   const dispatch = useDispatch();
@@ -18,15 +18,17 @@ export default function BookingList() {
 
   const customTimeSort = (rowA, rowB, id, desc) => {
     // console.log(rowA.values[id])
-    let valueA = rowA.values[id].sort()[1];
-    let valueB = rowB.values[id].sort()[1];
+    let valueA = rowA.values[id].sort()[rowA.values[id].length - 1];
+    let valueB = rowB.values[id].sort()[rowA.values[id].length - 1];
     // console.log(valueA, valueB)
-    if (!valueA ) {
-      valueA = desc ? "ZZZZZZ" : "AAAAAAA";
+    if (valueA == undefined ) {
+      valueA = desc ? "ZZZZZZZ" : "0000000";
     }
-    if (!valueB ) {
-      valueB = desc ? "ZZZZZZ" : "AAAAAAA";
+    if (valueB == undefined ) {
+      valueB = desc ? "ZZZZZZ" : "0000000";
     }
+    // console.log(rowA.values[id].sort()[rowA.values[id].length - 1])
+    console.log(valueA < valueB, valueA, valueB)
     if (valueA >valueB) return 1;
     if (valueB > valueA) return -1;
      return 0;
@@ -38,7 +40,10 @@ export default function BookingList() {
 
   useEffect(() => {
     dispatch(fetchAllBookings())
-  }, [])
+    // return () => {
+    //   dispatch(getData())
+    // }
+  }, [dispatch])
 
   const {
     getTableProps,
