@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { setContactDetails } from 'redux/cartDetails';
 import { useWizard } from 'react-use-wizard';
-import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
+import { Button, FormGroup, Label } from 'reactstrap';
 import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 
 const ContactDetails = () => {
