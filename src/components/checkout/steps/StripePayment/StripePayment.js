@@ -17,7 +17,7 @@ const StripePayment = () => {
   const { previousStep } = useWizard();
   const [clientSecret, setClientSecret] = useState("");
   const dispatch = useDispatch();
-  const { bookingDate, products, customerDetails, waiver } = useSelector(
+  const { bookingDate, products, customerDetails, participants } = useSelector(
     ({ cartDetails }) => cartDetails
   );
 
@@ -36,7 +36,7 @@ const StripePayment = () => {
       amount: "",
       receiptURL: "",
     },
-    waiver: waiver,
+    participants: participants,
   };
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const StripePayment = () => {
       <div>
         {clientSecret && (
           <Elements options={options} stripe={stripePromise}>
-            <Stripe props={clientSecret} />
+            <Stripe props={{ clientSecret, newDocID }} />
           </Elements>
         )}
       </div>

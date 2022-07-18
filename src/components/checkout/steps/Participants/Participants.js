@@ -3,7 +3,7 @@ import { useWizard } from "react-use-wizard";
 import { useDispatch } from 'react-redux';
 import { setParticipants } from 'redux/cartDetails';
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Button, Form, FormGroup, Input, Label, Col } from "reactstrap";
 
 function Participants() {
   const dispatch = useDispatch();
@@ -38,19 +38,17 @@ function Participants() {
         <ul className="list-unstyled">
           {fields.map((item, index) => (
             <li key={item.id}>
-              <FormGroup>
-                <Label for="firstName">First Name</Label>
-                <Controller
-                  render={({ field }) => <Input id="firstName" {...field} />}
-                  name={`participants.${index}.firstName`}
-                  control={control}
-                />
-                <Label for="lastName">Last Name</Label>
-                <Controller
-                  render={({ field }) => <Input id="lastName" {...field} className="mb-3" />}
-                  name={`participants.${index}.lastName`}
-                  control={control}
-                />
+              <FormGroup row>
+                <Label for="fullName" sm={3}>
+                  Full Name
+                </Label>
+                <Col sm={9}>
+                  <Controller
+                    render={({ field }) => <Input id="fullName" {...field} />}
+                    name={`participants.${index}.fullName`}
+                    control={control}
+                  />
+                </Col>
                 <Button type="button" onClick={() => remove(index)}>
                   Remove Jumper
                 </Button>
@@ -59,12 +57,7 @@ function Participants() {
           ))}
         </ul>
         <hr />
-        <Button
-          type="button"
-          color="primary"
-          className="mb-3"
-          onClick={() => append({ firstName: "", lastName: "" })}
-        >
+        <Button type="button" color="primary" className="mb-3" onClick={() => append({ fullName: "" })}>
           Add Jumper
         </Button>
         <div className="d-flex">

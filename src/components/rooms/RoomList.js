@@ -26,10 +26,10 @@ const RoomList = (props) => {
               <th>Photo</th>
             </tr>
           </thead>
-          {data.map((item, index) => {
-            return (
-              <tbody>
-                <tr>
+          <tbody>
+            {data.map((item, index) => {
+              return (
+                <tr key={item.id}>
                   <th scope="row">{index + 1}</th>
                   <td>{item.name}</td>
                   <td>{item.capacity}</td>
@@ -41,9 +41,9 @@ const RoomList = (props) => {
                     />
                   </td>
                 </tr>
-              </tbody>
-            );
-          })}
+              );
+            })}
+          </tbody>
         </Table>
       )}
     </section>
