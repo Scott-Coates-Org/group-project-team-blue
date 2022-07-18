@@ -21,6 +21,9 @@ const cartDetails = createSlice({
     headcount: 0,
   },
   reducers: {
+    setContactDetails: (state, action) => {
+      state.customerDetails = action.payload;
+    },
     getHeadcount: (state, action) => {
       state.headcount = state.products
         .filter((product) => product.type === 'product')
@@ -98,6 +101,7 @@ const cartDetails = createSlice({
 export const reducer = cartDetails.reducer;
 
 export const {
+  setContactDetails,
   getHeadcount,
   getCosts,
   setBookingDate,
