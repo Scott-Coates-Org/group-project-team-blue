@@ -16,6 +16,25 @@ export default function BookingList() {
   const data = useMemo(() => bookingdata, [bookingdata]);
   // console.log(bookingdata)
 
+  let totalAmount = 0;
+  for (let booking of bookingdata) {
+    let total = booking?.order.products.reduce(
+      (sum, { price, quantity }) => sum + price * quantity,
+      0
+    )
+    totalAmount += total
+  }
+  console.log(tickets)
+  // console.log(totalAmount)
+  let tickets = 0;
+  for (let booking of bookingdata) {
+    let sale = booking?.order.products.filter(({type}) => type == 'product')
+    .reduce((sum, {quantity}) => sum + quantity,
+    0)
+    tickets += sale
+  }
+
+  /* this sort is not fully working */
   const customTimeSort = (rowA, rowB, id, desc) => {
     // console.log(rowA.values[id])
     let valueA = rowA.values[id].sort()[rowA.values[id].length - 1];
@@ -40,9 +59,6 @@ export default function BookingList() {
 
   useEffect(() => {
     dispatch(fetchAllBookings())
-    // return () => {
-    //   dispatch(getData())
-    // }
   }, [dispatch])
 
   const {
@@ -81,11 +97,11 @@ export default function BookingList() {
     <BookingView filter={globalFilter} setFilter={setGlobalFilter}/>
     <div className="d-flex justify-content-start mb-5">
       <div className="mr-5">
-        <h5 className="mb-0">$ 100,000</h5>
+        <h5 className="mb-0">$ {totalAmount.toFixed(2)}</h5>
         <span>Sales</span>
       </div>
       <div>
-        <h5 className="mb-0">435</h5>
+        <h5 className="mb-0">{tickets}</h5>
         <span>Tickets</span>
       </div>
     </div>

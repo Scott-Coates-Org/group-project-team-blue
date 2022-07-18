@@ -39,12 +39,10 @@ export const COLUMNS = [
     {
         Header: "AMOUNT",
         accessor: row => {
-        let sum = [];
-        row.order.products.map(product => sum.push(product?.price))
-        const total = sum.reduce(
-            (sum, current) => sum + current,
-            0
-        )
+            let total = row?.order.products.reduce(
+                (sum, { price, quantity }) => sum + price * quantity,
+                0
+            )
         return total;
         }
     },
