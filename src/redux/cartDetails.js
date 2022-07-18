@@ -18,9 +18,13 @@ const cartDetails = createSlice({
       ipAddress: '',
       userAgent: ''
     },
+    participants: null,
     headcount: 0,
   },
   reducers: {
+    setParticipants: (state, action) => {
+      state.participants = action.payload.map(participant => participant);
+    },
     setContactDetails: (state, action) => {
       state.customerDetails = action.payload;
     },
@@ -101,6 +105,7 @@ const cartDetails = createSlice({
 export const reducer = cartDetails.reducer;
 
 export const {
+  setParticipants,
   setContactDetails,
   getHeadcount,
   getCosts,
