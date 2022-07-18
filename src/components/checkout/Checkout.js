@@ -4,7 +4,7 @@ import Cart from './cart/Cart';
 
 const Checkout = () => {
   return (
-    <div className="h-100 checkout-bg">
+    <div className="checkout-bg">
       <Container className="py-5">
         <Row xs="1">
           <WizardContainer />

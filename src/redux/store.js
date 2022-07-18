@@ -9,6 +9,7 @@ import { reducer as opentime } from './opentime';
 import { reducer as customer } from './customer';
 import { reducer as cartDetails } from './cartDetails';
 import { reducer as booking } from './booking';
+import { reducer as waiver } from './waiver';
 
 const reducer = combineReducers({
   user,
@@ -18,7 +19,8 @@ const reducer = combineReducers({
   opentime,
   customer,
   cartDetails,
-  booking
+  booking,
+  waiver 
 });
 
 const store = configureStore({
