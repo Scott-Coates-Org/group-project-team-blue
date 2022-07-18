@@ -67,7 +67,6 @@ function Participants() {
         >
           Add Jumper
         </Button>
-        {/* <Button type="submit">Submit</Button> */}
         <div className="d-flex">
           <Button
             color="secondary"
@@ -80,7 +79,6 @@ function Participants() {
           <Button
             type="submit"
             color="warning"
-            // onClick={() => nextStep()}
             className="flex-grow-1 w-75"
           >
             Continue
