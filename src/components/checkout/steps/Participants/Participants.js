@@ -1,8 +1,13 @@
 import React from "react";
+import { useWizard } from "react-use-wizard";
+import { useDispatch } from 'react-redux';
+import { setParticipants } from 'redux/cartDetails';
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 
 function Participants() {
+  const dispatch = useDispatch();
+  const { nextStep, previousStep } = useWizard();
   const {
     register,
     control,
@@ -20,16 +25,17 @@ function Participants() {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
+    const { participants } = data;
+    dispatch(setParticipants(participants));
+    nextStep();
   };
 
   return (
     <div>
       <Form
-        className="p-3 my-3 border border-primary"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <ul style={{ "list-style-type": "none" }}>
+        <ul className="list-unstyled">
           {fields.map((item, index) => (
             <li key={item.id}>
               <FormGroup>
@@ -41,7 +47,7 @@ function Participants() {
                 />
                 <Label for="lastName">Last Name</Label>
                 <Controller
-                  render={({ field }) => <Input id="lastName" {...field} />}
+                  render={({ field }) => <Input id="lastName" {...field} className="mb-3" />}
                   name={`participants.${index}.lastName`}
                   control={control}
                 />
@@ -52,13 +58,34 @@ function Participants() {
             </li>
           ))}
         </ul>
+        <hr />
         <Button
           type="button"
+          color="primary"
+          className="mb-3"
           onClick={() => append({ firstName: "", lastName: "" })}
         >
           Add Jumper
         </Button>
-        <Button type="submit">Submit</Button>
+        {/* <Button type="submit">Submit</Button> */}
+        <div className="d-flex">
+          <Button
+            color="secondary"
+            onClick={() => previousStep()}
+            className={"flex-grow-1 w-50 mr-2"}
+            outline
+          >
+            Back
+          </Button>
+          <Button
+            type="submit"
+            color="warning"
+            // onClick={() => nextStep()}
+            className="flex-grow-1 w-75"
+          >
+            Continue
+          </Button>
+        </div>
       </Form>
     </div>
   );
