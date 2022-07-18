@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Button, Form, FormGroup, Input, Label, Col } from "reactstrap";
 
 function Participants() {
   const {
@@ -32,19 +32,17 @@ function Participants() {
         <ul style={{ "list-style-type": "none" }}>
           {fields.map((item, index) => (
             <li key={item.id}>
-              <FormGroup>
-                <Label for="firstName">First Name</Label>
-                <Controller
-                  render={({ field }) => <Input id="firstName" {...field} />}
-                  name={`participants.${index}.firstName`}
-                  control={control}
-                />
-                <Label for="lastName">Last Name</Label>
-                <Controller
-                  render={({ field }) => <Input id="lastName" {...field} />}
-                  name={`participants.${index}.lastName`}
-                  control={control}
-                />
+              <FormGroup row>
+                <Label for="fullName" sm={3}>
+                  Full Name
+                </Label>
+                <Col sm={9}>
+                  <Controller
+                    render={({ field }) => <Input id="fullName" {...field} />}
+                    name={`participants.${index}.fullName`}
+                    control={control}
+                  />
+                </Col>
                 <Button type="button" onClick={() => remove(index)}>
                   Remove Jumper
                 </Button>
@@ -52,10 +50,7 @@ function Participants() {
             </li>
           ))}
         </ul>
-        <Button
-          type="button"
-          onClick={() => append({ firstName: "", lastName: "" })}
-        >
+        <Button type="button" onClick={() => append({ fullName: "" })}>
           Add Jumper
         </Button>
         <Button type="submit">Submit</Button>
