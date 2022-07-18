@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { setContactDetails } from 'redux/cartDetails';
 import { useWizard } from 'react-use-wizard';
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import WizardStep from 'components/checkout/wizard-parts/WizardStep';
@@ -9,17 +10,14 @@ const ContactDetails = () => {
   const { nextStep, previousStep } = useWizard();
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-
-
-
   const onSubmit = data => {
-    console.log(errors);
-    // dispatch(setContactDetails(data));
+    // console.log(errors);
+    dispatch(setContactDetails(data));
     nextStep();
   }
   return (
     <WizardStep stepHeader="Enter your details">
-      <form onSubmit={handleSubmit(onSubmit)} novalidate>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <FormGroup>
           <Label for="first">First Name</Label>
           <input className="form-control" type="text" id="first" {...register("first", {required: true})} required />
@@ -55,7 +53,6 @@ const ContactDetails = () => {
           </Button>
           <Button
             type="submit"
-            // onClick={() => nextStep()}
             color="warning"
             className="flex-grow-1 w-75"
           >
