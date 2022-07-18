@@ -15,7 +15,7 @@ th {
     border-left: 1.5px solid green;
     border-right: 1.5px solid green;
     border-bottom: 0;
-    background-color: #d3d3d3;
+    background-color: #def5fc;
 }
 
   .display {
@@ -28,7 +28,7 @@ th {
 }
 .table-bordered .halfbooked {
     visibility: visible;
-    background-color: #d3d3d3;
+    background-color: #def5fc;
     border: 1.5px solid orange;
 }
  
@@ -46,9 +46,10 @@ td:hover .cell {
     height: 60%;
   }
 
-.tableh {
+.table thead .tableh {
     position: sticky;
     top: 0;
+    border: 1px solid black;
 }
 
 .tablegap:before {
@@ -59,8 +60,6 @@ td:hover .cell {
 }
 
 .table-bordered thead th {
-    border: none;
-    border-color: white;
     background-color: #d3d3d3;
 }
 
@@ -80,3 +79,20 @@ td:hover .cell {
     justify-content: flex-start;
 
 }
+
+/*table header border sticky*/
+.tableh:after,
+ .tableh:before {
+   content: '';
+   position: absolute;
+   left: 0;
+   width: 100%;
+ }
+ .tableh:before {
+   top: -1px;
+   border-top: 1px solid black;
+ }
+ .tableh:after {
+   bottom: -1px;
+   border-bottom: 2px solid black;
+ }
