@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { Button } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
 import {
   PaymentElement,
   useStripe,
   useElements,
-} from '@stripe/react-stripe-js';
-import { firebase } from 'firebase/client';
-import { createBooking } from 'redux/booking';
-require('firebase/functions');
+} from "@stripe/react-stripe-js";
+import { firebase } from "firebase/client";
+import { createBooking, fetchAllBookings } from "redux/booking";
+require("firebase/functions");
 
 const Stripe = (props) => {
   const dispatch = useDispatch();
-  const { bookingDate, products, customerDetails, waiver } = useSelector(({ cartDetails }) => cartDetails);
+  const { bookingDate, products, customerDetails, waiver } = useSelector(
+    ({ cartDetails }) => cartDetails
+  );
+  const { data, isLoaded, hasErrors } = useSelector((state) => state.booking);
   const stripe = useStripe();
   const elements = useElements();
 
@@ -20,10 +23,15 @@ const Stripe = (props) => {
     customer: customerDetails,
     orders: {
       bookingDate: bookingDate,
-      products: products
+      products: products,
     },
-    stripe: 'test',
-    waiver: waiver
+    stripe: {
+      transactionID: "",
+      confirmDate: "",
+      amount: "",
+      receiptURL: "",
+    },
+    waiver: waiver,
   };
 
   const [message, setMessage] = useState(null);
@@ -42,21 +50,22 @@ const Stripe = (props) => {
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {
-        case 'succeeded':
-          setMessage('Payment succeeded!');
+        case "succeeded":
+          setMessage("Payment succeeded!");
           break;
-        case 'processing':
-          setMessage('Your payment is processing.');
+        case "processing":
+          setMessage("Your payment is processing.");
           break;
-        case 'requires_payment_method':
-          setMessage('Your payment was not successful, please try again.');
+        case "requires_payment_method":
+          setMessage("Your payment was not successful, please try again.");
           break;
         default:
-          setMessage('Something went wrong.');
+          setMessage("Something went wrong.");
           break;
       }
     });
   }, [stripe]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,31 +78,11 @@ const Stripe = (props) => {
 
     setIsLoading(true);
 
-    const createPaymentIntent = firebase
-      .functions()
-      .httpsCallable('createPaymentIntent');
-
-    createPaymentIntent(bookingDetails)
-      .then((res) => {
-        console.log('firing createPaymentIntent', bookingDetails);
-        dispatch(
-          createBooking({
-            customer: bookingDetails.customer,
-            order: bookingDetails.orders,
-            stripe: bookingDetails.stripe,
-            waiver: bookingDetails.waiver
-          })
-        );
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-      
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: 'http://localhost:3000',
+        return_url: "http://localhost:3000",
       },
     });
     // This point will only be reached if there is an immediate error when
@@ -101,10 +90,10 @@ const Stripe = (props) => {
     // your `return_url`. For some payment methods like iDEAL, your customer will
     // be redirected to an intermediate site first to authorize the payment, then
     // redirected to the `return_url`.
-    if (error.type === 'card_error' || error.type === 'validation_error') {
+    if (error.type === "card_error" || error.type === "validation_error") {
       setMessage(error.message);
     } else {
-      setMessage('An unexpected error occurred.');
+      setMessage("An unexpected error occurred.");
     }
 
     setIsLoading(false);
@@ -124,7 +113,7 @@ const Stripe = (props) => {
           {isLoading ? (
             <div /* className="spinner" id="spinner" */>loading</div>
           ) : (
-            'Pay now'
+            "Pay now"
           )}
         </span>
       </Button>

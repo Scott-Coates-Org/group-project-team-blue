@@ -11,7 +11,7 @@ import AdminBooking from 'components/AdminBooking/AdminBooking';
 import BookingView from 'components/AllBooking/BookingView';
 import BookingList from 'components/AllBooking/BookingList';
 import BookingDetails from 'components/AllBooking/BookingDetails';
-import CalendarView from 'components/AdminBooking/CalendarView';
+import CalendarView from 'components/CalendarView/CalendarView';
 
 const Dashboard = (props) => {
   return (
