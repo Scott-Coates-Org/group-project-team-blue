@@ -109,11 +109,14 @@ exports.events = functions.https.onRequest((request, response) => {
 
 exports.sendEmail = functions.https.onCall(async (data, context) => {
   const msg = {
-    to: "alechooyman@gmail.com", // Change to your recipient
-    from: "mentorshipteamblue@gmail.com", // Change to your verified sender
-    subject: "Sending with SendGrid is Fun",
-    text: "and easy to do anywhere, even with Node.js",
+    to: "marge.consunji@gmail.com",
+    from: "mentorshipteamblue@gmail.com",
+    subject: "Hopper - Booking Confirmation",
     html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+    templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
+    dynamicTemplateData: {
+      firstname: "Marge",
+    },
   };
 
   sgMail
