@@ -52,7 +52,6 @@ const StripePayment = () => {
       const createPaymentIntent = firebase
         .functions()
         .httpsCallable("createPaymentIntent");
-
       createPaymentIntent(bookingDetails).then((result) =>
         setClientSecret(result.data.clientSecret)
       );
