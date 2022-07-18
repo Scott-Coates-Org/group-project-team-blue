@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
-import datasource from '../datasource.json'
+import React, { useMemo, useEffect } from 'react'
 import { COLUMNS } from './columns'
 import { useTable, useSortBy, useGlobalFilter, usePagination } from 'react-table'
 import "./BookingList.css"
