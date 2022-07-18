@@ -49,7 +49,7 @@ export default function AdminNavbar() {
             </Collapse> */}
               <Dropdown isOpen={isOpen} toggle={toggle}>
                 <DropdownToggle className='nt' caret>
-                Jan3<br/>LoremLoremLorem
+                  Account
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem onClick={() => history.push("/logout")} className='text-white nt'>
