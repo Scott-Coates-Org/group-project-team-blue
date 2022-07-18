@@ -23,7 +23,10 @@ const Dashboard = (props) => {
         <Col className="bg-light content " xs="10">
           <Switch>
             <Route exact path="/admin">
-              <h3>Admin area</h3>
+              <div style={{height:  '100%'}} className='d-flex justify-content-center align-items-center'>
+                <h1 style={{fontSize: '5rem'}}>Admin area</h1>
+              </div>
+              
             </Route>
             <Route path="/admin/products">
               <ProductList />
