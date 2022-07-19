@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 import { createOpenTime } from "redux/opentime";
 import { useDispatch } from "react-redux";
+import { format } from "date-fns";
 
 const DateSelect = () => {
   const dispatch = useDispatch();
@@ -31,8 +32,8 @@ const DateSelect = () => {
           close: data.end,
         })
       ).then(() => {
+        alert(`Open & Close times for ${format(new Date(data.selectedDate),"dd/MM/yyyy")} added to Database`);
         reset();
-        alert("Room added to Database");
         console.log(data.selectedDate);
       });
     }
