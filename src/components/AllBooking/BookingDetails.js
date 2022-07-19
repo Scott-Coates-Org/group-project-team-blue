@@ -25,7 +25,7 @@ export default function BookingDetails() {
      console.log(waiverdata)
 
     console.log(data)
-    const bookingdata = data.filter((booking) => {
+    const bookingdata = data?.filter((booking) => {
         return booking.id == id
     })
      
