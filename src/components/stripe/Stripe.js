@@ -69,7 +69,7 @@ const Stripe = (props) => {
     const options = {
       expiresIn: 3600,
     };
-    const token = jwt.sign({ id: props.newDocID, ...bookingDetails }, key, options);
+    const token = jwt.sign({ bookingId: props.newDocID }, key, options);
 
     return token;
   };
