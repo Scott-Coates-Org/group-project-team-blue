@@ -23,6 +23,10 @@
     top: 0;
   }
 
+.l-height {
+  line-height: 2rem;
+}
+
 /*test*/
 #extra {
   display: none;

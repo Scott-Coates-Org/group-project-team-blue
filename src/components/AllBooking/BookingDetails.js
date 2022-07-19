@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom'
 import { Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchWaiversByBookingId } from 'redux/waiver';
-import { fetchBookingById, getData, getDataSuccess } from 'redux/booking';
+import { fetchAllBookings, fetchBookingById, getData, getDataSuccess } from 'redux/booking';
 import { firebase } from 'firebase/client';
+import { format } from 'date-fns';
 
 
 export default function BookingDetails() {
@@ -13,15 +14,21 @@ export default function BookingDetails() {
      const {data, isLoaded, hasErrors} = useSelector(state => state.booking)
      const {data: waiverdata } = useSelector(state => state.waiver)
 
+     useEffect(() => {
+        const getdata = async () => {
+            await dispatch(fetchAllBookings())
+            await dispatch(fetchWaiversByBookingId({id : id}))
+        }
+        getdata()
+     }, [])
+
      console.log(waiverdata)
 
-    console.log(bookingdata)
+    console.log(data)
     const bookingdata = data.filter((booking) => {
         return booking.id == id
     })
-     useEffect(() => {
-        dispatch(fetchWaiversByBookingId({id : id}))
-     }, [])
+     
 
     return (
         <div className='container'>
@@ -58,28 +65,28 @@ export default function BookingDetails() {
              </Table>
              <h5>Customer Infomation</h5>
              <ul>
-                 <li><strong>First Name:</strong> {bookingdata[0]?.customer?.first}</li>
-                 <li><strong>Last Name:</strong> {bookingdata[0]?.customer?.last}</li>
-                 <li><strong>Email:</strong> {bookingdata[0]?.customer?.email}</li>
-                 <li><strong>Zip:</strong> {bookingdata[0]?.customer?.zip}</li>
-                 <li><strong>Address:</strong> {bookingdata[0]?.customer?.address}</li>
+                 <li className='l-height'><strong className='mr-4'>First Name:</strong> {bookingdata[0]?.customer?.first}</li>
+                 <li className='l-height'><strong className='mr-4'>Last Name:</strong> {bookingdata[0]?.customer?.last}</li>
+                 <li className='l-height'><strong className='mr-4'>Email:</strong> {bookingdata[0]?.customer?.email}</li>
+                 <li className='l-height'><strong className='mr-4'>Zip:</strong> {bookingdata[0]?.customer?.zip}</li>
+                 <li className='l-height'><strong className='mr-4'>Address:</strong> {bookingdata[0]?.customer?.address}</li>
              </ul>
              <h5>Checkout Information</h5>
              <ul>
-                 <li><strong>Date:</strong> {bookingdata[0]?.stripe?.confirmDate}</li>
-                 <li><strong>Amount:</strong> {bookingdata[0]?.stripe?.amount}</li>
-                 <li><strong>Receipt Url:</strong> <a href={bookingdata[0]?.stripe?.receiptURL}> {bookingdata[0]?.stripe?.receiptURL}</a></li>
-                 <li><strong>Transcation ID:</strong> {bookingdata[0]?.stripe?.transactionID}</li>
+                 <li className='l-height'><strong className='mr-4'>Date:</strong> {bookingdata[0]?.stripe?.confirmDate}</li>
+                 <li className='l-height'><strong className='mr-4'>Amount:</strong> {bookingdata[0]?.stripe?.amount}</li>
+                 <li className='l-height'><strong className='mr-4'>Receipt Url:</strong> <a href={bookingdata[0]?.stripe?.receiptURL}>{bookingdata[0]?.stripe?.receiptURL}</a></li>
+                 <li className='l-height'><strong className='mr-4'>Transcation ID:</strong> {bookingdata[0]?.stripe?.transactionID}</li>
              </ul>
              <h5>Waiver</h5>
              {bookingdata[0]?.waiver &&  
              <ul>
-                <li><strong>Name:</strong> {waiverdata[0]?.name}</li>
-                <li><strong>Email:</strong> {waiverdata[0]?.email}</li>
-                <li><strong>Date:</strong> {waiverdata[0]?.date}</li>
-                 <li><strong>IP Address:</strong> {waiverdata[0]?.ipAddress}</li>
-                 <li><strong>User Agent:</strong> {waiverdata[0]?.userAgent}</li>
-                 <li><strong>Receipt Url:</strong> <a href={waiverdata[0]?.waiverURL}> {waiverdata[0]?.waiverURL}</a></li>
+                <li className='l-height'><strong className='mr-4'>Name:</strong> {waiverdata[0]?.name}</li>
+                <li className='l-height'><strong className='mr-4'>Email:</strong> {waiverdata[0]?.email}</li>
+                <li className='l-height'><strong className='mr-4'>Date:</strong> {waiverdata[0]?.date}</li>
+                <li className='l-height'><strong className='mr-4'>IP Address:</strong> {waiverdata[0]?.ipAddress}</li>
+                <li className='l-height'><strong className='mr-4'>User Agent:</strong> {waiverdata[0]?.userAgent}</li>
+                <li className='l-height'><strong className='mr-4'>Receipt Url:</strong> <a href={waiverdata[0]?.waiverURL}> {waiverdata[0]?.waiverURL}</a></li>
              </ul>}
             
         </div>

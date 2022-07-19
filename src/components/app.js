@@ -18,6 +18,7 @@ import CreateProduct from "./products/CreateProduct";
 import ProductList from "./products/ProductList";
 import SendGrid from "./sendgrid/SendGrid";
 import WaiverForm from "./waiver/WaiverForm";
+import BookingDetails from "./AllBooking/BookingDetails";
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
@@ -58,6 +59,9 @@ function App() {
       <AuthProvider onLogin={storeUserData}>
         <Router history={history}>
           <Switch>
+          <Route path="/bookings/:id">
+              <BookingDetails />
+            </Route>
             <Route
               path="/login"
               render={(routeProps) => (
