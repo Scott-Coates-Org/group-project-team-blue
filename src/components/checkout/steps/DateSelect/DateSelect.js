@@ -16,7 +16,7 @@ const DateSelect = () => {
   useEffect(() => {
     dispatch(
       setBookingDate(
-        `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
+        date.toISOString().split('T')[0]
       )
     );
   }, [date]);
