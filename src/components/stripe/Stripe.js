@@ -5,7 +5,7 @@ import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { firebase } from "firebase/client";
 import { createBooking, fetchAllBookings } from "redux/booking";
 require("firebase/functions");
-import { jwt } from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 
 const Stripe = (props) => {
   const dispatch = useDispatch();
@@ -15,6 +15,7 @@ const Stripe = (props) => {
   const { data, isLoaded, hasErrors } = useSelector((state) => state.booking);
   const stripe = useStripe();
   const elements = useElements();
+  const redirectURI = `${window.location.origin}/thankyou`;
 
   const bookingDetails = {
     customer: customerDetails,
@@ -63,12 +64,12 @@ const Stripe = (props) => {
     });
   }, [stripe]);
 
-  const createJWT = async () => {
+  const createJWT = () => {
     const key = process.env.REACT_APP_JWT_SECRET;
     const options = {
       expiresIn: 3600,
     };
-    const token = await jwt.sign({id: props.newDocID, ...bookingDetails}, key, options);
+    const token = jwt.sign({ id: props.newDocID, ...bookingDetails }, key, options);
 
     return token;
   };
@@ -84,11 +85,12 @@ const Stripe = (props) => {
 
     setIsLoading(true);
 
+    const bookingToken = createJWT();
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: `${redirectURI}?booking=${bookingToken}`,
       },
     });
 
