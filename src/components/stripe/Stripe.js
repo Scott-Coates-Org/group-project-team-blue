@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { firebase } from "firebase/client";
 import { createBooking, fetchAllBookings } from "redux/booking";
 require("firebase/functions");
+const jwt = require("jsonwebtoken");
 
 const Stripe = (props) => {
   const dispatch = useDispatch();
@@ -18,6 +15,7 @@ const Stripe = (props) => {
   const { data, isLoaded, hasErrors } = useSelector((state) => state.booking);
   const stripe = useStripe();
   const elements = useElements();
+  const redirectURI = `${window.location.origin}/thankyou`;
 
   const bookingDetails = {
     customer: customerDetails,
@@ -66,6 +64,16 @@ const Stripe = (props) => {
     });
   }, [stripe]);
 
+  const createJWT = () => {
+    const key = process.env.REACT_APP_JWT_SECRET;
+    const options = {
+      expiresIn: 3600,
+    };
+    const token = jwt.sign({ bookingId: props.newDocID }, key, options);
+
+    return token;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -77,11 +85,12 @@ const Stripe = (props) => {
 
     setIsLoading(true);
 
+    const bookingToken = createJWT();
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: `${redirectURI}?booking=${bookingToken}`,
       },
     });
 
@@ -110,11 +119,7 @@ const Stripe = (props) => {
         /* id="submit" */ type="submit"
       >
         <span /* id="button-text" */>
-          {isLoading ? (
-            <div /* className="spinner" id="spinner" */>loading</div>
-          ) : (
-            "Pay now"
-          )}
+          {isLoading ? <div /* className="spinner" id="spinner" */>loading</div> : "Pay now"}
         </span>
       </Button>
       {/* Show any error or success messages */}
