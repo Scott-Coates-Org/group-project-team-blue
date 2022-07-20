@@ -1,12 +1,34 @@
 import hopper from "../../assets/hopper.webp";
 import { Container, Row, Col, Table } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
+const jwt = require("jsonwebtoken");
 
 const Thankyou = () => {
-  const dispatch = useDispatch()
-  const { data: bookingData, isLoaded: bookingIsLoaded, hasErrors: bookingHasErrors } = useSelector((state) => state.booking);
-  const { data: productData, isLoaded: productIsLoaded, hasErrors: productHasErrors } = useSelector((state) => state.product);
+  // const dispatch = useDispatch();
+  // const {
+  //   data: bookingData,
+  //   isLoaded: bookingIsLoaded,
+  //   hasErrors: bookingHasErrors,
+  // } = useSelector((state) => state.booking);
+  // const {
+  //   data: productData,
+  //   isLoaded: productIsLoaded,
+  //   hasErrors: productHasErrors,
+  // } = useSelector((state) => state.product);
+
+  const useQuery = () => {
+    const { search } = useLocation();
+
+    return useMemo(() => new URLSearchParams(search), [search]);
+  };
+
+  const query = useQuery();
+  const bookingToken = query.get("booking");
+  const key = process.env.REACT_APP_JWT_SECRET;
+  const bookingData = jwt.verify(bookingToken, key);
+  console.log(bookingData);
 
   const styles = {
     h3: {
