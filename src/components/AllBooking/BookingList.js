@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react'
-// import datasource from '../datasource.json'
+import React, { useMemo, useEffect } from 'react'
 import { COLUMNS } from './columns'
 import { useTable, useSortBy, useGlobalFilter, usePagination } from 'react-table'
 import "./BookingList.css"
@@ -7,10 +6,60 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import BookingView from './BookingView';
 import { ButtonGroup, Button, ButtonToolbar } from 'reactstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchAllBookings, getData } from 'redux/booking'
 
 export default function BookingList() {
+  const dispatch = useDispatch();
+  const {data : bookingdata, isLoaded, hasErrors} = useSelector(state => state.booking)
   const columns = useMemo(() => COLUMNS, []);
-  const data = useMemo(() => datasource, []);
+  const data = useMemo(() => bookingdata, [bookingdata]);
+  // console.log(bookingdata)
+
+  let totalAmount = 0;
+  for (let booking of bookingdata) {
+    let total = booking?.order.products.reduce(
+      (sum, { price, quantity }) => sum + price * quantity,
+      0
+    )
+    totalAmount += total
+  }
+  console.log(tickets)
+  // console.log(totalAmount)
+  let tickets = 0;
+  for (let booking of bookingdata) {
+    let sale = booking?.order.products.filter(({type}) => type == 'product')
+    .reduce((sum, {quantity}) => sum + quantity,
+    0)
+    tickets += sale
+  }
+
+  /* this sort is not fully working */
+  const customTimeSort = (rowA, rowB, id, desc) => {
+    // console.log(rowA.values[id])
+    let valueA = rowA.values[id].sort()[rowA.values[id].length - 1];
+    let valueB = rowB.values[id].sort()[rowA.values[id].length - 1];
+    // console.log(valueA, valueB)
+    if (valueA == undefined ) {
+      valueA = desc ? "ZZZZZZZ" : "0000000";
+    }
+    if (valueB == undefined ) {
+      valueB = desc ? "ZZZZZZ" : "0000000";
+    }
+    // console.log(rowA.values[id].sort()[rowA.values[id].length - 1])
+    console.log(valueA < valueB, valueA, valueB)
+    if (valueA >valueB) return 1;
+    if (valueB > valueA) return -1;
+     return 0;
+}
+
+  const sortTypes = {
+    customTimeSort: customTimeSort,
+  };
+
+  useEffect(() => {
+    dispatch(fetchAllBookings())
+  }, [dispatch])
 
   const {
     getTableProps,
@@ -30,7 +79,8 @@ export default function BookingList() {
     setGlobalFilter
   } = useTable({
     columns,
-    data
+    data,
+    sortTypes
   }, useGlobalFilter, useSortBy, usePagination);
 
   const { globalFilter, pageIndex, pageSize } = state;
@@ -47,11 +97,11 @@ export default function BookingList() {
     <BookingView filter={globalFilter} setFilter={setGlobalFilter}/>
     <div className="d-flex justify-content-start mb-5">
       <div className="mr-5">
-        <h5 className="mb-0">$ 100,000</h5>
+        <h5 className="mb-0">$ {totalAmount.toFixed(2)}</h5>
         <span>Sales</span>
       </div>
       <div>
-        <h5 className="mb-0">435</h5>
+        <h5 className="mb-0">{tickets}</h5>
         <span>Tickets</span>
       </div>
     </div>
