@@ -1,5 +1,5 @@
 import { Button } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setBookingDate } from 'redux/cartDetails';
 import { useWizard } from 'react-use-wizard';
 import { useState, useEffect } from 'react';
@@ -16,7 +16,7 @@ const DateSelect = () => {
   useEffect(() => {
     dispatch(
       setBookingDate(
-        `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
+        date.toISOString().split('T')[0]
       )
     );
   }, [date]);
