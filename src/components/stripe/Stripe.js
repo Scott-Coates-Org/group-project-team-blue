@@ -1,75 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "reactstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { firebase } from "firebase/client";
-import { createBooking, fetchAllBookings } from "redux/booking";
 require("firebase/functions");
 const jwt = require("jsonwebtoken");
 
-const Stripe = (props) => {
-  const dispatch = useDispatch();
+const Stripe = ({ clientSecret, newDocID }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [message, setMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const redirectURI = `${window.location.origin}/thankyou`;
   const { bookingDate, products, customerDetails, waiver } = useSelector(
     ({ cartDetails }) => cartDetails
   );
-  const { data, isLoaded, hasErrors } = useSelector((state) => state.booking);
-  const stripe = useStripe();
-  const elements = useElements();
-  const redirectURI = `${window.location.origin}/thankyou`;
 
-  const bookingDetails = {
-    customer: customerDetails,
-    orders: {
-      bookingDate: bookingDate,
-      products: products,
-    },
-    stripe: {
-      transactionID: "",
-      confirmDate: "",
-      amount: "",
-      receiptURL: "",
-    },
-    waiver: waiver,
-  };
+  // const bookingDetails = {
+  //   customer: customerDetails,
+  //   orders: {
+  //     bookingDate: bookingDate,
+  //     products: products,
+  //   },
+  //   stripe: {
+  //     transactionID: "",
+  //     confirmDate: "",
+  //     amount: "",
+  //     receiptURL: "",
+  //   },
+  //   waiver: waiver,
+  // };
 
-  const [message, setMessage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  console.log(`newDocId in Stripe ${newDocID}`);
 
-  useEffect(() => {
-    if (!stripe) {
-      return;
-    }
-
-    const clientSecret = props.clientSecret;
-
-    if (!clientSecret) {
-      return;
-    }
-
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          break;
-      }
-    });
-  }, [stripe]);
-
-  const createJWT = () => {
+  const createJWT = (payload) => {
     const key = process.env.REACT_APP_JWT_SECRET;
     const options = {
       expiresIn: 3600,
     };
-    const token = jwt.sign({ bookingId: props.newDocID }, key, options);
+    const token = jwt.sign(payload, key, options);
 
     return token;
   };
@@ -83,13 +51,16 @@ const Stripe = (props) => {
       return;
     }
 
+    console.log(`bookingId: ${newDocID}`)
+    const bookingToken = createJWT({ bookingId: newDocID });
+    alert("check")
+
+    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
     setIsLoading(true);
 
-    const bookingToken = createJWT();
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
         return_url: `${redirectURI}?booking=${bookingToken}`,
       },
     });

@@ -3,32 +3,30 @@ import { Container, Row, Col, Table } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
+import { fetchBookingById } from "redux/booking";
 const jwt = require("jsonwebtoken");
 
 const Thankyou = () => {
-  // const dispatch = useDispatch();
-  // const {
-  //   data: bookingData,
-  //   isLoaded: bookingIsLoaded,
-  //   hasErrors: bookingHasErrors,
-  // } = useSelector((state) => state.booking);
-  // const {
-  //   data: productData,
-  //   isLoaded: productIsLoaded,
-  //   hasErrors: productHasErrors,
-  // } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+  const {
+    data: bookingData,
+    isLoaded: bookingIsLoaded,
+    hasErrors: bookingHasErrors,
+  } = useSelector((state) => state.booking);
 
   const useQuery = () => {
     const { search } = useLocation();
-
     return useMemo(() => new URLSearchParams(search), [search]);
   };
 
   const query = useQuery();
   const bookingToken = query.get("booking");
   const key = process.env.REACT_APP_JWT_SECRET;
-  const bookingData = jwt.verify(bookingToken, key);
-  console.log(bookingData);
+  const { bookingId } = jwt.verify(bookingToken, key, { algorithm: "HS256" });
+
+  useEffect(() => {
+    dispatch(fetchBookingById({ id: bookingId }));
+  }, []);
 
   const styles = {
     h3: {
@@ -62,7 +60,7 @@ const Thankyou = () => {
 
   return (
     <>
-      {hasErrors && "Error Loading"}
+      {bookingHasErrors && "Error Loading"}
       {bookingIsLoaded && (
         <section className="d-flex flex-column justify-content-center align-items-center vh-100 h-100 checkout-bg p-3 overflow-auto">
           <div className="d-flex position-relative">
@@ -107,7 +105,7 @@ const Thankyou = () => {
             </Row>
             <Row className="mx-1 mt-2">
               Confirmation #
-              <span className="text-primary">{bookingData.booking?.transactionId}</span>
+              <span className="text-primary">{bookingData.stripe?.transactionId}</span>
             </Row>
             <Row className="mx-1 mt-4">
               <Table borderless size="sm" responsive>
@@ -122,12 +120,12 @@ const Thankyou = () => {
                   {bookingData.order?.products.map((product) => (
                     <tr>
                       <td>
-                        <b>{productData[product.productId].title}</b>
+                        <b>{product.title}</b>
                         <br />
-                        <i className="pl-1">{product.date}</i>
+                        <i className="pl-1">{bookingData.order?.products.bookingDate}</i>
                       </td>
                       <td>{product.quantity}</td>
-                      <td>${productData[product.productId].price * product.quantity}</td>
+                      <td>${product.price * product.quantity}</td>
                     </tr>
                   ))}
                   <tr>
