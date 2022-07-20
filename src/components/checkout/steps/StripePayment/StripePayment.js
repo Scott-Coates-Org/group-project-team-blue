@@ -40,22 +40,13 @@ const StripePayment = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      createBookingWithID({
-        docID: bookingDetails.docID,
-        customer: bookingDetails.customer,
-        order: bookingDetails.orders,
-        stripe: bookingDetails.stripe,
-        waiver: bookingDetails.waiver,
-      })
-    ).then(() => {
-      const createPaymentIntent = firebase
-        .functions()
-        .httpsCallable("createPaymentIntent");
-      createPaymentIntent(bookingDetails).then((result) =>
-        setClientSecret(result.data.clientSecret)
-      );
-    });
+    const createPaymentIntent = firebase
+      .functions()
+      .httpsCallable("createPaymentIntent");
+
+    createPaymentIntent(bookingDetails).then((result) =>
+      setClientSecret(result.data.clientSecret)
+    );
   }, []);
 
   const options = {
