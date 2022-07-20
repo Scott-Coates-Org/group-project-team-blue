@@ -125,7 +125,6 @@ async function _fetchAllBookingsFromDb() {
 async function _fetchBookingByIdFromDb(id) {
   const snapshot = await firebaseClient.firestore().collection("bookings").doc(id).get();
   const bookingData = snapshot ? { id: snapshot.id, ...snapshot.data() } : null;
-  console.log(bookingData)
 
   return bookingData;
 }
