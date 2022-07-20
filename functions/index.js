@@ -44,16 +44,49 @@ const calculateOrderAmount = (data) => {
   const tax = 1.05;
   if (data[0] != undefined) {
     for (const item of data) {
-      subtotal += (item.price * item.quantity);
+      subtotal += item.price * item.quantity;
     }
-    total = Math.round(((subtotal * 100) * tax)) + transactionFee;
+    total = Math.round(subtotal * 100 * tax) + transactionFee;
     return total;
   }
   return 1400;
 };
 
+const removeUnnecessaryProductDetails = (products) => {
+  if (products[0] != undefined) {
+    const scrubedProducts = [];
+    for (const prod of products) {
+      if (prod.room != undefined) {
+        // all day pass
+        if (prod.room == null) {
+          delete prod.room;
+          delete prod.time;
+          scrubedProducts.push(prod);
+        } else {
+          // 90 minute room pass
+          delete prod.room.photo;
+          scrubedProducts.push(prod);
+        }
+      } else if (prod.type == "addon") {
+        // addons
+        delete prod.duration;
+        delete prod.timeSlot;
+        scrubedProducts.push(prod);
+      }
+    }
+    return scrubedProducts;
+  }
+  return "No Products Selected";
+};
+
 exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
   const products = data.orders.products;
+  const ordersProducts = removeUnnecessaryProductDetails(data.orders.products);
+  data.orders.products = ordersProducts;
+
+  const customer = JSON.stringify(data.customer);
+  const orders = JSON.stringify(data.orders);
+  const participants = JSON.stringify(data.participants);
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: calculateOrderAmount(products),
@@ -64,6 +97,9 @@ exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
     },
     metadata: {
       docID: data.docID,
+      customer: customer,
+      orders: orders,
+      participants: participants,
     },
   });
 
@@ -129,11 +165,19 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
       });
 });
 
-// want transactionId, confirmDate, amount, receiptURL
+exports.stripeConfirmAddToDB = functions.database
+    .ref("/events/{eventId}")
+    .onCreate(async (snapshot, context) => {
+      const metadata = snapshot.val().data.object.metadata;
+      const docID = metadata.docID;
+      const customer = metadata.customer;
+      const orders = metadata.orders;
+      const participants = metadata.participants;
 
-exports.addStripeDataToDB = functions.database.ref("/events/{eventId}")
-    .onCreate( async (snapshot, context) => {
-      const docID = snapshot.val().data.object.metadata.docID;
+      const parsedCustomer = JSON.parse(customer);
+      const parsedOrders = JSON.parse(orders);
+      const parsedParticipants = JSON.parse(participants);
+
       const amount = snapshot.val().data.object.amount_received;
       const transactionID = snapshot.val().data.object.id;
       const receiptURL = snapshot.val().data.object.charges.data[0].receipt_url;
@@ -141,11 +185,16 @@ exports.addStripeDataToDB = functions.database.ref("/events/{eventId}")
       const milliseconds = unixTime * 1000;
       const dateObject = new Date(milliseconds);
       const dbTime = dateObject.toString();
-      await admin.firestore().collection("bookings").doc(docID).update({
-        "stripe.amount": amount,
-        "stripe.receiptURL": receiptURL,
-        "stripe.transactionID": transactionID,
-        "stripe.confirmDate": dbTime,
+      await admin.firestore().collection("bookings").doc(docID).set({
+        customer: parsedCustomer,
+        order: parsedOrders,
+        participants: parsedParticipants,
+        stripe: {
+          amount: amount,
+          receiptURL: receiptURL,
+          transactionID: transactionID,
+          confirmDate: dbTime,
+        },
       });
       return console.log({
         eventId: context.params.eventId,
