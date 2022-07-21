@@ -30,6 +30,7 @@ exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
       .where("customer_id", "==", customer.id)
       .get();
   const snap = snapshot.docs[0].id;
+  
   return {
     customerID: customer.id,
     clientSecret: intent.client_secret,
@@ -80,12 +81,12 @@ const removeUnnecessaryProductDetails = (products) => {
 };
 
 exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
-  const products = data.orders.products;
-  const ordersProducts = removeUnnecessaryProductDetails(data.orders.products);
-  data.orders.products = ordersProducts;
+  const products = data.order.products;
+  const orderProducts = removeUnnecessaryProductDetails(data.order.products);
+  data.order.products = orderProducts;
 
   const customer = JSON.stringify(data.customer);
-  const orders = JSON.stringify(data.orders);
+  const order = JSON.stringify(data.order);
   const participants = JSON.stringify(data.participants);
 
   const paymentIntent = await stripe.paymentIntents.create({
@@ -97,9 +98,9 @@ exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
     },
     metadata: {
       docID: data.docID,
-      customer: customer,
-      orders: orders,
-      participants: participants,
+      // customer: customer,
+      // order: order,
+      // participants: participants,
     },
   });
 
@@ -170,13 +171,14 @@ exports.stripeConfirmAddToDB = functions.database
     .onCreate(async (snapshot, context) => {
       const metadata = snapshot.val().data.object.metadata;
       const docID = metadata.docID;
-      const customer = metadata.customer;
-      const orders = metadata.orders;
-      const participants = metadata.participants;
 
-      const parsedCustomer = JSON.parse(customer);
-      const parsedOrders = JSON.parse(orders);
-      const parsedParticipants = JSON.parse(participants);
+      // const customer = metadata.customer;
+      // const order = metadata.order;
+      // const participants = metadata.participants;
+
+      // const parsedCustomer = JSON.parse(customer);
+      // const parsedOrder = JSON.parse(order);
+      // const parsedParticipants = JSON.parse(participants);
 
       const amount = snapshot.val().data.object.amount_received;
       const transactionID = snapshot.val().data.object.id;
@@ -186,16 +188,21 @@ exports.stripeConfirmAddToDB = functions.database
       const dateObject = new Date(milliseconds);
       const dbTime = dateObject.toString();
       await admin.firestore().collection("bookings").doc(docID).set({
-        customer: parsedCustomer,
-        order: parsedOrders,
-        participants: parsedParticipants,
+        // customer: parsedCustomer,
+        // order: parsedOrder,
+        // participants: parsedParticipants,
         stripe: {
           amount: amount,
           receiptURL: receiptURL,
           transactionID: transactionID,
           confirmDate: dbTime,
         },
+        status: {
+          type: "SUCCESS",
+          text: ""
+        }
       });
+
       return console.log({
         eventId: context.params.eventId,
         data: snapshot.val().data.object.metadata.docID,
