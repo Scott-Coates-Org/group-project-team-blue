@@ -22,7 +22,26 @@ const Thankyou = () => {
   const query = useQuery();
   const bookingToken = query.get("booking");
   const key = process.env.REACT_APP_JWT_SECRET;
-  const { bookingId } = jwt.verify(bookingToken, key, { algorithm: "HS256" });
+  let bookingId;
+
+  const result = jwt.verify(bookingToken, key, { algorithm: "HS256" }, (err, decoded) => {
+    if (err) {
+      return { error: err.name, ...err };
+    }
+
+    return decoded;
+  });
+
+  if (result.error) {
+    return (
+      <div className="vh-100 vw-100 d-flex justify-content-center align-items-center">
+        <div className="bg-white text-center">
+          <h4 className="text-danger">{result.error}</h4>
+          <h4 className="text-danger">{JSON.stringify(result.expiredAt)}</h4>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     dispatch(fetchBookingById({ id: bookingId }));
@@ -62,7 +81,7 @@ const Thankyou = () => {
     <>
       {bookingHasErrors && "Error Loading"}
       {bookingIsLoaded && (
-        <section className="d-flex flex-column justify-content-center align-items-center vh-100 h-100 checkout-bg p-3 overflow-auto">
+        <section className="d-flex flex-column justify-content-center align-items-center min-vh-100 h-100 checkout-bg p-3 overflow-auto pt-5">
           <div className="d-flex position-relative">
             <img
               src={hopper}
@@ -128,31 +147,6 @@ const Thankyou = () => {
                       <td>${product.price * product.quantity}</td>
                     </tr>
                   ))}
-                  <tr>
-                    <td>
-                      <b>60min small room</b>
-                      <br />
-                      <i className="pl-1">20-Jul @ 10:30am</i>
-                    </td>
-                    <td>1</td>
-                    <td>$99.00</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <b>30min big room</b>
-                      <br />
-                      <i className="pl-1">20-Jul @ 12:30pm</i>
-                    </td>
-                    <td>5</td>
-                    <td>$1,897.00</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <b>Socks</b>
-                    </td>
-                    <td>6</td>
-                    <td>$11.00</td>
-                  </tr>
                 </tbody>
               </Table>
             </Row>
