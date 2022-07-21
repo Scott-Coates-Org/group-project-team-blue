@@ -97,6 +97,7 @@ export const updateBooking = createAsyncThunk(
 export const createBookingWithID = createAsyncThunk(
   "booking/createBookingWithID",
   async (payload, thunkAPI) => {
+    console.log({ payload });
     try {
       await _createBookingWithID(
         payload.docID,

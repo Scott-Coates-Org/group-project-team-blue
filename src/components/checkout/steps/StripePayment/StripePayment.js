@@ -27,7 +27,7 @@ const StripePayment = () => {
   const bookingDetails = {
     docID: newDocID,
     customer: customerDetails,
-    orders: {
+    order: {
       bookingDate: bookingDate,
       products: products,
     },

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { createBookingWithID } from "redux/booking";
+import { createBookingWithID, updateBooking } from "redux/booking";
 require("firebase/functions");
 const jwt = require("jsonwebtoken");
 
@@ -39,6 +39,7 @@ const Stripe = ({ clientSecret, newDocID, bookingDetails }) => {
     const bookingToken = createJWT({ bookingId: newDocID });
 
     // Create booking in PENDING status prior to confirming payment
+    console.log({ bookingDetails });
     await dispatch(
       createBookingWithID({ ...bookingDetails, status: { type: "PENDING", text: "" } })
     );
@@ -54,8 +55,10 @@ const Stripe = ({ clientSecret, newDocID, bookingDetails }) => {
     });
 
     // Update booking in FAILED status if payment fails
+    console.log(bookingDetails.docID);
     await dispatch(
-      updateBookingStatus({
+      updateBooking({
+        docID: bookingDetails.docID,
         status: { type: "FAILED", text: `${error.type}: ${error.message}` },
       })
     );
