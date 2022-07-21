@@ -1,5 +1,5 @@
 import { useWizard } from "react-use-wizard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "reactstrap";
 import WizardStep from "components/checkout/wizard-parts/WizardStep";
 import Stripe from "components/stripe/Stripe";
@@ -21,7 +21,8 @@ const StripePayment = () => {
     ({ cartDetails }) => cartDetails
   );
 
-  const newDocID = uniqid();
+  const newDocID = useMemo(() => uniqid(), []);
+  console.log(`newDocId in StripePayment ${newDocID}`);
 
   const bookingDetails = {
     docID: newDocID,
@@ -40,9 +41,7 @@ const StripePayment = () => {
   };
 
   useEffect(() => {
-    const createPaymentIntent = firebase
-      .functions()
-      .httpsCallable("createPaymentIntent");
+    const createPaymentIntent = firebase.functions().httpsCallable("createPaymentIntent");
 
     createPaymentIntent(bookingDetails).then((result) =>
       setClientSecret(result.data.clientSecret)
@@ -59,7 +58,7 @@ const StripePayment = () => {
       <div>
         {clientSecret && (
           <Elements options={options} stripe={stripePromise}>
-            <Stripe props={{ clientSecret, newDocID }} />
+            <Stripe clientSecret={clientSecret} newDocID={newDocID} />
           </Elements>
         )}
       </div>
