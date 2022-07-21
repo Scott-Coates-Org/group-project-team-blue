@@ -166,6 +166,45 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
       });
 });
 
+const createWaiversInDB = async (bookingId) => {
+  try {
+    const snapshot = await admin.firestore().collection("bookings").doc(bookingId).get();
+
+    const bookingData = snapshot ? { docID: snapshot.id, ...snapshot.data() } : null;
+    const participants = bookingData.participants;
+    const updatedParticipants = [];
+
+    for (const participant of participants) {
+      const waiver = {
+        fullName: participant.fullName,
+        bookingId,
+      };
+
+      const docRef = await admin.firestore().collection("waivers").add(waiver);
+
+      updatedParticipants.push({
+        waiverId: docRef.id,
+        fullName: waiver.fullName
+      });
+    }
+
+    return updatedParticipants;
+  } catch (error) {
+    return response.status(400).end();
+  }
+  
+}
+
+const updateBookingWithWaiversInDB = async (bookingId, updatedParticipants) => {
+  try {
+    await admin.firestore().collection("bookings").doc(bookingId).update({
+      participants: updatedParticipants,
+    });
+  } catch (error) {
+    return response.status(400).end();
+  }
+}
+
 exports.stripeConfirmAddToDB = functions.database
     .ref("/events/{eventId}")
     .onCreate(async (snapshot, context) => {
@@ -202,6 +241,10 @@ exports.stripeConfirmAddToDB = functions.database
           text: ""
         }
       });
+
+      const updatedParticipants = await createWaiversInDB(docID);
+
+      await updateBookingWithWaiversInDB(docID, updatedParticipants);
 
       return console.log({
         eventId: context.params.eventId,
