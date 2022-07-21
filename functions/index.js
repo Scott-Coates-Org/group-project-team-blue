@@ -85,9 +85,9 @@ exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
   const orderProducts = removeUnnecessaryProductDetails(data.order.products);
   data.order.products = orderProducts;
 
-  const customer = JSON.stringify(data.customer);
-  const order = JSON.stringify(data.order);
-  const participants = JSON.stringify(data.participants);
+  // const customer = JSON.stringify(data.customer);
+  // const order = JSON.stringify(data.order);
+  // const participants = JSON.stringify(data.participants);
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount: calculateOrderAmount(products),
@@ -168,9 +168,11 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
 
 const createWaiversInDB = async (bookingId) => {
   try {
+    // eslint-disable-next-line max-len
     const snapshot = await admin.firestore().collection("bookings").doc(bookingId).get();
 
-    const bookingData = snapshot ? { docID: snapshot.id, ...snapshot.data() } : null;
+    // eslint-disable-next-line max-len
+    const bookingData = snapshot ? {docID: snapshot.id, ...snapshot.data()} : null;
     const participants = bookingData.participants;
     const updatedParticipants = [];
 
@@ -184,16 +186,16 @@ const createWaiversInDB = async (bookingId) => {
 
       updatedParticipants.push({
         waiverId: docRef.id,
-        fullName: waiver.fullName
+        fullName: waiver.fullName,
       });
     }
 
     return updatedParticipants;
   } catch (error) {
+    // eslint-disable-next-line no-undef
     return response.status(400).end();
   }
-  
-}
+};
 
 const updateBookingWithWaiversInDB = async (bookingId, updatedParticipants) => {
   try {
@@ -201,9 +203,10 @@ const updateBookingWithWaiversInDB = async (bookingId, updatedParticipants) => {
       participants: updatedParticipants,
     });
   } catch (error) {
+    // eslint-disable-next-line no-undef
     return response.status(400).end();
   }
-}
+};
 
 exports.stripeConfirmAddToDB = functions.database
     .ref("/events/{eventId}")
@@ -238,13 +241,34 @@ exports.stripeConfirmAddToDB = functions.database
         },
         status: {
           type: "SUCCESS",
-          text: ""
-        }
+          text: "",
+        },
       });
 
       const updatedParticipants = await createWaiversInDB(docID);
 
       await updateBookingWithWaiversInDB(docID, updatedParticipants);
+
+      const msg = {
+        to: "marge.consunji@gmail.com",
+        from: "mentorshipteamblue@gmail.com",
+        subject: "Hopper - Booking Confirmation",
+        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+        // templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
+        // dynamicTemplateData: {
+        //   firstname: "Marge",
+        // },
+      };
+
+      sgMail
+          .send(msg)
+          .then(() => {
+            console.log("Email sent");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
 
       return console.log({
         eventId: context.params.eventId,
