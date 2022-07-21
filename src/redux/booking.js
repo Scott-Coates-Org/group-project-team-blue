@@ -43,7 +43,7 @@ export const fetchAllBookings = createAsyncThunk(
       thunkAPI.dispatch(getDataSuccess(data));
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(getDataFailure(error));
+      thunkAPI.dispatch(getDataFailure(error.message));
     }
   }
 );
@@ -58,7 +58,7 @@ export const fetchBookingById = createAsyncThunk(
       thunkAPI.dispatch(getDataSuccess(data));
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(getDataFailure(error));
+      thunkAPI.dispatch(getDataFailure(error.message));
     }
   }
 );
@@ -70,7 +70,7 @@ export const createBooking = createAsyncThunk(
       await _createBooking(payload.customer, payload.order, payload.stripe, payload.waiver);
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error.message));
     }
   }
 );
@@ -88,7 +88,7 @@ export const updateBooking = createAsyncThunk(
       );
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error.message));
     }
   }
 );
@@ -107,7 +107,7 @@ export const createBookingWithID = createAsyncThunk(
       );
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error.message));
     }
   }
 );
@@ -137,7 +137,7 @@ async function _createBooking(customer, order, stripe, waiver) {
     stripe,
     waiver,
   });
-  
+
   return doc;
 }
 
