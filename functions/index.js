@@ -30,7 +30,7 @@ exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
       .where("customer_id", "==", customer.id)
       .get();
   const snap = snapshot.docs[0].id;
-  
+
   return {
     customerID: customer.id,
     clientSecret: intent.client_secret,
@@ -187,7 +187,7 @@ exports.stripeConfirmAddToDB = functions.database
       const milliseconds = unixTime * 1000;
       const dateObject = new Date(milliseconds);
       const dbTime = dateObject.toString();
-      await admin.firestore().collection("bookings").doc(docID).set({
+      await admin.firestore().collection("bookings").doc(docID).update({
         // customer: parsedCustomer,
         // order: parsedOrder,
         // participants: parsedParticipants,
