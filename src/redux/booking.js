@@ -102,7 +102,8 @@ export const createBookingWithID = createAsyncThunk(
         payload.customer,
         payload.order,
         payload.stripe,
-        payload.waiver
+        payload.participants,
+        payload.status
       );
     } catch (error) {
       console.error("error", error);
@@ -136,6 +137,7 @@ async function _createBooking(customer, order, stripe, waiver) {
     stripe,
     waiver,
   });
+  
   return doc;
 }
 
@@ -145,10 +147,11 @@ async function _updateCustomer(customer, order, stripe, waiver) {
     .collection("bookings")
     .doc(docID)
     .update({ stripe });
+
   return doc;
 }
 
-async function _createBookingWithID(docID, customer, order, stripe, waiver) {
+async function _createBookingWithID(docID, customer, order, stripe, participants, status) {
   const doc = await firebaseClient
     .firestore()
     .collection("bookings")
@@ -157,7 +160,9 @@ async function _createBookingWithID(docID, customer, order, stripe, waiver) {
       customer,
       order,
       stripe,
-      waiver,
+      participants,
+      status
     });
+
   return doc;
 }
