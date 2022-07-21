@@ -84,7 +84,7 @@ export const updateWaiver = createAsyncThunk(
     try {
       await _updateWaiver(
         payload.id,
-        payload.name,
+        payload.fullName,
         payload.guardian,
         payload.email,
         payload.date,
@@ -93,6 +93,7 @@ export const updateWaiver = createAsyncThunk(
         payload.submitted,
         payload.waiverURL
       );
+      thunkAPI.dispatch(getDataSuccess(payload));
     } catch (error) {
       console.error("error", error);
       thunkAPI.dispatch(createDataFailure());
@@ -179,7 +180,7 @@ async function _createWaiver(name, bookingId) {
 
 async function _updateWaiver(
   id,
-  name,
+  fullName,
   guardian,
   email,
   date,
@@ -189,7 +190,7 @@ async function _updateWaiver(
   waiverURL
 ) {
   const doc = await firebaseClient.firestore().collection("waivers").doc(id).update({
-    name,
+    fullName,
     guardian,
     email,
     date,
