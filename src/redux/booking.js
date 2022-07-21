@@ -76,7 +76,7 @@ export const createBooking = createAsyncThunk(
 );
 
 export const updateBooking = createAsyncThunk(
-  "booking/createBooking",
+  "booking/updateBooking",
   async (payload, thunkAPI) => {
     try {
       await _updateBooking(
@@ -84,7 +84,8 @@ export const updateBooking = createAsyncThunk(
         payload.customer,
         payload.order,
         payload.stripe,
-        payload.waiver
+        payload.participants,
+        payload.status
       );
     } catch (error) {
       console.error("error", error);
@@ -141,28 +142,42 @@ async function _createBooking(customer, order, stripe, waiver) {
   return doc;
 }
 
-async function _updateCustomer(customer, order, stripe, waiver) {
+async function _updateBooking(
+  docID,
+  customer = null,
+  order = null,
+  stripe = null,
+  participants = null,
+  status = null
+) {
+  const updatedBooking = Object.assign(
+    {},
+    customer && { customer },
+    order && { order },
+    stripe && { stripe },
+    participants && { participants },
+    status && { status }
+  );
+
+  console.log(updatedBooking);
+
   const doc = await firebaseClient
     .firestore()
     .collection("bookings")
     .doc(docID)
-    .update({ stripe });
+    .update({ ...updatedBooking });
 
   return doc;
 }
 
 async function _createBookingWithID(docID, customer, order, stripe, participants, status) {
-  const doc = await firebaseClient
-    .firestore()
-    .collection("bookings")
-    .doc(docID)
-    .set({
-      customer,
-      order,
-      stripe,
-      participants,
-      status
-    });
+  const doc = await firebaseClient.firestore().collection("bookings").doc(docID).set({
+    customer,
+    order,
+    stripe,
+    participants,
+    status,
+  });
 
   return doc;
 }
