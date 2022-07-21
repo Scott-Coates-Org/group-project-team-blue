@@ -1,37 +1,20 @@
 import React, { useState } from "react";
 import { Button } from "reactstrap";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { createBookingWithID, updateBooking } from "redux/booking";
 require("firebase/functions");
 const jwt = require("jsonwebtoken");
 
-const Stripe = ({ clientSecret, newDocID }) => {
+const Stripe = ({ clientSecret, newDocID, bookingDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const dispatch = useDispatch();
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const redirectURI = `${window.location.origin}/thankyou`;
-  const { bookingDate, products, customerDetails, waiver } = useSelector(
-    ({ cartDetails }) => cartDetails
-  );
-
-  // const bookingDetails = {
-  //   customer: customerDetails,
-  //   orders: {
-  //     bookingDate: bookingDate,
-  //     products: products,
-  //   },
-  //   stripe: {
-  //     transactionID: "",
-  //     confirmDate: "",
-  //     amount: "",
-  //     receiptURL: "",
-  //   },
-  //   waiver: waiver,
-  // };
 
   console.log(`newDocId in Stripe ${newDocID}`);
-
   const createJWT = (payload) => {
     const key = process.env.REACT_APP_JWT_SECRET;
     const options = {
@@ -45,17 +28,23 @@ const Stripe = ({ clientSecret, newDocID }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Stripe.js has not yet loaded.
+    // Make sure to disable form submission until Stripe.js has loaded.
     if (!stripe || !elements) {
-      // Stripe.js has not yet loaded.
-      // Make sure to disable form submission until Stripe.js has loaded.
       return;
     }
 
-    console.log(`bookingId: ${newDocID}`)
+    // Create booking token used by ThankYou page (added to return url)
+    console.log(`bookingId: ${newDocID}`);
     const bookingToken = createJWT({ bookingId: newDocID });
-    alert("check")
 
-    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+    // Create booking in PENDING status prior to confirming payment
+    console.log({ bookingDetails });
+    await dispatch(
+      createBookingWithID({ ...bookingDetails, status: { type: "PENDING", text: "" } })
+    );
+
+    // const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
     setIsLoading(true);
 
     const { error } = await stripe.confirmPayment({
@@ -64,6 +53,15 @@ const Stripe = ({ clientSecret, newDocID }) => {
         return_url: `${redirectURI}?booking=${bookingToken}`,
       },
     });
+
+    // Update booking in FAILED status if payment fails
+    console.log(bookingDetails.docID);
+    await dispatch(
+      updateBooking({
+        docID: bookingDetails.docID,
+        status: { type: "FAILED", text: `${error.type}: ${error.message}` },
+      })
+    );
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to

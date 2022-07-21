@@ -27,7 +27,7 @@ const StripePayment = () => {
   const bookingDetails = {
     docID: newDocID,
     customer: customerDetails,
-    orders: {
+    order: {
       bookingDate: bookingDate,
       products: products,
     },
@@ -58,7 +58,11 @@ const StripePayment = () => {
       <div>
         {clientSecret && (
           <Elements options={options} stripe={stripePromise}>
-            <Stripe clientSecret={clientSecret} newDocID={newDocID} />
+            <Stripe
+              clientSecret={clientSecret}
+              newDocID={newDocID}
+              bookingDetails={bookingDetails}
+            />
           </Elements>
         )}
       </div>
