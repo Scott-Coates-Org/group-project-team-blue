@@ -218,17 +218,26 @@ const sendConfirmationEmail = async (docID) => {
   const {email, first, last} = orderDetails.customer;
   const {bookingDate, products} = orderDetails.order;
   const {amount, confirmDate, transactionID} = orderDetails.stripe;
-  const {participants} = orderDetails.participants;
+  const participants = orderDetails.participants;
   const formattedConfirmDate = confirmDate.split("GMT+0000")[0];
   const formattedAmount = (amount / 100).toFixed(2);
 
-  const baseUri = "https://team-blue-8951b.web.app/waiver/";
-
+  const baseUri = "https://team-blue-8951b.web.app/waiver";
 
   const waiverList = participants?.map(({fullName, waiverId}) => (`
   <li>${fullName} -
   <a href="${baseUri}/docId/waiverId">
-  ${baseUri}/${docID}/${waiverId}</a></li>`));
+  ${baseUri}/${docID}/${waiverId}</a></li>`)).join("");
+
+  const waiverSection = participants.length ? (`<div>
+  <h3>Waiver Forms</h3>
+  <p>In case you're jumping with 
+  other people, here's a list of
+  waiver form links to send to everyone in your party.</p>
+  <ol>
+  ${waiverList}
+  </ol>
+  </div>`) : "";
 
   const productList = products.map(({title, price, quantity, timeSlot}) => {
     if (timeSlot) {
@@ -269,14 +278,15 @@ const sendConfirmationEmail = async (docID) => {
   <div style="max-width: 550px;
   margin: 0 auto;
   font-family: 'Arial', sans-serif;
-  color:#444444;
+  color:black;
   font-size:14px;
   line-height:20px; padding:16px 16px 16px 16px;">
           <div style="margin-bottom: 50px">
               <h2>Hi there, ${first}!</h2>
               <p>Thank you for booking an event with us at Hopper.</p>
-              <p>We recommend you have all the
-              event participants sign their waiver forms ahead of time.
+              <p>If you're jumping as a group, 
+              we recommend you have everyone 
+              sign their waiver forms ahead of time.
               You'll find individual links below for each waiver form.</p>
           </div>
 
@@ -318,14 +328,7 @@ const sendConfirmationEmail = async (docID) => {
           <div style="text-align: right;">
           <p style="font-size: 19px;"><b>Total</b>: $${formattedAmount}</p>
           </div>
-          <div>
-              <h3>Waiver Forms</h3>
-              <p>Here's a list of waiver form links
-              to send to event participants.</p>
-              <ol>
-              ${waiverList}
-              </ol>
-          </div>
+          ${waiverSection}
       </div>
   </body>
 </html>`;
