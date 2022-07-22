@@ -239,13 +239,15 @@ const sendConfirmationEmail = async (docID) => {
   </ol>
   </div>`) : "";
 
-  const productList = products.map(({title, price, quantity, timeSlot}) => {
-    if (timeSlot) {
+  const productList = products.map(({title,
+    price, quantity, time, timeSlot}) => {
+    if (time) {
       return (
         `<tr>
         <td style="padding: 10px; border-bottom: 1px solid gainsboro;">
           <p style="margin-bottom: 3px;">${title}</p>
-            <small style="color: grey;">Booking Time: ${timeSlot}</small>
+            <small style="color: grey; 
+            font-size: 13px">Booking Time: ${time}</small>
         </td>
         <td style="text-align: center; 
         border-bottom: 1px solid gainsboro;">
