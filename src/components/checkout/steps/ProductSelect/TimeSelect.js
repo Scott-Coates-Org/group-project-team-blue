@@ -52,7 +52,6 @@ import { Button } from 'reactstrap';
 
 const TimeSelect = ({ duration, id, timeSlots, handleSetTime }) => {
   // const sessions = generateTimeBlocks(duration);
-  const times = timeSlots[0].times;
 
   const determineAvailability = (duration, time, times) => {
     switch (true) {
@@ -81,10 +80,11 @@ const TimeSelect = ({ duration, id, timeSlots, handleSetTime }) => {
           </Button>
         ))}
       </div> */}
-      { times.length ? (
+      <p>test</p>
+      { timeSlots.length ? (
       <div role="group" data-toggle="buttons" className="d-flex flex-wrap mb-3">
 
-        {times.map((time, index, times) => {
+        {timeSlots.map((time, index, times) => {
           return (
             <Button
               data-toggle="button"
