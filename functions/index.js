@@ -208,6 +208,147 @@ const updateBookingWithWaiversInDB = async (bookingId, updatedParticipants) => {
   }
 };
 
+const sendConfirmationEmail = async (docID) => {
+  // eslint-disable-next-line max-len
+  const snapshot = await admin.firestore().collection("bookings").doc(docID).get();
+
+  const orderDetails = snapshot.data();
+  console.log("orderdetails", orderDetails);
+
+  const {email, first, last} = orderDetails.customer;
+  const {bookingDate, products} = orderDetails.order;
+  const {amount, confirmDate, transactionID} = orderDetails.stripe;
+  const {participants} = orderDetails.participants;
+  const formattedConfirmDate = confirmDate.split("GMT+0000")[0];
+  const formattedAmount = (amount / 100).toFixed(2);
+
+  const baseUri = "https://team-blue-8951b.web.app/waiver/";
+
+
+  const waiverList = participants?.map(({fullName, waiverId}) => (`
+  <li>${fullName} -
+  <a href="${baseUri}/docId/waiverId">
+  ${baseUri}/${docID}/${waiverId}</a></li>`));
+
+  const productList = products.map(({title, price, quantity, timeSlot}) => {
+    if (timeSlot) {
+      return (
+        `<tr>
+        <td style="padding: 10px; border-bottom: 1px solid gainsboro;">
+          <p style="margin-bottom: 3px;">${title}</p>
+            <small style="color: grey;">Booking Time: ${timeSlot}</small>
+        </td>
+        <td style="text-align: center; 
+        border-bottom: 1px solid gainsboro;">
+        ${quantity}</td>
+        <td style="text-align: center; 
+        border-bottom: 1px solid gainsboro;">
+        ${price}</td>
+      </tr>`
+      );
+    } else {
+      return (
+        `<tr>
+        <td style="padding: 10px; border-bottom: 1px solid gainsboro;">
+          <p style="margin-bottom: 3px;">${title}</p>
+        </td>
+        <td style="text-align: center; 
+        border-bottom: 1px solid gainsboro;">${quantity}</td>
+        <td style="text-align: center; 
+        border-bottom: 1px solid gainsboro;">${price}</td>
+      </tr>`
+      );
+    }
+  }).join("");
+
+  const msgBody = `<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+  <div style="max-width: 550px;
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  color:#444444;
+  font-size:14px;
+  line-height:20px; padding:16px 16px 16px 16px;">
+          <div style="margin-bottom: 50px">
+              <h2>Hi there, ${first}!</h2>
+              <p>Thank you for booking an event with us at Hopper.</p>
+              <p>We recommend you have all the
+              event participants sign their waiver forms ahead of time.
+              You'll find individual links below for each waiver form.</p>
+          </div>
+
+          <h2>Your Booking</h2>
+          <div style="background-color: #F5F5F5; padding: 4px;">
+              <ul style="list-style: none;
+              margin-left: 0; padding-left: 10px; width: 100%;">
+                  <li><b>Billed To:</b>${first} ${last}
+                  </li>
+                  <li><b>Receipt No.</b> ${transactionID}</li>
+                  <li><b>Confirmation Date:</b> ${formattedConfirmDate}</li>
+                  <li><b>Order Total:</b> $${formattedAmount}</li>
+              </ul>
+          </div>
+          <div style="margin-bottom: 10px;">
+            <h3>Your Booking Details</h3>
+            <p><b>Booking Date: ${bookingDate}</b></p>
+          </div>
+              <table style="width: 100%; border-collapse: collapse;">
+              <tbody>
+                  <tr>
+                      <th style="text-align: left;
+                      padding: 10px;
+                      border-bottom: 1px solid gainsboro">
+                      Product
+                      </th>
+                      <th style="padding: 10px; border-bottom: 
+                      1px solid gainsboro">
+                      Quantity
+                      </th>
+                      <th style="padding: 10px;  border-bottom: 
+                      1px solid gainsboro">
+                      Price
+                      </th>
+                  </tr>
+                  ${productList}
+              </tbody>
+          </table>
+          <div style="text-align: right;">
+          <p style="font-size: 19px;"><b>Total</b>: $${formattedAmount}</p>
+          </div>
+          <div>
+              <h3>Waiver Forms</h3>
+              <p>Here's a list of waiver form links
+              to send to event participants.</p>
+              <ol>
+              ${waiverList}
+              </ol>
+          </div>
+      </div>
+  </body>
+</html>`;
+
+  const msg = {
+    to: `${email}`,
+    from: "mentorshipteamblue@gmail.com",
+    subject: `Hopper - Booking Confirmation for ${first} ${last}`,
+    text: "Booking Confirmation Details",
+    html: msgBody,
+  };
+
+  sgMail
+      .send(msg)
+      .then(() => {}, (error) => {
+        console.error(error);
+
+        if (error.response) {
+          console.error(error.response.body);
+        }
+      });
+};
+
 exports.stripeConfirmAddToDB = functions.database
     .ref("/events/{eventId}")
     .onCreate(async (snapshot, context) => {
@@ -249,26 +390,7 @@ exports.stripeConfirmAddToDB = functions.database
 
       await updateBookingWithWaiversInDB(docID, updatedParticipants);
 
-      const msg = {
-        to: "marge.consunji@gmail.com",
-        from: "mentorshipteamblue@gmail.com",
-        subject: "Hopper - Booking Confirmation",
-        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-        // templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
-        // dynamicTemplateData: {
-        //   firstname: "Marge",
-        // },
-      };
-
-      sgMail
-          .send(msg)
-          .then(() => {
-            console.log("Email sent");
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-
+      await sendConfirmationEmail(docID);
 
       return console.log({
         eventId: context.params.eventId,
