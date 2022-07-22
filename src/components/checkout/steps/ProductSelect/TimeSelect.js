@@ -80,7 +80,6 @@ const TimeSelect = ({ duration, id, timeSlots, handleSetTime }) => {
           </Button>
         ))}
       </div> */}
-      <p>test</p>
       { timeSlots.length ? (
       <div role="group" data-toggle="buttons" className="d-flex flex-wrap mb-3">
 
