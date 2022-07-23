@@ -85,7 +85,7 @@ const CreateProduct = (props) => {
               price: data.price,
               photo: photoUrl,
               status: data.status,
-              roomId: data.room,
+              room: data.room,
               duration: data.duration,
             })
           ).then(() => {
