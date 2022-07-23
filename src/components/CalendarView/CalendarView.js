@@ -93,23 +93,6 @@ export default function CalendarView() {
                 // const bookedProduct = []
                 /*here I want the bookedProduct above to move and I will filter only the product.room.name == currentproduct.room.name */
                 let proArr = []
-                // if (prod.title.includes('All')) {
-                //     for (let sess of cell) {
-                //         let originalCellCapacity = 25
-                //         let impactedTimeSlot = cell
-                //         let impactedCapacity = []
-                //         for (let x of impactedTimeSlot) {
-                //             let slotCapacity = 25;
-                //             for (let p of bookedProduct) {
-                //                 slotCapacity -= p.quantity
-                //             }
-                //             impactedCapacity.push(slotCapacity)
-                //         }
-                //         originalCellCapacity = impactedCapacity.sort()[0]
-                //         proArr.push({time : sess, remainingCapacity: originalCellCapacity})
-                //     }
-                //     finalObj[`${prod.title}`] = proArr
-                // } else {
                 for (let sess of cell) {
                     let originalCellCapacity = 25;
                     
