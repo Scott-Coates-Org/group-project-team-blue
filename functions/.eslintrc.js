@@ -1,7 +1,8 @@
 module.exports = {
   parserOptions: {
     // Required for certain syntax usages
-    ecmaVersion: 2017,
+    parser: "babel-eslint",
+    ecmaVersion: 2020,
   },
   root: true,
   env: {
