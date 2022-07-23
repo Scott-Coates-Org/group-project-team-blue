@@ -34,6 +34,7 @@ export default function CalendarView() {
         })
     }, [dispatch, startdate]);
 
+
     const open = timedata[0]?.open;
     const close = timedata[0]?.close;
     const date = timedata[0]?.date;
@@ -76,32 +77,32 @@ export default function CalendarView() {
             return (value.order.bookingDate == '2022-07-28')
         })
         
-        const bookedProduct = []
-        for (let product of dateFilter) {
-            for (let x of product.order.products) {
-                if (x.room?.name == 'Small') {
-                    bookedProduct.push(x)
-                } else if (x.room == null && x.title == 'All Day Pass') {
-                    bookedProduct.push(x)
-                }
-            }
-        }
-        
         const finalObj = {}
         for (let prod of productdata) {
+
             if (prod.type == 'product') {
-                // const bookedProduct = []
+                const bookedProduct = []
+                for (let product of dateFilter) {
+                    for (let x of product.order.products) {
+                        if (x.room?.name == prod?.room.name) {
+                            bookedProduct.push(x)
+                        } else if (x.room == null && x.title == 'All Day Pass') {
+                            bookedProduct.push(x)
+                        }
+                    }
+                }
+                // console.log('booked', prod.title, bookedProduct)
                 /*here I want the bookedProduct above to move and I will filter only the product.room.name == currentproduct.room.name */
                 let proArr = []
                 for (let sess of cell) {
-                    let originalCellCapacity = 25;
+                    let originalCellCapacity = prod?.room.capacity;
                     
                     if (prod.title.includes('All')) {
                         let impactedTimeSlot = cell
                     // console.log(impactedTimeSlot, sess, prod.title)
                         let impactedCapacity = []
                         for (let x of impactedTimeSlot) {
-                            let slotCapacity = 25
+                            let slotCapacity = prod?.room.capacity
                             for (let p of bookedProduct) {
                                 const session  = []
                                 for (let i=0; i< p.duration / 30; i++) {
@@ -113,13 +114,13 @@ export default function CalendarView() {
                             }
                             impactedCapacity.push(slotCapacity)
                         }
-                        originalCellCapacity = impactedCapacity.sort()[0]
-                        proArr.push({time : sess, remainingCapacity: originalCellCapacity})
+                        originalCellCapacity = Math.min(...impactedCapacity)
+                        // proArr.push({time : sess, remainingCapacity: originalCellCapacity})
                     } else {
                         let impactedTimeSlot = timearr(prod.duration, sess)
                         let impactedCapacity = []
                         for (let x of impactedTimeSlot) {
-                            let slotCapacity = 25
+                            let slotCapacity = prod?.room.capacity
                             for (let p of bookedProduct) {
                                 const session  = []
                                 for (let i=0; i< p.duration / 30; i++) {
@@ -132,22 +133,20 @@ export default function CalendarView() {
                                 }
                             }
                             impactedCapacity.push(slotCapacity)
+                            // console.log(prod.title,x, impactedCapacity.sort()[0])
                         }
-                        originalCellCapacity = impactedCapacity.sort()[0]
-                        proArr.push({time : sess, remainingCapacity: originalCellCapacity})
-                        
+                        originalCellCapacity = Math.min(...impactedCapacity)
                         // proArr.push({time: sess, remainingCapacity: originalCellCapacity})
                         // finalObj[`${prod.title}`]
-                        // console.log(prod.title,x, impactedCapacity)
+                        
                     }
-                    
+                    proArr.push({time : sess, remainingCapacity: originalCellCapacity})
                 }
                 finalObj[`${prod.title}`] = proArr
             //}
             }
             
         }
-        console.log('booked', bookedProduct)
         console.log(finalObj)
     }
     sessionCapacity()

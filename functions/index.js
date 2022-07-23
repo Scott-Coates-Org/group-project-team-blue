@@ -10,6 +10,8 @@ const stripeWebhook = require("stripe")(functions.config().keys.webhooks);
 const endpointSecret = functions.config().keys.signing;
 
 const sgMail = require("@sendgrid/mail");
+const {useDispatch, useSelector} = require("react-redux");
+const {fetchAllProducts} = require("redux/product");
 sgMail.setApiKey(functions.config().sendgrid.api);
 
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
@@ -402,3 +404,22 @@ exports.stripeConfirmAddToDB = functions.database
         data: snapshot.val().data.object.metadata.docID,
       });
     });
+
+
+exports.calculateRemainingCapacity = functions.https
+.onCall(async (data, context) => {
+  const dispatch = useDispatch();
+  const date = data.date;
+  const bookingSnapshot = await admin.firestore()
+  .collection("bookings").where("order.bookingDate", "==", date).get();
+  const bookingData = bookingSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  await dispatch(fetchAllProducts());
+  const {data : productData} = useSelector(state => state.product);
+  return ({
+    bookingData,
+    productData,
+  });
+});
