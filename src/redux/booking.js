@@ -63,6 +63,21 @@ export const fetchBookingById = createAsyncThunk(
   }
 );
 
+export const fetchBookingByDate = createAsyncThunk(
+  "booking/fetchBookingByDate",
+  async (payload, thunkAPI) => {
+    thunkAPI.dispatch(getData());
+
+    try {
+      const data = await _fetchBookingByDateFromDb(payload.date);
+      thunkAPI.dispatch(getDataSuccess(data));
+    } catch (error) {
+      console.error("error", error);
+      thunkAPI.dispatch(getDataFailure(error));
+    }
+  }
+);
+
 export const createBooking = createAsyncThunk(
   "booking/createBooking",
   async (payload, thunkAPI) => {
@@ -161,4 +176,15 @@ async function _createBookingWithID(docID, customer, order, stripe, waiver) {
       waiver,
     });
   return doc;
+}
+
+async function _fetchBookingByDateFromDb(date) {
+  const snapshot = await firebaseClient.firestore().collection("bookings").where('order.bookingDate', '==', date ).get();
+
+  const bookingData = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  return bookingData;
 }

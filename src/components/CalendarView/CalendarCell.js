@@ -7,27 +7,27 @@ export default function CalendarCell(props) {
     const { cellValue, productdata, roomdata, currentRoom, bookingdata, datepick} = props;
     const [cellCapacity, setCellCapacity ] = useState(currentRoom.capacity);
     const dateFilter = bookingdata.filter((value) => {
-        return (value.order.bookingDate == format(datepick, 'M/d/yyyy'))
+        return (value.order.bookingDate == format(datepick, 'yyyy-MM-dd'))
     })
 
     const arr = []
-    
     for (let product of dateFilter) {
         for (let x of product.order.products) {
             if (x.room?.name == currentRoom.name) {
                 arr.push(x)
-             } else if (x.room == null && x.title == 'All Day Pass') {
-                 arr.push(x)
+            } else if (x.room == null && x.title == 'All Day Pass') {
+                arr.push(x)
             }
         }
     }
+    // console.log(dateFilter)
 // console.log(arr, cellValue, currentRoom.name)
 useEffect(() => {
     setCellCapacity(currentRoom.capacity)
     calculate()
 }, [datepick])
 
-
+// console.log(arr)
 const calculate = () => {
     for (let x of arr) {
         // console.log("loop start", cellCapacity)
@@ -35,7 +35,7 @@ const calculate = () => {
         for (let i=0; i< x.duration / 30; i++) {
             session.push(eachCellTime(x.time, i))
         }
-        if (session.includes(cellValue) || x.title == 'All Day Pass') {
+        if (session.includes(cellValue) || x.title.includes('All')) {
             setCellCapacity((cellCapacity) => cellCapacity - x.quantity)
             // console.log(cellCapacity - x.quantity, cellValue)
         }

@@ -12,7 +12,7 @@ import { format, millisecondsToMinutes, minutesToSeconds, secondsToHours, second
 import { firebase } from 'firebase/client';
 import CalendarCell from './CalendarCell';
 import { fetchAllProducts } from 'redux/product';
-import { fetchAllBookings } from 'redux/booking';
+import { fetchAllBookings, fetchBookingByDate } from 'redux/booking';
 
 export default function CalendarView() {
     const [startdate, setStartDate] = useState(new Date());
@@ -59,6 +59,116 @@ export default function CalendarView() {
         }
         return newtime+ ':00'
     }
+
+    /*start */
+    function timearr(duration, time) {
+        let sesArr = [];
+            for (let x = -duration/30 + 1; x < duration/30; x++){
+                sesArr.push(eachCellTime(time, x))
+            }
+        return sesArr
+    }
+
+
+
+    function sessionCapacity() {
+        const dateFilter = bookingdata.filter((value) => {
+            return (value.order.bookingDate == '2022-07-28')
+        })
+        
+        const bookedProduct = []
+        for (let product of dateFilter) {
+            for (let x of product.order.products) {
+                if (x.room?.name == 'Small') {
+                    bookedProduct.push(x)
+                } else if (x.room == null && x.title == 'All Day Pass') {
+                    bookedProduct.push(x)
+                }
+            }
+        }
+        
+        const finalObj = {}
+        for (let prod of productdata) {
+            if (prod.type == 'product') {
+                // const bookedProduct = []
+                /*here I want the bookedProduct above to move and I will filter only the product.room.name == currentproduct.room.name */
+                let proArr = []
+                // if (prod.title.includes('All')) {
+                //     for (let sess of cell) {
+                //         let originalCellCapacity = 25
+                //         let impactedTimeSlot = cell
+                //         let impactedCapacity = []
+                //         for (let x of impactedTimeSlot) {
+                //             let slotCapacity = 25;
+                //             for (let p of bookedProduct) {
+                //                 slotCapacity -= p.quantity
+                //             }
+                //             impactedCapacity.push(slotCapacity)
+                //         }
+                //         originalCellCapacity = impactedCapacity.sort()[0]
+                //         proArr.push({time : sess, remainingCapacity: originalCellCapacity})
+                //     }
+                //     finalObj[`${prod.title}`] = proArr
+                // } else {
+                for (let sess of cell) {
+                    let originalCellCapacity = 25;
+                    
+                    if (prod.title.includes('All')) {
+                        let impactedTimeSlot = cell
+                    // console.log(impactedTimeSlot, sess, prod.title)
+                        let impactedCapacity = []
+                        for (let x of impactedTimeSlot) {
+                            let slotCapacity = 25
+                            for (let p of bookedProduct) {
+                                const session  = []
+                                for (let i=0; i< p.duration / 30; i++) {
+                                    session.push(eachCellTime(p.time, i))
+                                }
+                                if (session.includes(x) || p.title.includes('All')) {
+                                    slotCapacity -= p.quantity
+                                }
+                            }
+                            impactedCapacity.push(slotCapacity)
+                        }
+                        originalCellCapacity = impactedCapacity.sort()[0]
+                        proArr.push({time : sess, remainingCapacity: originalCellCapacity})
+                    } else {
+                        let impactedTimeSlot = timearr(prod.duration, sess)
+                        let impactedCapacity = []
+                        for (let x of impactedTimeSlot) {
+                            let slotCapacity = 25
+                            for (let p of bookedProduct) {
+                                const session  = []
+                                for (let i=0; i< p.duration / 30; i++) {
+                                    session.push(eachCellTime(p.time, i))
+                                }
+                                if (session.includes(x) || p.title.includes('All')) {
+                                    slotCapacity -= p.quantity
+                                    
+                                    // console.log(cellCapacity - x.quantity, cellValue)
+                                }
+                            }
+                            impactedCapacity.push(slotCapacity)
+                        }
+                        originalCellCapacity = impactedCapacity.sort()[0]
+                        proArr.push({time : sess, remainingCapacity: originalCellCapacity})
+                        
+                        // proArr.push({time: sess, remainingCapacity: originalCellCapacity})
+                        // finalObj[`${prod.title}`]
+                        // console.log(prod.title,x, impactedCapacity)
+                    }
+                    
+                }
+                finalObj[`${prod.title}`] = proArr
+            //}
+            }
+            
+        }
+        console.log('booked', bookedProduct)
+        console.log(finalObj)
+    }
+    sessionCapacity()
+    /*end */
 
     return (
         <section style={{height: '100%'}}>
