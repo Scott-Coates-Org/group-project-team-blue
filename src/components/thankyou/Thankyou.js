@@ -1,12 +1,55 @@
 import hopper from "../../assets/hopper.webp";
 import { Container, Row, Col, Table } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
+import { fetchBookingById } from "redux/booking";
+const jwt = require("jsonwebtoken");
 
 const Thankyou = () => {
-  const dispatch = useDispatch()
-  const { data: bookingData, isLoaded: bookingIsLoaded, hasErrors: bookingHasErrors } = useSelector((state) => state.booking);
-  const { data: productData, isLoaded: productIsLoaded, hasErrors: productHasErrors } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+  const baseURI = window.location.origin;
+  const {
+    data: bookingData,
+    isLoaded: bookingIsLoaded,
+    hasErrors: bookingHasErrors,
+  } = useSelector((state) => state.booking);
+  const stripeDataIsLoaded = !(bookingData.stripe?.amount === "");
+
+  const useQuery = () => {
+    const { search } = useLocation();
+    return useMemo(() => new URLSearchParams(search), [search]);
+  };
+
+  const query = useQuery();
+  const bookingToken = query.get("booking");
+  const key = process.env.REACT_APP_JWT_SECRET;
+
+  const result = jwt.verify(bookingToken, key, { algorithm: "HS256" }, (err, decoded) => {
+    if (err) {
+      return { error: err.name, ...err };
+    }
+
+    return decoded;
+  });
+
+  if (result.error) {
+    return (
+      <div className="vh-100 vw-100 d-flex justify-content-center align-items-center">
+        <div className="bg-white text-center">
+          <h4 className="text-danger">{result.error}</h4>
+          <h4 className="text-danger">{JSON.stringify(result.expiredAt)}</h4>
+        </div>
+      </div>
+    );
+  }
+
+  const bookingId = result.bookingId;
+  useEffect(() => {
+    if (!bookingIsLoaded || !stripeDataIsLoaded) {
+      dispatch(fetchBookingById({ id: bookingId }));
+    }
+  }, [bookingIsLoaded, stripeDataIsLoaded]);
 
   const styles = {
     h3: {
@@ -40,22 +83,19 @@ const Thankyou = () => {
 
   return (
     <>
-      {hasErrors && "Error Loading"}
+      {bookingHasErrors && "Error Loading"}
       {bookingIsLoaded && (
-        <section className="d-flex flex-column justify-content-center align-items-center vh-100 h-100 checkout-bg p-3 overflow-auto">
+        <section className="d-flex flex-column align-items-center min-vh-100 h-100 checkout-bg p-3 overflow-auto pt-4 pb-4">
           <div className="d-flex position-relative">
             <img
               src={hopper}
-              width="300px"
+              width="350px"
               style={styles.img}
               alt="Jim Hopper from Stranger Things"
             />
-            <div className="bubble bubble-bottom-left shadow-lg">
-              <span style={styles.h3}>Thank you!</span>
-            </div>
           </div>
           <Container
-            className="px-2 pt-3 pb-5 bg-white rounded shadow-lg"
+            className="px-2 pt-3 pb-2 bg-white rounded shadow-lg"
             style={styles.container}
           >
             <Row className="mx-1 pb-2 d-flex align-items-center border-bottom">
@@ -74,76 +114,87 @@ const Thankyou = () => {
               </h5>
             </Row>
             <Row className="mx-1">
+              <p>Thank you for choosing to hop with us!</p>
               <p>
-                Thank you for choosing to hop with us! Please remember to arrive 10 minutes
-                prior to your booked time to allow time for check-in & to change into your
-                awesome hopper socks.
+                Please ensure that all hoppers fill out the waiver prior to arriving (you can
+                find the links below). Remember to arrive 10 minutes prior to your booked time
+                to allow time for check-in & to change into your awesome hopper socks.
               </p>
             </Row>
             <Row className="mx-1 mt-4 d-flex align-items-center border-bottom">
-              <h5 className="text-primary">Order Details</h5>
-            </Row>
-            <Row className="mx-1 mt-2">
-              Confirmation #
-              <span className="text-primary">{bookingData.booking?.transactionId}</span>
+              <h5 className="text-primary">
+                Order Details #{" "}
+                <span className="text-dark">{bookingData.stripe?.transactionID}</span>
+              </h5>
             </Row>
             <Row className="mx-1 mt-4">
               <Table borderless size="sm" responsive>
                 <thead>
                   <tr>
                     <th>Product</th>
-                    <th>Quantity</th>
+                    <th className="text-center">Quantity</th>
                     <th>Price</th>
                   </tr>
                 </thead>
                 <tbody>
                   {bookingData.order?.products.map((product) => (
-                    <tr>
+                    <tr key={product.id}>
                       <td>
-                        <b>{productData[product.productId].title}</b>
+                        <b>{product.title}</b>
                         <br />
-                        <i className="pl-1">{product.date}</i>
+                        <i className="pl-1">
+                          {product.time &&
+                            `${bookingData.order?.bookingDate} @ ${product.time}`}
+                        </i>
                       </td>
-                      <td>{product.quantity}</td>
-                      <td>${productData[product.productId].price * product.quantity}</td>
+                      <td className="text-center">{product.quantity}</td>
+                      <td>${(product.price * product.quantity).toFixed(2)}</td>
                     </tr>
                   ))}
-                  <tr>
-                    <td>
-                      <b>60min small room</b>
-                      <br />
-                      <i className="pl-1">20-Jul @ 10:30am</i>
-                    </td>
-                    <td>1</td>
-                    <td>$99.00</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <b>30min big room</b>
-                      <br />
-                      <i className="pl-1">20-Jul @ 12:30pm</i>
-                    </td>
-                    <td>5</td>
-                    <td>$1,897.00</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <b>Socks</b>
-                    </td>
-                    <td>6</td>
-                    <td>$11.00</td>
-                  </tr>
                 </tbody>
               </Table>
             </Row>
-            <Row className="mx-1 mt-4 w-50 d-flex ml-auto" style={styles.total}>
-              <Col>
-                <b>Grand Total:</b>
-              </Col>
-              <Col>
-                <b>${bookingData.order?.amount}</b>
-                <b>$2,189.92</b>
-              </Col>
+            {stripeDataIsLoaded && (
+              <Row className="mx-1 mt-4 w-50 d-flex ml-auto" style={styles.total}>
+                <Col>
+                  <b>Grand Total:</b>
+                </Col>
+                <Col>
+                  <b>${(bookingData.stripe?.amount / 100).toFixed(2)}</b>
+                </Col>
+              </Row>
+            )}
+            <Row className="mx-1 mt-4 d-flex align-items-center border-bottom">
+              <h5 className="text-primary">Waivers</h5>
+            </Row>
+            <Row className="mx-1 mt-2">
+              <p>
+                Please remember that each participant must sign their waiver before coming to
+                Hopper.
+              </p>
+            </Row>
+            {stripeDataIsLoaded && (
+              <Row className="mx-1 mt-4">
+                {bookingData.participants?.map((participant) => {
+                  const waiverURI = `${baseURI}/waiver/${bookingId}/${participant.waiverId}`;
+
+                  return (
+                    <Row key={participant.waiverId} className="d-flex flex-column mx-1 mb-3">
+                      <div>
+                        <b>{participant.fullName}</b>
+                      </div>
+                      <div>
+                        <a href={waiverURI} target="_blank">
+                          {waiverURI}
+                        </a>
+                      </div>
+                    </Row>
+                  );
+                })}
+              </Row>
+            )}
+            <Row className="mx-1 mt-5 pt-2 d-flex justify-content-center border-top">
+              <p className="text-center text-secondary">Hopper limited ®</p>
             </Row>
           </Container>
         </section>

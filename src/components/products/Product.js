@@ -11,7 +11,7 @@ const Product = ({ product, idx}) => {
         <td>{product.price}</td>
         <td>{product.status}</td>
         <td>{product.room?.name}</td>
-        <td>{product.duration}</td>
+        <td>{product.duration >= 0 ? product.duration : ""}</td>
       </tr>
     </tbody>
   );

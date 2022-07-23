@@ -43,7 +43,7 @@ export const fetchAllBookings = createAsyncThunk(
       thunkAPI.dispatch(getDataSuccess(data));
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(getDataFailure(error));
+      thunkAPI.dispatch(getDataFailure(error.message));
     }
   }
 );
@@ -58,7 +58,7 @@ export const fetchBookingById = createAsyncThunk(
       thunkAPI.dispatch(getDataSuccess(data));
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(getDataFailure(error));
+      thunkAPI.dispatch(getDataFailure(error.message));
     }
   }
 );
@@ -70,13 +70,13 @@ export const createBooking = createAsyncThunk(
       await _createBooking(payload.customer, payload.order, payload.stripe, payload.waiver);
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error.message));
     }
   }
 );
 
 export const updateBooking = createAsyncThunk(
-  "booking/createBooking",
+  "booking/updateBooking",
   async (payload, thunkAPI) => {
     try {
       await _updateBooking(
@@ -84,11 +84,12 @@ export const updateBooking = createAsyncThunk(
         payload.customer,
         payload.order,
         payload.stripe,
-        payload.waiver
+        payload.participants,
+        payload.status
       );
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error.message));
     }
   }
 );
@@ -96,17 +97,19 @@ export const updateBooking = createAsyncThunk(
 export const createBookingWithID = createAsyncThunk(
   "booking/createBookingWithID",
   async (payload, thunkAPI) => {
+    console.log({ payload });
     try {
       await _createBookingWithID(
         payload.docID,
         payload.customer,
         payload.order,
         payload.stripe,
-        payload.waiver
+        payload.participants,
+        payload.status
       );
     } catch (error) {
       console.error("error", error);
-      thunkAPI.dispatch(createDataFailure());
+      thunkAPI.dispatch(createDataFailure(error.message));
     }
   }
 );
@@ -124,7 +127,6 @@ async function _fetchAllBookingsFromDb() {
 
 async function _fetchBookingByIdFromDb(id) {
   const snapshot = await firebaseClient.firestore().collection("bookings").doc(id).get();
-
   const bookingData = snapshot ? { id: snapshot.id, ...snapshot.data() } : null;
 
   return bookingData;
@@ -137,28 +139,46 @@ async function _createBooking(customer, order, stripe, waiver) {
     stripe,
     waiver,
   });
+
   return doc;
 }
 
-async function _updateCustomer(customer, order, stripe, waiver) {
+async function _updateBooking(
+  docID,
+  customer = null,
+  order = null,
+  stripe = null,
+  participants = null,
+  status = null
+) {
+  const updatedBooking = Object.assign(
+    {},
+    customer && { customer },
+    order && { order },
+    stripe && { stripe },
+    participants && { participants },
+    status && { status }
+  );
+
+  console.log(updatedBooking);
+
   const doc = await firebaseClient
     .firestore()
     .collection("bookings")
     .doc(docID)
-    .update({ stripe });
+    .update({ ...updatedBooking });
+
   return doc;
 }
 
-async function _createBookingWithID(docID, customer, order, stripe, waiver) {
-  const doc = await firebaseClient
-    .firestore()
-    .collection("bookings")
-    .doc(docID)
-    .set({
-      customer,
-      order,
-      stripe,
-      waiver,
-    });
+async function _createBookingWithID(docID, customer, order, stripe, participants, status) {
+  const doc = await firebaseClient.firestore().collection("bookings").doc(docID).set({
+    customer,
+    order,
+    stripe,
+    participants,
+    status,
+  });
+
   return doc;
 }

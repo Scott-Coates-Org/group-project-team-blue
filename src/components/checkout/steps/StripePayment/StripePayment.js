@@ -1,5 +1,5 @@
 import { useWizard } from "react-use-wizard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "reactstrap";
 import WizardStep from "components/checkout/wizard-parts/WizardStep";
 import Stripe from "components/stripe/Stripe";
@@ -17,16 +17,17 @@ const StripePayment = () => {
   const { previousStep } = useWizard();
   const [clientSecret, setClientSecret] = useState("");
   const dispatch = useDispatch();
-  const { bookingDate, products, customerDetails, waiver } = useSelector(
+  const { bookingDate, products, customerDetails, participants } = useSelector(
     ({ cartDetails }) => cartDetails
   );
 
-  const newDocID = uniqid();
+  const newDocID = useMemo(() => uniqid(), []);
+  console.log(`newDocId in StripePayment ${newDocID}`);
 
   const bookingDetails = {
     docID: newDocID,
     customer: customerDetails,
-    orders: {
+    order: {
       bookingDate: bookingDate,
       products: products,
     },
@@ -36,27 +37,15 @@ const StripePayment = () => {
       amount: "",
       receiptURL: "",
     },
-    waiver: waiver,
+    participants: participants,
   };
 
   useEffect(() => {
-    dispatch(
-      createBookingWithID({
-        docID: bookingDetails.docID,
-        customer: bookingDetails.customer,
-        order: bookingDetails.orders,
-        stripe: bookingDetails.stripe,
-        waiver: bookingDetails.waiver,
-      })
-    ).then(() => {
-      const createPaymentIntent = firebase
-        .functions()
-        .httpsCallable("createPaymentIntent");
+    const createPaymentIntent = firebase.functions().httpsCallable("createPaymentIntent");
 
-      createPaymentIntent(bookingDetails).then((result) =>
-        setClientSecret(result.data.clientSecret)
-      );
-    });
+    createPaymentIntent(bookingDetails).then((result) =>
+      setClientSecret(result.data.clientSecret)
+    );
   }, []);
 
   const options = {
@@ -69,7 +58,11 @@ const StripePayment = () => {
       <div>
         {clientSecret && (
           <Elements options={options} stripe={stripePromise}>
-            <Stripe props={clientSecret} />
+            <Stripe
+              clientSecret={clientSecret}
+              newDocID={newDocID}
+              bookingDetails={bookingDetails}
+            />
           </Elements>
         )}
       </div>

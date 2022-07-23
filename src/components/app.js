@@ -14,10 +14,9 @@ import store from "redux/store";
 import { getData, getDataSuccess } from "redux/user";
 import ErrorBoundary from "components/error-boundary";
 import Dashboard from "./dashboard/Dashboard";
-import CreateProduct from "./products/CreateProduct";
-import ProductList from "./products/ProductList";
 import SendGrid from "./sendgrid/SendGrid";
 import WaiverForm from "./waiver/WaiverForm";
+import Thankyou from "./thankyou/Thankyou";
 
 // DO NOT import BrowserRouter (as per tutorial). that caused router to not actually do anything.
 // see here: https://stackoverflow.com/questions/63554233/react-router-v5-history-push-changes-the-address-bar-but-does-not-change-the
@@ -71,13 +70,9 @@ function App() {
               )}
             />
             <Route exact path="/" render={() => <Home />} />
-            <Route
-              exact
-              path="/createproduct"
-              render={() => <CreateProduct />}
-            />
             <Route path="/checkout" render={() => <Checkout />} />
             <Route path="/sendgrid" render={() => <SendGrid />} />
+            <Route path="/thankyou" render={() => <Thankyou />} />
             <Route path="/waiver/:bookingId/:waiverId" render={() => <WaiverForm />} />
             {/* this must be on the bottom */}
             <ProtectedRoute path="/admin" component={Dashboard} {...props} />
