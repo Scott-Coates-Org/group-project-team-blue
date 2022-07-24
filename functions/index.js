@@ -10,8 +10,7 @@ const stripeWebhook = require("stripe")(functions.config().keys.webhooks);
 const endpointSecret = functions.config().keys.signing;
 
 const sgMail = require("@sendgrid/mail");
-const {useDispatch, useSelector} = require("react-redux");
-const {fetchAllProducts} = require("redux/product");
+const {millisecondsToMinutes} = require("date-fns");
 sgMail.setApiKey(functions.config().sendgrid.api);
 
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
@@ -147,25 +146,92 @@ exports.events = functions.https.onRequest((request, response) => {
 });
 
 exports.sendEmail = functions.https.onCall(async (data, context) => {
-  const msg = {
-    to: "marge.consunji@gmail.com",
-    from: "mentorshipteamblue@gmail.com",
-    subject: "Hopper - Booking Confirmation",
-    html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-    templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
-    dynamicTemplateData: {
-      firstname: "Marge",
-    },
-  };
+  // const msg = {
+  //   to: "marge.consunji@gmail.com",
+  //   from: "mentorshipteamblue@gmail.com",
+  //   subject: "Hopper - Booking Confirmation",
+  //   html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+  //   templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
+  //   dynamicTemplateData: {
+  //     firstname: "Marge",
+  //   },
+  // };
 
-  sgMail
-      .send(msg)
-      .then(() => {
-        console.log("Email sent");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  // sgMail
+  //     .send(msg)
+  //     .then(() => {
+  //       console.log("Email sent");
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  try {
+    const date = data.date;
+    const bookingSnapshot = await admin.firestore()
+        .collection("bookings")
+        .where("order.bookingDate", "==", date)
+        .get();
+    const bookingData = bookingSnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+    const productSnapshot = await admin
+        .firestore()
+        .collection("products")
+        .where("type", "==", "product")
+        .get();
+    console.log("productSnapshot", productSnapshot);
+    const roomsData = {};
+    const rooms = await admin.firestore()
+        .collection("rooms").get();
+    rooms.docs.forEach((doc) => {
+      (roomsData[doc.id] = {...doc.data()});
+    },
+    );
+    console.log("allrooms", roomsData);
+
+    const productData = productSnapshot.docs.map((doc) => {
+      const {room, ...rest} = doc.data();
+
+      return {
+        id: doc.id,
+        ...rest,
+        room: roomsData[room] || null,
+      };
+    });
+    console.log({productData});
+
+    const timeSnapshot = await admin.firestore()
+        .collection("opentime")
+        .where("date", "==", date)
+        .get();
+    const timeData = timeSnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+    const open = timeData[0]?.open;
+    const close = timeData[0]?.close;
+    const cell = [];
+    const openHour = new Date(`${date}T${open}:00Z`);
+    const closeHour = new Date(`${date}T${close}:00Z`);
+    const totalOpenTime = closeHour.getTime() - openHour.getTime();
+    const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
+    for (let i=0; i < noOfCells; i++) {
+      cell.push(i);
+    }
+    return {
+      bookingData: bookingData,
+      productData: productData,
+      timeData: timeData,
+      noOfCells: noOfCells,
+    };
+  } catch (error) {
+    return error;
+  }
 });
 
 const createWaiversInDB = async (bookingId) => {
@@ -405,21 +471,22 @@ exports.stripeConfirmAddToDB = functions.database
       });
     });
 
-
-exports.calculateRemainingCapacity = functions.https
-.onCall(async (data, context) => {
-  const dispatch = useDispatch();
-  const date = data.date;
-  const bookingSnapshot = await admin.firestore()
-  .collection("bookings").where("order.bookingDate", "==", date).get();
-  const bookingData = bookingSnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-  await dispatch(fetchAllProducts());
-  const {data : productData} = useSelector(state => state.product);
-  return ({
-    bookingData,
-    productData,
-  });
-});
+// exports.calculateSessionCapacity = functions.https
+//     .onCall(async (data, context) => {
+//       return {
+//         test: "hello",
+//       };
+//       const date = data.date;
+//       const bookingSnapshot = await admin.firestore()
+//           .collection("bookings")
+//       .where("order.bookingDate", "==", date).get();
+//       const bookingData = bookingSnapshot.docs.map((doc) => ({
+//         id: doc.id,
+//         ...doc.data(),
+//       }));
+//       const productData = await fetchAllProductsFromDb();
+//       return {
+//         bookingData,
+//         productData,
+//       };
+//     });
