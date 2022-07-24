@@ -50,6 +50,17 @@ export const COLUMNS = [
         Header: "BOOKING NAME",
         accessor: row => `${row.customer?.first} ${row.customer?.last}`
     },
+    {
+        Header: "STATUS",
+        accessor: 'status.type',
+        Cell: ({value}) => {
+            if (value == 'SUCCESS') {
+                return <span className='text-success'>{value}</span>
+            }
+            return <span>{value}</span>
+        }
+        
+    },
 ]
 
 // const customTimeSort = (rowA, rowB, id, desc) => {

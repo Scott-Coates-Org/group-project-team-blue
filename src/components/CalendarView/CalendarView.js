@@ -31,7 +31,16 @@ export default function CalendarView() {
         .then((collections) => {
             const mydata = collections.docs.map(time => time.data())
             dispatch(getDataSuccess(mydata));
+
+            const sendEmail = firebase.functions().httpsCallable("sendEmail");
+
+            sendEmail({date : "2022-07-23"}).then((result) =>
+            console.log(result.data.productData)
+            ).catch(error => console.log(error))
+
         })
+
+    
     }, [dispatch, startdate]);
 
 

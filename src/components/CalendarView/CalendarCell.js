@@ -11,12 +11,12 @@ export default function CalendarCell(props) {
     })
 
     const arr = []
-    for (let product of dateFilter) {
-        for (let x of product.order.products) {
-            if (x.room?.name == currentRoom.name) {
-                arr.push(x)
-            } else if (x.room == null && x.title == 'All Day Pass') {
-                arr.push(x)
+    for (let booking of dateFilter) {
+        for (let product of booking.order.products) {
+            if (product.room?.name == currentRoom.name) {
+                arr.push(product)
+            } else if (product.room == null && product.title == 'All Day Pass') {
+                arr.push(product)
             }
         }
     }
@@ -29,15 +29,15 @@ useEffect(() => {
 
 // console.log(arr)
 const calculate = () => {
-    for (let x of arr) {
+    for (let prod of arr) {
         // console.log("loop start", cellCapacity)
         const session  = []
-        for (let i=0; i< x.duration / 30; i++) {
-            session.push(eachCellTime(x.time, i))
+        for (let i=0; i< prod.duration / 30; i++) {
+            session.push(eachCellTime(prod.time, i))
         }
-        if (session.includes(cellValue) || x.title.includes('All')) {
-            setCellCapacity((cellCapacity) => cellCapacity - x.quantity)
-            // console.log(cellCapacity - x.quantity, cellValue)
+        if (session.includes(cellValue) || prod.title.includes('All')) {
+            setCellCapacity((cellCapacity) => cellCapacity - prod.quantity)
+            // console.log(cellCapacity - prod.quantity, cellValue)
         }
     }
 }
