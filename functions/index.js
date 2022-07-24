@@ -10,7 +10,13 @@ const stripeWebhook = require("stripe")(functions.config().keys.webhooks);
 const endpointSecret = functions.config().keys.signing;
 
 const sgMail = require("@sendgrid/mail");
-const {millisecondsToMinutes} = require("date-fns");
+const {
+  millisecondsToMinutes,
+  hoursToSeconds,
+  minutesToSeconds,
+  secondsToHours,
+  secondsToMinutes,
+} = require("date-fns");
 sgMail.setApiKey(functions.config().sendgrid.api);
 
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
@@ -145,6 +151,25 @@ exports.events = functions.https.onRequest((request, response) => {
   }
 });
 
+const eachCellTime = (time, plus) => {
+  const hr = time?.split(":")[0];
+  const min = time?.split(":")[1];
+  const inseconds = hoursToSeconds(hr) + minutesToSeconds(min) + plus * 1800;
+  const newtime = secondsToHours(inseconds);
+  if (inseconds % 3600 != 0) {
+    return newtime +":"+ secondsToMinutes(inseconds % 3600);
+  }
+  return newtime+ ":00";
+};
+
+const generateImpactedTime = (duration, time) => {
+  const sesArr = [];
+  for (let x = -duration/30 + 1; x < duration/30; x++) {
+    sesArr.push(eachCellTime(time, x));
+  }
+  return sesArr;
+};
+
 exports.sendEmail = functions.https.onCall(async (data, context) => {
   // const msg = {
   //   to: "marge.consunji@gmail.com",
@@ -182,7 +207,6 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
         .collection("products")
         .where("type", "==", "product")
         .get();
-    console.log("productSnapshot", productSnapshot);
     const roomsData = {};
     const rooms = await admin.firestore()
         .collection("rooms").get();
@@ -190,7 +214,6 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
       (roomsData[doc.id] = {...doc.data()});
     },
     );
-    console.log("allrooms", roomsData);
 
     const productData = productSnapshot.docs.map((doc) => {
       const {room, ...rest} = doc.data();
@@ -201,7 +224,6 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
         room: roomsData[room] || null,
       };
     });
-    console.log({productData});
 
     const timeSnapshot = await admin.firestore()
         .collection("opentime")
@@ -213,22 +235,76 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
         ...doc.data(),
       };
     });
-    const open = timeData[0]?.open;
-    const close = timeData[0]?.close;
+    const open = (timeData.length == 0) ? "09:00" : timeData[0]?.open;
+    const close = (timeData.length == 0) ? "21:00" : timeData[0]?.close;
     const cell = [];
     const openHour = new Date(`${date}T${open}:00Z`);
     const closeHour = new Date(`${date}T${close}:00Z`);
     const totalOpenTime = closeHour.getTime() - openHour.getTime();
     const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
     for (let i=0; i < noOfCells; i++) {
-      cell.push(i);
+      cell.push(eachCellTime(open, i));
     }
-    return {
-      bookingData: bookingData,
-      productData: productData,
-      timeData: timeData,
-      noOfCells: noOfCells,
-    };
+
+    const finalObj = {};
+    for (const prod of productData) {
+      const bookedProduct = [];
+      for (const booking of bookingData) {
+        if (booking.status.type == "SUCCESS") {
+          for (const product of booking.order.products) {
+            if (product.room?.name == prod?.room.name) {
+              bookedProduct.push(product);
+            } else if (product.room == null &&
+              product.title == "All Day Pass" ) {
+              bookedProduct.push(product);
+            }
+          }
+        }
+      }
+      const productArr = [];
+      for (const [index, sess] of cell.entries()) {
+        let originalCellCapacity = prod?.room.capacity;
+        if (prod.title.includes("All")) {
+          const impactedTimeSlot = cell;
+          const impactedCapacityArr = [];
+          for (const slot of impactedTimeSlot) {
+            let slotCapacity = prod?.room.capacity;
+            for (const p of bookedProduct) {
+              const session = [];
+              for (let i = 0; i < p.duration / 30; i++) {
+                session.push(eachCellTime(p.time, i));
+              }
+              if (session.includes(slot) || p.title.includes("All")) {
+                slotCapacity -= p.quantity;
+              }
+            }
+            impactedCapacityArr.push(slotCapacity);
+          }
+          originalCellCapacity = Math.min(...impactedCapacityArr);
+        } else {
+          const impactedTimeSlot = generateImpactedTime(prod.duration, sess);
+          const impactedCapacityArr = [];
+          for (const slot of impactedTimeSlot) {
+            let slotCapacity = prod?.room.capacity;
+            for (const p of bookedProduct) {
+              const session = [];
+              for (let i = 0; i < p.duration / 30; i++) {
+                session.push(eachCellTime(p.time, i));
+              }
+              if (session.includes(slot) || p.title.includes("All")) {
+                slotCapacity -= p.quantity;
+              }
+            }
+            impactedCapacityArr.push(slotCapacity);
+          }
+          originalCellCapacity = Math.min(...impactedCapacityArr);
+        }
+        productArr.push({idx: index, time: sess,
+          remainingCapacity: originalCellCapacity});
+      }
+      finalObj[`${prod.id}`] = productArr;
+    }
+    return finalObj;
   } catch (error) {
     return error;
   }

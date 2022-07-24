@@ -32,11 +32,11 @@ export default function CalendarView() {
             const mydata = collections.docs.map(time => time.data())
             dispatch(getDataSuccess(mydata));
 
-            const sendEmail = firebase.functions().httpsCallable("sendEmail");
+            // const sendEmail = firebase.functions().httpsCallable("sendEmail");
 
-            sendEmail({date : "2022-07-23"}).then((result) =>
-            console.log(result.data.productData)
-            ).catch(error => console.log(error))
+            // sendEmail({date : "2022-07-23"}).then((result) =>
+            // console.log(result.data)
+            // ).catch(error => console.log(error))
 
         })
 
@@ -44,12 +44,13 @@ export default function CalendarView() {
     }, [dispatch, startdate]);
 
 
-    const open = timedata[0]?.open;
-    const close = timedata[0]?.close;
-    const date = timedata[0]?.date;
+    const open = (timedata.length == 0) ? "09:00" : timedata[0]?.open;
+    const close = (timedata.length == 0) ? "21:00" : timedata[0]?.close;
+    const date = (timedata.length == 0) ? format(startdate, "yyyy-MM-dd") : timedata[0]?.date;
     const cell = [];
     const openHour = new Date(`${date}T${open}:00Z`)
     const closeHour = new Date(`${date}T${close}:00Z`)
+    console.log(openHour, closeHour)
     const totalOpenTime = closeHour.getTime() - openHour.getTime()
     const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
 
@@ -57,7 +58,6 @@ export default function CalendarView() {
         cell.push(eachCellTime(open, i));
     }
     const headers = cell.filter((value, index) => index % 2 == 0)
-    // console.log(bookingdata)
     
     function eachCellTime(time, plus) {
         let hr = time?.split(':')[0];
@@ -69,97 +69,6 @@ export default function CalendarView() {
         }
         return newtime+ ':00'
     }
-
-    /*start */
-    function timearr(duration, time) {
-        let sesArr = [];
-            for (let x = -duration/30 + 1; x < duration/30; x++){
-                sesArr.push(eachCellTime(time, x))
-            }
-        return sesArr
-    }
-
-
-
-    function sessionCapacity() {
-        const dateFilter = bookingdata.filter((value) => {
-            return (value.order.bookingDate == '2022-07-28')
-        })
-        
-        const finalObj = {}
-        for (let prod of productdata) {
-
-            if (prod.type == 'product') {
-                const bookedProduct = []
-                for (let product of dateFilter) {
-                    for (let x of product.order.products) {
-                        if (x.room?.name == prod?.room.name) {
-                            bookedProduct.push(x)
-                        } else if (x.room == null && x.title == 'All Day Pass') {
-                            bookedProduct.push(x)
-                        }
-                    }
-                }
-                // console.log('booked', prod.title, bookedProduct)
-                /*here I want the bookedProduct above to move and I will filter only the product.room.name == currentproduct.room.name */
-                let proArr = []
-                for (let sess of cell) {
-                    let originalCellCapacity = prod?.room.capacity;
-                    
-                    if (prod.title.includes('All')) {
-                        let impactedTimeSlot = cell
-                    // console.log(impactedTimeSlot, sess, prod.title)
-                        let impactedCapacity = []
-                        for (let x of impactedTimeSlot) {
-                            let slotCapacity = prod?.room.capacity
-                            for (let p of bookedProduct) {
-                                const session  = []
-                                for (let i=0; i< p.duration / 30; i++) {
-                                    session.push(eachCellTime(p.time, i))
-                                }
-                                if (session.includes(x) || p.title.includes('All')) {
-                                    slotCapacity -= p.quantity
-                                }
-                            }
-                            impactedCapacity.push(slotCapacity)
-                        }
-                        originalCellCapacity = Math.min(...impactedCapacity)
-                        // proArr.push({time : sess, remainingCapacity: originalCellCapacity})
-                    } else {
-                        let impactedTimeSlot = timearr(prod.duration, sess)
-                        let impactedCapacity = []
-                        for (let x of impactedTimeSlot) {
-                            let slotCapacity = prod?.room.capacity
-                            for (let p of bookedProduct) {
-                                const session  = []
-                                for (let i=0; i< p.duration / 30; i++) {
-                                    session.push(eachCellTime(p.time, i))
-                                }
-                                if (session.includes(x) || p.title.includes('All')) {
-                                    slotCapacity -= p.quantity
-                                    
-                                    // console.log(cellCapacity - x.quantity, cellValue)
-                                }
-                            }
-                            impactedCapacity.push(slotCapacity)
-                            // console.log(prod.title,x, impactedCapacity.sort()[0])
-                        }
-                        originalCellCapacity = Math.min(...impactedCapacity)
-                        // proArr.push({time: sess, remainingCapacity: originalCellCapacity})
-                        // finalObj[`${prod.title}`]
-                        
-                    }
-                    proArr.push({time : sess, remainingCapacity: originalCellCapacity})
-                }
-                finalObj[`${prod.title}`] = proArr
-            //}
-            }
-            
-        }
-        console.log(finalObj)
-    }
-    sessionCapacity()
-    /*end */
 
     return (
         <section style={{height: '100%'}}>

@@ -20,24 +20,19 @@ export default function CalendarCell(props) {
             }
         }
     }
-    // console.log(dateFilter)
-// console.log(arr, cellValue, currentRoom.name)
 useEffect(() => {
     setCellCapacity(currentRoom.capacity)
     calculate()
 }, [datepick])
 
-// console.log(arr)
 const calculate = () => {
     for (let prod of arr) {
-        // console.log("loop start", cellCapacity)
         const session  = []
         for (let i=0; i< prod.duration / 30; i++) {
             session.push(eachCellTime(prod.time, i))
         }
         if (session.includes(cellValue) || prod.title.includes('All')) {
             setCellCapacity((cellCapacity) => cellCapacity - prod.quantity)
-            // console.log(cellCapacity - prod.quantity, cellValue)
         }
     }
 }
@@ -68,7 +63,7 @@ const calculate = () => {
     return (
         <td 
             onMouseOver={mouseOver} onMouseOut={mouseOut}
-            id={`${cellCapacity > currentRoom.capacity * 0.5 ? 'available' : ''}`}
+            id={`${cellCapacity >= currentRoom.capacity * 0.5 ? 'available' : ''}`}
             className={`p-0 
             ${cellCapacity > 0 && cellCapacity < currentRoom.capacity * 0.5 ? 'halfbooked' : ''} 
             ${cellCapacity < 0 ? 'overbooked' : ''}
