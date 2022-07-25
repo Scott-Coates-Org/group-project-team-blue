@@ -12,7 +12,7 @@ import { format, millisecondsToMinutes, minutesToSeconds, secondsToHours, second
 import { firebase } from 'firebase/client';
 import CalendarCell from './CalendarCell';
 import { fetchAllProducts } from 'redux/product';
-import { fetchAllBookings } from 'redux/booking';
+import { fetchAllBookings, fetchBookingByDate } from 'redux/booking';
 
 export default function CalendarView() {
     const [startdate, setStartDate] = useState(new Date());
@@ -31,15 +31,26 @@ export default function CalendarView() {
         .then((collections) => {
             const mydata = collections.docs.map(time => time.data())
             dispatch(getDataSuccess(mydata));
+
+            // const sendEmail = firebase.functions().httpsCallable("sendEmail");
+
+            // sendEmail({date : "2022-07-23"}).then((result) =>
+            // console.log(result.data)
+            // ).catch(error => console.log(error))
+
         })
+
+    
     }, [dispatch, startdate]);
 
-    const open = timedata[0]?.open;
-    const close = timedata[0]?.close;
-    const date = timedata[0]?.date;
+
+    const open = (timedata.length == 0) ? "09:00" : timedata[0]?.open;
+    const close = (timedata.length == 0) ? "21:00" : timedata[0]?.close;
+    const date = (timedata.length == 0) ? format(startdate, "yyyy-MM-dd") : timedata[0]?.date;
     const cell = [];
     const openHour = new Date(`${date}T${open}:00Z`)
     const closeHour = new Date(`${date}T${close}:00Z`)
+    console.log(openHour, closeHour)
     const totalOpenTime = closeHour.getTime() - openHour.getTime()
     const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
 
@@ -47,7 +58,6 @@ export default function CalendarView() {
         cell.push(eachCellTime(open, i));
     }
     const headers = cell.filter((value, index) => index % 2 == 0)
-    // console.log(bookingdata)
     
     function eachCellTime(time, plus) {
         let hr = time?.split(':')[0];

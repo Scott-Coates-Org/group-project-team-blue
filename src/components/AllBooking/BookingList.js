@@ -11,7 +11,7 @@ import { fetchAllBookings, getData } from 'redux/booking'
 
 export default function BookingList() {
   const dispatch = useDispatch();
-  const {data : bookingdata, isLoaded, hasErrors} = useSelector(state => state.booking)
+  const {data: bookingdata, isLoaded, hasErrors} = useSelector(state => state.booking)
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => bookingdata, [bookingdata]);
   // console.log(bookingdata)
