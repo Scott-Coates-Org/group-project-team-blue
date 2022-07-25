@@ -1,6 +1,25 @@
-import { Button } from 'reactstrap';
+import { firebase } from "firebase/client";
+require("firebase/functions");
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Spinner, Button } from 'reactstrap';
 
 const TimeSelect = ({ duration, id, timeSlots, handleSetTime }) => {
+  const [timeslots, setTimeslots] = useState([]);
+
+  const bookingDate = useSelector(({ cartDetails }) => cartDetails.bookingDate);
+
+  useEffect( () => {
+    const getRemainingCapacity = firebase.functions().httpsCallable('getRemainingCapacity');
+    const fetchCapacities = async () => {
+      const data = await getRemainingCapacity({ date: bookingDate });
+      setTimeslots(data.data[id]);
+      return data;
+    }
+    fetchCapacities().catch(console.error);
+  }, [bookingDate]);
+
+  console.log(timeslots);
 
   const determineAvailability = (duration, time, times) => {
     switch (true) {
@@ -16,8 +35,9 @@ const TimeSelect = ({ duration, id, timeSlots, handleSetTime }) => {
   return (
     <>
       <div role="group" data-toggle="buttons" className="d-flex flex-wrap mb-3">
-
-        {timeSlots.map((time, index, times) => {
+      {!timeslots ? (<div className="py-3 w-100 d-flex my-4 justify-content-center">
+          <Spinner color="primary" />
+        </div>) : (<>{timeslots.map((time, index, times) => {
           return (
             <Button
               data-toggle="button"
@@ -29,7 +49,7 @@ const TimeSelect = ({ duration, id, timeSlots, handleSetTime }) => {
               {time.time}
             </Button>
           )
-        })}
+        })}</>)}
       </div>
     </>
   );
