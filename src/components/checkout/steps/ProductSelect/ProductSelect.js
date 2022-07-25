@@ -11,198 +11,196 @@ import WizardStep from 'components/checkout/wizard-parts/WizardStep';
 import 'react-calendar/dist/Calendar.css';
 import './productSelect.css';
 
-const productCapacities = 
-  { '5c4cXcnzwtFmZT9gtKhS': [
-    { idx: 0,
-      time: "10:00",
-      remainingCapacity: 0
-    },
-    { idx: 1,
-      time: "10:30",
-      remainingCapacity: 0
-    },
-    { idx: 2,
-      time: "11:00",
-      remainingCapacity: 0
-    },
-    { idx: 3,
-      time: "11:30",
-      remainingCapacity: 5
-    },
-    { idx: 4,
-      time: "12:00",
-      remainingCapacity: 0
-    },
-    { idx: 5,
-      time: "12:30",
-      remainingCapacity: 12
-    },
-    { idx: 6,
-      time: "13:00",
-      remainingCapacity: 50
-    },
-    { idx: 7,
-      time: "13:30",
-      remainingCapacity: 10
-    },
-    { idx: 8,
-      time: "14:00",
-      remainingCapacity: 0
-    },
-    { idx: 9,
-      time: "14:30",
-      remainingCapacity: 40
-    },
-    { idx: 10,
-      time: "15:00",
-      remainingCapacity: 20
-    },
-    { idx: 11,
-      time: "15:30",
-      remainingCapacity: 21
-    },
-    { idx: 12,
-      time: "16:00",
-      remainingCapacity: 0
-    },
-    { idx: 13,
-      time: "16:30",
-      remainingCapacity: 0
-    },
-    { idx: 14,
-      time: "17:00",
-      remainingCapacity: 10
-    },
-    { idx: 15,
-      time: "17:30",
-      remainingCapacity: 11
-    },
-    { idx: 16,
-      time: "18:00",
-      remainingCapacity: 20
-    },
-    { idx: 17,
-      time: "18:30",
-      remainingCapacity: 21
-    },
-    { idx: 18,
-      time: "19:00",
-      remainingCapacity: 0
-    },
-    { idx: 19,
-      time: "19:30",
-      remainingCapacity: 22
-    },
-    { idx: 20,
-      time: "20:00",
-      remainingCapacity: 14
-    },
-    { idx: 21,
-      time: "20:30",
-      remainingCapacity: 6
-    },
-    { idx: 22,
-      time: "21:00",
-      remainingCapacity: 0
-    },
-  ],
-  'lQq80BfyHvS5THLnAC95': [
-    { idx: 0,
-      time: "10:00",
-      remainingCapacity: 0
-    },
-    { idx: 1,
-      time: "10:30",
-      remainingCapacity: 0
-    },
-    { idx: 2,
-      time: "11:00",
-      remainingCapacity: 0
-    },
-    { idx: 3,
-      time: "11:30",
-      remainingCapacity: 5
-    },
-    { idx: 4,
-      time: "12:00",
-      remainingCapacity: 0
-    },
-    { idx: 5,
-      time: "12:30",
-      remainingCapacity: 12
-    },
-    { idx: 6,
-      time: "13:00",
-      remainingCapacity: 50
-    },
-    { idx: 7,
-      time: "13:30",
-      remainingCapacity: 10
-    },
-    { idx: 8,
-      time: "14:00",
-      remainingCapacity: 0
-    },
-    { idx: 9,
-      time: "14:30",
-      remainingCapacity: 40
-    },
-    { idx: 10,
-      time: "15:00",
-      remainingCapacity: 20
-    },
-    { idx: 11,
-      time: "15:30",
-      remainingCapacity: 21
-    },
-    { idx: 12,
-      time: "16:00",
-      remainingCapacity: 0
-    },
-    { idx: 13,
-      time: "16:30",
-      remainingCapacity: 0
-    },
-    { idx: 14,
-      time: "17:00",
-      remainingCapacity: 10
-    },
-    { idx: 15,
-      time: "17:30",
-      remainingCapacity: 11
-    },
-    { idx: 16,
-      time: "18:00",
-      remainingCapacity: 20
-    },
-    { idx: 17,
-      time: "18:30",
-      remainingCapacity: 21
-    },
-    { idx: 18,
-      time: "19:00",
-      remainingCapacity: 0
-    },
-    { idx: 19,
-      time: "19:30",
-      remainingCapacity: 22
-    },
-    { idx: 20,
-      time: "20:00",
-      remainingCapacity: 14
-    },
-    { idx: 21,
-      time: "20:30",
-      remainingCapacity: 6
-    },
-    { idx: 22,
-      time: "21:00",
-      remainingCapacity: 0
-    },
-  ]
-  }
-
-
+// const productCapacities = 
+//   { '5c4cXcnzwtFmZT9gtKhS': [
+//     { idx: 0,
+//       time: "10:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 1,
+//       time: "10:30",
+//       remainingCapacity: 0
+//     },
+//     { idx: 2,
+//       time: "11:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 3,
+//       time: "11:30",
+//       remainingCapacity: 5
+//     },
+//     { idx: 4,
+//       time: "12:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 5,
+//       time: "12:30",
+//       remainingCapacity: 12
+//     },
+//     { idx: 6,
+//       time: "13:00",
+//       remainingCapacity: 50
+//     },
+//     { idx: 7,
+//       time: "13:30",
+//       remainingCapacity: 10
+//     },
+//     { idx: 8,
+//       time: "14:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 9,
+//       time: "14:30",
+//       remainingCapacity: 40
+//     },
+//     { idx: 10,
+//       time: "15:00",
+//       remainingCapacity: 20
+//     },
+//     { idx: 11,
+//       time: "15:30",
+//       remainingCapacity: 21
+//     },
+//     { idx: 12,
+//       time: "16:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 13,
+//       time: "16:30",
+//       remainingCapacity: 0
+//     },
+//     { idx: 14,
+//       time: "17:00",
+//       remainingCapacity: 10
+//     },
+//     { idx: 15,
+//       time: "17:30",
+//       remainingCapacity: 11
+//     },
+//     { idx: 16,
+//       time: "18:00",
+//       remainingCapacity: 20
+//     },
+//     { idx: 17,
+//       time: "18:30",
+//       remainingCapacity: 21
+//     },
+//     { idx: 18,
+//       time: "19:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 19,
+//       time: "19:30",
+//       remainingCapacity: 22
+//     },
+//     { idx: 20,
+//       time: "20:00",
+//       remainingCapacity: 14
+//     },
+//     { idx: 21,
+//       time: "20:30",
+//       remainingCapacity: 6
+//     },
+//     { idx: 22,
+//       time: "21:00",
+//       remainingCapacity: 0
+//     },
+//   ],
+//   'lQq80BfyHvS5THLnAC95': [
+//     { idx: 0,
+//       time: "10:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 1,
+//       time: "10:30",
+//       remainingCapacity: 0
+//     },
+//     { idx: 2,
+//       time: "11:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 3,
+//       time: "11:30",
+//       remainingCapacity: 5
+//     },
+//     { idx: 4,
+//       time: "12:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 5,
+//       time: "12:30",
+//       remainingCapacity: 12
+//     },
+//     { idx: 6,
+//       time: "13:00",
+//       remainingCapacity: 50
+//     },
+//     { idx: 7,
+//       time: "13:30",
+//       remainingCapacity: 10
+//     },
+//     { idx: 8,
+//       time: "14:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 9,
+//       time: "14:30",
+//       remainingCapacity: 40
+//     },
+//     { idx: 10,
+//       time: "15:00",
+//       remainingCapacity: 20
+//     },
+//     { idx: 11,
+//       time: "15:30",
+//       remainingCapacity: 21
+//     },
+//     { idx: 12,
+//       time: "16:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 13,
+//       time: "16:30",
+//       remainingCapacity: 0
+//     },
+//     { idx: 14,
+//       time: "17:00",
+//       remainingCapacity: 10
+//     },
+//     { idx: 15,
+//       time: "17:30",
+//       remainingCapacity: 11
+//     },
+//     { idx: 16,
+//       time: "18:00",
+//       remainingCapacity: 20
+//     },
+//     { idx: 17,
+//       time: "18:30",
+//       remainingCapacity: 21
+//     },
+//     { idx: 18,
+//       time: "19:00",
+//       remainingCapacity: 0
+//     },
+//     { idx: 19,
+//       time: "19:30",
+//       remainingCapacity: 22
+//     },
+//     { idx: 20,
+//       time: "20:00",
+//       remainingCapacity: 14
+//     },
+//     { idx: 21,
+//       time: "20:30",
+//       remainingCapacity: 6
+//     },
+//     { idx: 22,
+//       time: "21:00",
+//       remainingCapacity: 0
+//     },
+//   ]
+//   }
 
 const AccordionItem = ({ ...props }) => {
   const dispatch = useDispatch();
@@ -210,8 +208,6 @@ const AccordionItem = ({ ...props }) => {
   const [time, setTime] = useState('');
   const { id, title, photo, desc, price, duration, type, room } = props;
   const [open, setOpen] = useState(false);
-
-  const productTimeslots = productCapacities[id];
 
   const handleSetTime = (id, time) => {
     setTime(time);
@@ -266,7 +262,6 @@ const AccordionItem = ({ ...props }) => {
             <TimeSelect
               duration={duration}
               id={id}
-              timeSlots={productTimeslots}
               handleSetTime={handleSetTime}
             />
           ) : null}
@@ -319,8 +314,10 @@ const ProductSelect = () => {
   const { data, isLoaded, hasErrors } = useSelector((state) => state.product);
   const products = data.filter(({ type }) => type === 'product');
 
+
   useEffect(() => {
     dispatch(fetchAllProducts());
+
   }, [dispatch]);
   return (
     <WizardStep stepHeader="Select your products">
