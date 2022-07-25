@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { Table } from 'reactstrap'
+import { useHistory, useParams } from 'react-router-dom'
+import { Button, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchWaiversByBookingId } from 'redux/waiver';
 import { fetchAllBookings, fetchBookingById, getData, getDataSuccess } from 'redux/booking';
@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 
 
 export default function BookingDetails() {
+    const history = useHistory()
     const dispatch = useDispatch();
     const { id } = useParams()
      const {data, isLoaded, hasErrors} = useSelector(state => state.booking)
@@ -32,7 +33,8 @@ export default function BookingDetails() {
 
     return (
         <div className='container'>
-             <h2 className='mb-3 text-center'>Booking Details for {id}</h2>
+            <Button className='back' onClick={() => history.goBack()}>Back</Button>
+             <h2 className='mb-5 text-center'>Booking Details for {id}</h2>
              <h5>Products And Addons:</h5>
              <Table borderless>
                  <thead>
@@ -74,20 +76,41 @@ export default function BookingDetails() {
              <h5>Checkout Information</h5>
              <ul>
                  <li className='l-height'><strong className='mr-4'>Date:</strong> {bookingdata[0]?.stripe?.confirmDate}</li>
-                 <li className='l-height'><strong className='mr-4'>Amount:</strong> {bookingdata[0]?.stripe?.amount}</li>
+                 <li className='l-height'><strong className='mr-4'>Amount {'($)'}:</strong> {bookingdata[0]?.stripe?.amount / 100}</li>
                  <li className='l-height'><strong className='mr-4'>Receipt Url:</strong> <a href={bookingdata[0]?.stripe?.receiptURL}>{bookingdata[0]?.stripe?.receiptURL}</a></li>
                  <li className='l-height'><strong className='mr-4'>Transcation ID:</strong> {bookingdata[0]?.stripe?.transactionID}</li>
              </ul>
              <h5>Waiver</h5>
-             {bookingdata[0]?.waiver &&  
-             <ul>
-                <li className='l-height'><strong className='mr-4'>Name:</strong> {waiverdata[0]?.name}</li>
-                <li className='l-height'><strong className='mr-4'>Email:</strong> {waiverdata[0]?.email}</li>
-                <li className='l-height'><strong className='mr-4'>Date:</strong> {waiverdata[0]?.date}</li>
-                <li className='l-height'><strong className='mr-4'>IP Address:</strong> {waiverdata[0]?.ipAddress}</li>
-                <li className='l-height'><strong className='mr-4'>User Agent:</strong> {waiverdata[0]?.userAgent}</li>
-                <li className='l-height'><strong className='mr-4'>Receipt Url:</strong> <a href={waiverdata[0]?.waiverURL}> {waiverdata[0]?.waiverURL}</a></li>
-             </ul>}
+             {waiverdata &&  
+             <Table borderless>
+             <thead>
+                 <tr>
+                     <th>Date</th>
+                     <th>Name</th>
+                     <th>Guardian</th>
+                     <th>Email</th>
+                     <th>IP Address</th>
+                     <th>Waiver Url</th>
+                     <th>UserAgent</th>
+                 </tr>
+             </thead>
+             <tbody>
+                 {waiverdata.map((waiver) => {
+                    return (
+                    <tr key={waiver.id}>
+                        <td>{waiver.date ? waiver.date : '-'}</td>
+                        <td>{waiver.name ? waiver.name : waiver.fullName}</td>
+                        <td>{waiver.guardian ? waiver.guardian : '-'}</td>
+                        <td>{waiver.email ? waiver.email: '-'}</td>
+                        <td>{waiver.ipAddress ? waiver.ipAddress: '-'}</td>
+                        <td>{waiver.waiverURL ? waiver.waiverURL : '-'}</td>
+                        <td>{waiver.userAgent ? waiver.userAgent : '-'}</td>
+                     </tr>
+                     )
+                 }) 
+             }
+             </tbody>
+         </Table>}
             
         </div>
     )
