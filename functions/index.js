@@ -170,7 +170,7 @@ const generateImpactedTime = (duration, time) => {
   return sesArr;
 };
 
-exports.sendEmail = functions.https.onCall(async (data, context) => {
+exports.getRemainingCapacity = functions.https.onCall(async (data, context) => {
   // const msg = {
   //   to: "marge.consunji@gmail.com",
   //   from: "mentorshipteamblue@gmail.com",
