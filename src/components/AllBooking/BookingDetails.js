@@ -103,7 +103,7 @@ export default function BookingDetails() {
                         <td>{waiver.guardian ? waiver.guardian : '-'}</td>
                         <td>{waiver.email ? waiver.email: '-'}</td>
                         <td>{waiver.ipAddress ? waiver.ipAddress: '-'}</td>
-                        <td>{waiver.waiverURL ? waiver.waiverURL : '-'}</td>
+                        <td>{waiver.waiverURL ? <a href={waiver.waiverURL}>{waiver.waiverURL}</a> : '-'}</td>
                         <td>{waiver.userAgent ? waiver.userAgent : '-'}</td>
                      </tr>
                      )
