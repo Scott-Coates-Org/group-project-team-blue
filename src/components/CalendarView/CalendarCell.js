@@ -7,37 +7,32 @@ export default function CalendarCell(props) {
     const { cellValue, productdata, roomdata, currentRoom, bookingdata, datepick} = props;
     const [cellCapacity, setCellCapacity ] = useState(currentRoom.capacity);
     const dateFilter = bookingdata.filter((value) => {
-        return (value.order.bookingDate == format(datepick, 'M/d/yyyy'))
+        return (value.order.bookingDate == format(datepick, 'yyyy-MM-dd'))
     })
 
     const arr = []
-    
-    for (let product of dateFilter) {
-        for (let x of product.order.products) {
-            if (x.room?.name == currentRoom.name) {
-                arr.push(x)
-             } else if (x.room == null && x.title == 'All Day Pass') {
-                 arr.push(x)
+    for (let booking of dateFilter) {
+        for (let product of booking.order.products) {
+            if (product.room?.name == currentRoom.name) {
+                arr.push(product)
+            } else if (product.room == null && product.title == 'All Day Pass') {
+                arr.push(product)
             }
         }
     }
-// console.log(arr, cellValue, currentRoom.name)
 useEffect(() => {
     setCellCapacity(currentRoom.capacity)
     calculate()
 }, [datepick])
 
-
 const calculate = () => {
-    for (let x of arr) {
-        // console.log("loop start", cellCapacity)
+    for (let prod of arr) {
         const session  = []
-        for (let i=0; i< x.duration / 30; i++) {
-            session.push(eachCellTime(x.time, i))
+        for (let i=0; i< prod.duration / 30; i++) {
+            session.push(eachCellTime(prod.time, i))
         }
-        if (session.includes(cellValue) || x.title == 'All Day Pass') {
-            setCellCapacity((cellCapacity) => cellCapacity - x.quantity)
-            // console.log(cellCapacity - x.quantity, cellValue)
+        if (session.includes(cellValue) || prod.title.includes('All')) {
+            setCellCapacity((cellCapacity) => cellCapacity - prod.quantity)
         }
     }
 }
@@ -68,7 +63,7 @@ const calculate = () => {
     return (
         <td 
             onMouseOver={mouseOver} onMouseOut={mouseOut}
-            id={`${cellCapacity > currentRoom.capacity * 0.5 ? 'available' : ''}`}
+            id={`${cellCapacity >= currentRoom.capacity * 0.5 ? 'available' : ''}`}
             className={`p-0 
             ${cellCapacity > 0 && cellCapacity < currentRoom.capacity * 0.5 ? 'halfbooked' : ''} 
             ${cellCapacity < 0 ? 'overbooked' : ''}

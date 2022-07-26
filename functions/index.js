@@ -10,6 +10,13 @@ const stripeWebhook = require("stripe")(functions.config().keys.webhooks);
 const endpointSecret = functions.config().keys.signing;
 
 const sgMail = require("@sendgrid/mail");
+const {
+  millisecondsToMinutes,
+  hoursToSeconds,
+  minutesToSeconds,
+  secondsToHours,
+  secondsToMinutes,
+} = require("date-fns");
 sgMail.setApiKey(functions.config().sendgrid.api);
 
 exports.createStripeCustomer = functions.https.onCall(async (data, context) => {
@@ -144,26 +151,163 @@ exports.events = functions.https.onRequest((request, response) => {
   }
 });
 
-exports.sendEmail = functions.https.onCall(async (data, context) => {
-  const msg = {
-    to: "marge.consunji@gmail.com",
-    from: "mentorshipteamblue@gmail.com",
-    subject: "Hopper - Booking Confirmation",
-    html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-    templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
-    dynamicTemplateData: {
-      firstname: "Marge",
-    },
-  };
+const eachCellTime = (time, plus) => {
+  const hr = time?.split(":")[0];
+  const min = time?.split(":")[1];
+  const inseconds = hoursToSeconds(hr) + minutesToSeconds(min) + plus * 1800;
+  const newtime = secondsToHours(inseconds);
+  if (inseconds % 3600 != 0) {
+    return newtime +":"+ secondsToMinutes(inseconds % 3600);
+  }
+  return newtime+ ":00";
+};
 
-  sgMail
-      .send(msg)
-      .then(() => {
-        console.log("Email sent");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+const generateImpactedTime = (duration, time) => {
+  const sesArr = [];
+  for (let x = -duration/30 + 1; x < duration/30; x++) {
+    sesArr.push(eachCellTime(time, x));
+  }
+  return sesArr;
+};
+
+exports.getRemainingCapacity = functions.https.onCall(async (data, context) => {
+  // const msg = {
+  //   to: "marge.consunji@gmail.com",
+  //   from: "mentorshipteamblue@gmail.com",
+  //   subject: "Hopper - Booking Confirmation",
+  //   html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+  //   templateId: "d-da2e6b3a1b434600aefd89e11ead3048",
+  //   dynamicTemplateData: {
+  //     firstname: "Marge",
+  //   },
+  // };
+
+  // sgMail
+  //     .send(msg)
+  //     .then(() => {
+  //       console.log("Email sent");
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  try {
+    const date = data.date;
+    const bookingSnapshot = await admin.firestore()
+        .collection("bookings")
+        .where("order.bookingDate", "==", date)
+        .get();
+    const bookingData = bookingSnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+    const productSnapshot = await admin
+        .firestore()
+        .collection("products")
+        .where("type", "==", "product")
+        .get();
+    const roomsData = {};
+    const rooms = await admin.firestore()
+        .collection("rooms").get();
+    rooms.docs.forEach((doc) => {
+      (roomsData[doc.id] = {...doc.data()});
+    },
+    );
+
+    const productData = productSnapshot.docs.map((doc) => {
+      const {room, ...rest} = doc.data();
+
+      return {
+        id: doc.id,
+        ...rest,
+        room: roomsData[room] || null,
+      };
+    });
+
+    const timeSnapshot = await admin.firestore()
+        .collection("opentime")
+        .where("date", "==", date)
+        .get();
+    const timeData = timeSnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+    const open = (timeData.length == 0) ? "09:00" : timeData[0]?.open;
+    const close = (timeData.length == 0) ? "21:00" : timeData[0]?.close;
+    const cell = [];
+    const openHour = new Date(`${date}T${open}:00Z`);
+    const closeHour = new Date(`${date}T${close}:00Z`);
+    const totalOpenTime = closeHour.getTime() - openHour.getTime();
+    const noOfCells = millisecondsToMinutes(totalOpenTime) / 30;
+    for (let i=0; i < noOfCells; i++) {
+      cell.push(eachCellTime(open, i));
+    }
+
+    const finalObj = {};
+    for (const prod of productData) {
+      const bookedProduct = [];
+      for (const booking of bookingData) {
+        if (booking.status.type == "SUCCESS") {
+          for (const product of booking.order.products) {
+            if (product.room?.name == prod?.room.name) {
+              bookedProduct.push(product);
+            } else if (product.room == null &&
+              product.title == "All Day Pass" ) {
+              bookedProduct.push(product);
+            }
+          }
+        }
+      }
+      const productArr = [];
+      for (const [index, sess] of cell.entries()) {
+        let originalCellCapacity = prod?.room.capacity;
+        if (prod.title.includes("All")) {
+          const impactedTimeSlot = cell;
+          const impactedCapacityArr = [];
+          for (const slot of impactedTimeSlot) {
+            let slotCapacity = prod?.room.capacity;
+            for (const p of bookedProduct) {
+              const session = [];
+              for (let i = 0; i < p.duration / 30; i++) {
+                session.push(eachCellTime(p.time, i));
+              }
+              if (session.includes(slot) || p.title.includes("All")) {
+                slotCapacity -= p.quantity;
+              }
+            }
+            impactedCapacityArr.push(slotCapacity);
+          }
+          originalCellCapacity = Math.min(...impactedCapacityArr);
+        } else {
+          const impactedTimeSlot = generateImpactedTime(prod.duration, sess);
+          const impactedCapacityArr = [];
+          for (const slot of impactedTimeSlot) {
+            let slotCapacity = prod?.room.capacity;
+            for (const p of bookedProduct) {
+              const session = [];
+              for (let i = 0; i < p.duration / 30; i++) {
+                session.push(eachCellTime(p.time, i));
+              }
+              if (session.includes(slot) || p.title.includes("All")) {
+                slotCapacity -= p.quantity;
+              }
+            }
+            impactedCapacityArr.push(slotCapacity);
+          }
+          originalCellCapacity = Math.min(...impactedCapacityArr);
+        }
+        productArr.push({idx: index, time: sess,
+          remainingCapacity: originalCellCapacity});
+      }
+      finalObj[`${prod.id}`] = productArr;
+    }
+    return finalObj;
+  } catch (error) {
+    return error;
+  }
 });
 
 const createWaiversInDB = async (bookingId) => {
@@ -402,3 +546,23 @@ exports.stripeConfirmAddToDB = functions.database
         data: snapshot.val().data.object.metadata.docID,
       });
     });
+
+// exports.calculateSessionCapacity = functions.https
+//     .onCall(async (data, context) => {
+//       return {
+//         test: "hello",
+//       };
+//       const date = data.date;
+//       const bookingSnapshot = await admin.firestore()
+//           .collection("bookings")
+//       .where("order.bookingDate", "==", date).get();
+//       const bookingData = bookingSnapshot.docs.map((doc) => ({
+//         id: doc.id,
+//         ...doc.data(),
+//       }));
+//       const productData = await fetchAllProductsFromDb();
+//       return {
+//         bookingData,
+//         productData,
+//       };
+//     });

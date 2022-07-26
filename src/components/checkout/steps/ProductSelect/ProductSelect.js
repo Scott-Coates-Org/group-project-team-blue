@@ -123,8 +123,10 @@ const ProductSelect = () => {
   const { data, isLoaded, hasErrors } = useSelector((state) => state.product);
   const products = data.filter(({ type }) => type === 'product');
 
+
   useEffect(() => {
     dispatch(fetchAllProducts());
+
   }, [dispatch]);
   return (
     <WizardStep stepHeader="Select your products">
