@@ -7,7 +7,8 @@ import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import BookingView from './BookingView';
 import { ButtonGroup, Button, ButtonToolbar } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAllBookings, getData } from 'redux/booking'
+import { fetchAllBookings, getData, getDataSuccess } from 'redux/booking'
+import { firebase } from 'firebase/client'
 
 export default function BookingList() {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ export default function BookingList() {
       (sum, { price, quantity }) => sum + price * quantity,
       0
     )
-    totalAmount += total
+    totalAmount += (total + 5 + 0.05 * total)
   }
   console.log(tickets)
   // console.log(totalAmount)
@@ -58,7 +59,14 @@ export default function BookingList() {
   };
 
   useEffect(() => {
-    dispatch(fetchAllBookings())
+    firebase.firestore().collection("bookings").where("status.type", "==", "SUCCESS").get()
+    .then(collections => {
+      const mydata = collections.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+    dispatch(getDataSuccess(mydata))
+    })
   }, [dispatch])
 
   const {
