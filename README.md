@@ -57,7 +57,7 @@ We **will** be using issues for the group project. Go to the issues list to mana
 
 ## Restrictions
 
-**Bookings**
+**Bookings**.
 
 - Cannot book on a non-working day
 - Cannot book at a non-working hour (Last timeslot should be: Closing time - smallest product by time)
